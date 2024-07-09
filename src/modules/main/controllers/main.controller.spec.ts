@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MainController } from './main.controller';
 import { MainService } from '../services';
+import { EvaGalleryRepository } from '@modules/app-db/repositories';
 
 describe('MainController', () => {
 
@@ -9,7 +10,10 @@ describe('MainController', () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [MainController],
-      providers: [MainService],
+      providers: [
+        MainService,
+        { provide: EvaGalleryRepository, useValue: {} },
+      ],
     }).compile();
     mainController = app.get<MainController>(MainController);
   });

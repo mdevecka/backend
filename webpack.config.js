@@ -1,5 +1,6 @@
 const path = require('path');
-const tsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const mode = process.env.NODE_ENV || 'development';
 
 module.exports = {
@@ -7,12 +8,18 @@ module.exports = {
     './src/main.ts',
   ],
   optimization: {
-    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          keep_classnames: true,
+        },
+      }),
+    ],
   },
   target: 'node',
   mode,
   resolve: {
-    plugins: [new tsconfigPathsPlugin()],
+    plugins: [new TsconfigPathsPlugin()],
     extensions: ['.ts', '.js'],
   },
   output: {
