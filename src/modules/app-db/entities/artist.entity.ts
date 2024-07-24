@@ -1,17 +1,14 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { LabeledEntity } from './labeled.entity';
 import { Country } from './country.entity';
 import { ArtistCategory } from './artist-category.entity';
 import { User } from './user.entity';
 
 @Entity()
-export class Artist extends BaseEntity {
-
-  @Column('text')
-  name: string;
+export class Artist extends LabeledEntity {
 
   @Column('date')
-  born: Date;
+  born: string;
 
   @Column({ type: 'text', nullable: true })
   biography: string;

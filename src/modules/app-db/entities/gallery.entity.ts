@@ -1,13 +1,10 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { LabeledEntity } from './labeled.entity';
 import { Country } from './country.entity';
 import { User } from './user.entity';
 
 @Entity()
-export class Gallery extends BaseEntity {
-
-  @Column('text')
-  name: string;
+export class Gallery extends LabeledEntity {
 
   @Column('text')
   description: string;
@@ -24,7 +21,7 @@ export class Gallery extends BaseEntity {
   @ManyToOne(() => Country)
   country: Country;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column('text')
   gps: string;
 
   @Column({ type: 'boolean', default: true })

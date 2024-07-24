@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppConfig } from '@common/config';
 import { MainModule } from '@modules/.';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
@@ -9,7 +10,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
+      useFactory: (config: ConfigService<AppConfig>) => ({
         type: 'postgres',
         host: config.get("POSTGRES_HOST"),
         port: parseInt(config.get("POSTGRES_PORT")),

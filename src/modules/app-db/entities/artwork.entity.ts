@@ -1,20 +1,15 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { Entity, Column, ManyToOne, ManyToMany } from 'typeorm';
+import { LabeledEntity } from './labeled.entity';
 import { Artist } from './artist.entity';
+import { Exhibition } from './exhibition.entity';
 import { ArtworkGenre } from './artwork-genre.entity';
 import { ArtworkMaterial } from './artwork-material.entity';
 import { ArtworkWorktype } from './artwork-worktype.entity';
 import { ArtworkTechnique } from './artwork-technique.entity';
-
-export enum ArtworkCategory {
-  EaselPainting = 'easel painting',
-}
+import { ArtworkCategory } from './artwork-category.entity';
 
 @Entity()
-export class Artwork extends BaseEntity {
-
-  @Column('text')
-  name: string;
+export class Artwork extends LabeledEntity {
 
   @Column({ type: 'text', nullable: true })
   description: string;
@@ -22,8 +17,11 @@ export class Artwork extends BaseEntity {
   @ManyToOne(() => Artist)
   artist: Artist;
 
-  @Column({ type: 'char', length: 250 })
-  image: string;
+  @Column({ type: "bytea", nullable: true })
+  image: Buffer;
+
+  @Column({ type: 'text', nullable: true })
+  imageUrlTemp: string;
 
   @Column('text')
   year: string;
@@ -34,7 +32,7 @@ export class Artwork extends BaseEntity {
   @ManyToOne(() => ArtworkWorktype)
   artworkWorktype: ArtworkWorktype;
 
-  @Column({ type: "enum", enum: ArtworkCategory })
+  @ManyToOne(() => ArtworkCategory)
   artworkCategory: ArtworkCategory;
 
   @ManyToOne(() => ArtworkMaterial)
@@ -42,6 +40,9 @@ export class Artwork extends BaseEntity {
 
   @ManyToOne(() => ArtworkTechnique)
   artworkTechnique: ArtworkTechnique;
+
+  @ManyToMany(() => Exhibition)
+  exhibitions: Exhibition[];
 
   @Column('text')
   measurements: string;

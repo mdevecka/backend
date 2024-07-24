@@ -1,6 +1,7 @@
 export * from './artist.entity';
 export * from './artist-category.entity';
 export * from './artwork.entity';
+export * from './artwork-category.entity';
 export * from './artwork-genre.entity';
 export * from './artwork-material.entity';
 export * from './artwork-technique.entity';
@@ -8,6 +9,6 @@ export * from './artwork-worktype.entity';
 export * from './base.entity';
 export * from './country.entity';
 export * from './exhibition.entity';
-export * from './exhibition-artwork.entity';
 export * from './gallery.entity';
+export * from './labeled.entity';
 export * from './user.entity';

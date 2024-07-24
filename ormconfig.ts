@@ -31,6 +31,7 @@ async function createDataSource() {
     migrations: ["src/migrations/*.ts"],
     namingStrategy: new SnakeNamingStrategy(),
   };
+  await app.close();
   return new DataSource(connectionOptions);
 }
 

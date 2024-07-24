@@ -14,7 +14,7 @@ export class EvaGalleryRepository {
     return this.artists.find();
   }
 
-  async createArtist(name: string, born: Date) {
+  async createArtist(name: string, born: string) {
     const artist = this.artists.create({
       name: name, born: born
     });

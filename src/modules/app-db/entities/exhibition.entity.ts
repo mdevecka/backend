@@ -1,17 +1,15 @@
-import { Entity, Column, ManyToOne } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
+import { LabeledEntity } from './labeled.entity';
 import { Gallery } from './gallery.entity';
+import { Artwork } from './artwork.entity';
 
 @Entity()
-export class Exhibition extends BaseEntity {
+export class Exhibition extends LabeledEntity {
 
-  @Column('text')
-  name: string;
-
-  @Column('date')
+  @Column('timestamptz')
   fromDate: Date;
 
-  @Column('date')
+  @Column('timestamptz')
   toDate: Date;
 
   @Column('text')
@@ -19,6 +17,10 @@ export class Exhibition extends BaseEntity {
 
   @ManyToOne(() => Gallery)
   gallery: Gallery;
+
+  @JoinTable()
+  @ManyToMany(() => Artwork)
+  artworks: Artwork[];
 
   @Column({ type: 'boolean', default: true })
   active: boolean;

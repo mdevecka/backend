@@ -1,1 +1,1 @@
-export type GetArtistsResponse = { name: string, born: Date }[];
+export type GetArtistsResponse = { name: string, born: string }[];
