@@ -41,7 +41,7 @@ export class Artwork extends LabeledEntity {
   @ManyToOne(() => ArtworkTechnique)
   artworkTechnique: ArtworkTechnique;
 
-  @ManyToMany(() => Exhibition)
+  @ManyToMany(() => Exhibition, ex => ex.artworks)
   exhibitions: Exhibition[];
 
   @Column('text')
