@@ -6,7 +6,7 @@ import { MintDto } from './dto/MintDto';
 export class MintController {
   constructor(private readonly appService: MintCreator) {}
 
-  @Post('changeowner')
+  @Post('trialmint')
   GetCollection(
     @Body() imageData : MintDto,
     @Req() req: Request,){
