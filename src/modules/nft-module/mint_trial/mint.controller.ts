@@ -2,7 +2,7 @@ import { Controller, Body, Post, Req} from '@nestjs/common';
 import { MintCreator } from './mint.service';
 import { MintDto } from './dto/MintDto';
 
-@Controller()
+@Controller('mint')
 export class MintController {
   constructor(private readonly appService: MintCreator) {}
 

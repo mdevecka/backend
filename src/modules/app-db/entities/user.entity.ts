@@ -19,4 +19,6 @@ export class User extends LabeledEntity {
   @Column({ type: 'text', nullable: true })
   avatarUrlTemp: string;
 
+  @Column('int')
+  trialMint: number;
 }

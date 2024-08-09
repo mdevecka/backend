@@ -6,4 +6,6 @@ export interface AppConfig {
   POSTGRES_USER: string;
   POSTGRES_PASSWORD: string;
   POSTGRES_DATABASE: string;
+  WALLET_SECRET_KEY: string;
+  NFT_MODULE_URL: string;
 }

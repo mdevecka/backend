@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CollectionController } from './collection.controller';
-import { collectionCreator } from './collection.service';
+import { CollectionCreator } from './collection.service';
 
 @Module({
   imports: [],
   controllers: [CollectionController],
-  providers: [collectionCreator],
+  providers: [CollectionCreator],
 })
 export class CollectionModule {}

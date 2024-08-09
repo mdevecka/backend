@@ -2,7 +2,7 @@ import { Controller, Body, Post, Req} from '@nestjs/common';
 import { SwapCreator } from './swap.service';
 import { SwapDto } from './dto/SwapDto';
 
-@Controller()
+@Controller('ownership')
 export class SwapController {
   constructor(private readonly appService: SwapCreator) {}
 

@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfig } from '@common/config';
 import { MainModule } from '@modules/.';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { MintModule } from '@modules/nft-module/mint_trial/mint.module';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       }),
       inject: [ConfigService],
     }),
-    MainModule,
+    MainModule, MintModule
   ],
 })
 export class AppModule { }

@@ -1,10 +1,10 @@
 import { Controller, Body, Get, Req} from '@nestjs/common';
-import { metaFetcher } from './nft.service';
+import { MetaFetcher } from './nft.service';
 import { MetaDto } from './dto/MetaDto';
 
-@Controller()
+@Controller('metadata')
 export class MetaController {
-  constructor(private readonly appService: metaFetcher) {}
+  constructor(private readonly appService: MetaFetcher) {}
 
   @Get('/nftmeta')
   GetCollection(

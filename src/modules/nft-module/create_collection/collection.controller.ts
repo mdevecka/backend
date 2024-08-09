@@ -1,10 +1,10 @@
 import { Controller, Body, Post, Req} from '@nestjs/common';
-import { collectionCreator } from './collection.service';
+import { CollectionCreator } from './collection.service';
 import { CollectionDto } from './dto/CollectionDto';
 
-@Controller()
+@Controller('collection')
 export class CollectionController {
-  constructor(private readonly appService: collectionCreator) {}
+  constructor(private readonly appService: CollectionCreator) {}
 
   @Post('generatecol')
   GetCollection(

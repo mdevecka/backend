@@ -1,19 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import '@polkadot/api-augment';
 import { MetaDto } from './dto/MetaDto';
-
+import {ConfigService } from '@nestjs/config';
+import { AppConfig } from '@common/config';
 
 @Injectable()
-export class metaFetcher {
+export class MetaFetcher {
+ 
+  constructor(private configService: ConfigService<AppConfig>) {
 
-   async fetchMetadata(account: MetaDto): Promise<any> {
+  }
+
+   async fetchMetadata(account: MetaDto): Promise<Response> {
     //We will fetch metadata for user and save them to the database, 
     //this call is made each time user loads their profile to see NFTS
     //Returns 200 ok if successful so project can fetch from DB
-
+    const url = this.configService.get("NFT_MODULE_URL");
 
     const response = await fetch(
-        "http://localhost:3001/nftmeta?" +
+        url+"/nftmeta?" +
         new URLSearchParams({
             "address": account.address
         })

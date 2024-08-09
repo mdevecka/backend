@@ -1,10 +1,10 @@
 import { Controller, Body, Post, Req} from '@nestjs/common';
-import { nftCreator } from './nft.service';
+import { NftCreator } from './nft.service';
 import { NftDto } from './dto/NFTDto';
 
-@Controller()
+@Controller('nft') 
 export class NftController {
-  constructor(private readonly appService: nftCreator) {}
+  constructor(private readonly appService: NftCreator) {}
 
   @Post('generatenft')
   GetCollection(
