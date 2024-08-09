@@ -7,4 +7,4 @@ import { NftCreator } from './nft.service';
   controllers: [NftController],
   providers: [NftCreator],
 })
-export class NftModule {}
+export class NftModule { }

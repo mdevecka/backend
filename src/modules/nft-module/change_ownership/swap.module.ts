@@ -7,4 +7,4 @@ import { SwapCreator } from './swap.service';
   controllers: [SwapController],
   providers: [SwapCreator],
 })
-export class SwapModule {}
+export class SwapModule { }

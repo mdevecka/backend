@@ -8,4 +8,4 @@ import { AppDbModule } from '@modules/app-db';
   controllers: [MintController],
   providers: [MintCreator],
 })
-export class MintModule {}
+export class MintModule { }

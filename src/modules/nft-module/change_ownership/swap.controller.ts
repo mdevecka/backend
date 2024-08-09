@@ -1,15 +1,14 @@
-import { Controller, Body, Post, Req} from '@nestjs/common';
+import { Controller, Body, Post } from '@nestjs/common';
 import { SwapCreator } from './swap.service';
 import { SwapDto } from './dto/SwapDto';
 
 @Controller('ownership')
 export class SwapController {
-  constructor(private readonly appService: SwapCreator) {}
+  constructor(private readonly appService: SwapCreator) { }
 
   @Post('changeowner')
   GetCollection(
-    @Body() swapData : SwapDto,
-    @Req() req: Request,){
+    @Body() swapData: SwapDto) {
     return this.appService.createSwapCall(swapData);
   }
 }

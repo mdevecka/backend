@@ -7,4 +7,4 @@ import { CollectionCreator } from './collection.service';
   controllers: [CollectionController],
   providers: [CollectionCreator],
 })
-export class CollectionModule {}
+export class CollectionModule { }

@@ -7,4 +7,4 @@ import { MetaFetcher } from './nft.service';
   controllers: [MetaController],
   providers: [MetaFetcher],
 })
-export class MetadataModule {}
+export class MetadataModule { }
