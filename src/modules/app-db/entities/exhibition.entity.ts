@@ -19,7 +19,7 @@ export class Exhibition extends LabeledEntity {
   gallery: Gallery;
 
   @JoinTable()
-  @ManyToMany(() => Artwork)
+  @ManyToMany(() => Artwork, art => art.exhibitions)
   artworks: Artwork[];
 
   @Column({ type: 'boolean', default: true })

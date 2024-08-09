@@ -1,1 +1,1 @@
-export * from './eva-gallery.repository';
+export * from './admin.repository';
