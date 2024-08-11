@@ -23,8 +23,8 @@ export class NftCreator {
     const { name, description } = metadata;
     const collectionID = 1 //TBA Fetch from DB to get users collection ID also add check if user has a collection ID
 
-    const response = await fetch(url + "/generatenft", {
-      method: 'POST',
+    const response = await fetch(url + "/collection/" + collectionID.toString() + "/asset", {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -32,10 +32,9 @@ export class NftCreator {
         "metadata": {
           "name": name,
           "description": description,
-          "ipfs": ipfs
+          "ipfs": ipfs,
+          "author": address
         },
-        "address": address,
-        "collectionID": collectionID
       })
     });
 

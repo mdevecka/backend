@@ -20,21 +20,52 @@ export class CollectionCreator {
     const ipfs = "IPFS image link";
     const url = this.configService.get("NFT_MODULE_URL");
     const { metadata, address } = collection;
-    const { name, description } = metadata;
+    const { name, description = null } = metadata;
+    var body = null;
 
-    const response = await fetch(url + "/generatecol", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+    if (ipfs == null) {
+      body = JSON.stringify({
+        "owner": address,
+        "metadata": {
+          "name": name,
+          "description": description
+        },
+      });
+    }
+    else if (description == null) {
+      body = JSON.stringify({
+        "owner": address,
+        "metadata": {
+          "name": name,
+          "ipfs": ipfs
+        },
+      });
+    }
+    else if(description == null && ipfs == null){
+      body = JSON.stringify({
+        "owner": address,
+        "metadata": {
+          "name": name
+        },
+      });
+    }
+    else {
+      body = JSON.stringify({
+        "owner": address,
         "metadata": {
           "name": name,
           "description": description,
           "ipfs": ipfs
         },
-        "address": address,
-      })
+      });
+    }
+
+    const response = await fetch(url + "/collection", {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: body
     });
 
     return response;

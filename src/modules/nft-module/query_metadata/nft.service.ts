@@ -18,10 +18,7 @@ export class MetaFetcher {
     const url = this.configService.get("NFT_MODULE_URL");
 
     const response = await fetch(
-      url + "/nftmeta?" +
-      new URLSearchParams({
-        "address": account.address
-      })
+      url + "/address/" + account.toString()
     );
 
     //TBA The response is then saved to the database and if successful we return 200 ok, if not we return 400 please try again

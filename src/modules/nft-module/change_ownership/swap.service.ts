@@ -17,14 +17,12 @@ export class SwapCreator {
 
     const { assetID, collectionID, address } = swapData;
 
-    const response = await fetch(url + "/changeowner", {
+    const response = await fetch(url + "/transfer/collection/" + collectionID.toString() + "/asset/" + assetID.toString(),  {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "assetID": assetID,
-        "collectionID": collectionID,
         "address": address,
       })
     });
