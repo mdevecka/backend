@@ -1,6 +1,7 @@
 import { Entity, Column, OneToMany } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Nft } from './nft.entity';
+import { Wallet } from './wallet.entity';
 
 @Entity()
 export class User extends LabeledEntity {
@@ -23,7 +24,6 @@ export class User extends LabeledEntity {
   @Column('int')
   trialMint: number;
 
-  @OneToMany(() => Nft, nft => nft.user)
-  nfts: Nft[];
-
+  @OneToMany(() => Wallet, wallet => wallet.user)
+  wallets: Wallet[];
 }

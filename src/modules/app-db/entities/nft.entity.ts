@@ -1,13 +1,12 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { User } from './user.entity';
+import { Wallet } from './wallet.entity';
 
 @Entity()
 export class Nft extends BaseEntity {
 
-    // Many NFTs belong to one user
-    @ManyToOne(() => User, user => user.nfts)
-    user: User;
+    @ManyToOne(() => Wallet, wallet => wallet.nfts)
+    wallet: Wallet;
 
     @Column({ type: 'json', unique: true })
     nftData: JSON;
