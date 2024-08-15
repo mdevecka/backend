@@ -1,5 +1,5 @@
 import { Controller, Body, Get } from '@nestjs/common';
-import { MetaFetcher } from './nft.service';
+import { MetaFetcher } from './meta.service';
 import { MetaDto } from './dto/MetaDto';
 
 @Controller('metadata')

@@ -3,11 +3,12 @@ import '@polkadot/api-augment';
 import { MetaDto } from './dto/MetaDto';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
+import { NftRepository } from '@modules/app-db/repositories';
 
 @Injectable()
 export class MetaFetcher {
 
-  constructor(private configService: ConfigService<AppConfig>) {
+  constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>) {
 
   }
 
@@ -20,6 +21,8 @@ export class MetaFetcher {
     const response = await fetch(
       url + "/address/" + account.toString()
     );
+
+    //this.nftRepo.saveMetadata(response, account, userID);
 
     //TBA The response is then saved to the database and if successful we return 200 ok, if not we return 400 please try again
 

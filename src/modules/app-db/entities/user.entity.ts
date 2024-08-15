@@ -24,6 +24,9 @@ export class User extends LabeledEntity {
   @Column('int')
   trialMint: number;
 
+  @Column('int')
+  collectionID: number;
+
   @OneToMany(() => Wallet, wallet => wallet.user)
   wallets: Wallet[];
 }

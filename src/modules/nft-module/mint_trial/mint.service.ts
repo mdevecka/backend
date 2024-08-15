@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import '@polkadot/api-augment';
-import { MintDto } from './dto/MintDto';
 //import { ApiPromise, WsProvider, Keyring } from '@polkadot/api'
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
+import { MemoryStoredFile } from 'nestjs-form-data';
 
 
 @Injectable()
@@ -14,7 +14,7 @@ export class MintCreator {
 
   }
 
-  async createMint(mintData: MintDto): Promise<Response> {
+  async createMint(file: MemoryStoredFile, name: string, description: string, userId: string): Promise<Response> {
     //First we check if user has the right to mint an NFT, if they have already minted an NFT we return 400
     //If they haven't we create the NFT for them
     const url = this.configService.get("NFT_MODULE_URL");
@@ -22,7 +22,6 @@ export class MintCreator {
     console.log(users);
 
     const collectionID = 1 //TBA This will be hardcoded value but has to be set to actual collection that will be created
-    const { name, description } = mintData;
 
     //TBA Upload image to IPFS here for the fetch below
     const ipfs = "IPFS image link";

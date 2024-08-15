@@ -1,15 +1,16 @@
 import { IsNotEmpty } from 'class-validator';
-
-export class Metadata {
-  @IsNotEmpty()
-  name: string;
-  @IsNotEmpty()
-  description: string;
-}
+import { MemoryStoredFile, IsFile, MaxFileSize, HasMimeType } from 'nestjs-form-data';
 
 export class CollectionDto {
+  @IsFile()
+  @MaxFileSize(10e6) // 10MB
+  @HasMimeType(['image/jpeg', 'image/png'])
+  file: MemoryStoredFile;
   @IsNotEmpty()
-  metadata: Metadata;
+  name: string;
+  description: string;
   @IsNotEmpty()
   address: string;
+  @IsNotEmpty()
+  userID: string;
 }

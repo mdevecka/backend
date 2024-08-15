@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import '@polkadot/api-augment';
-import { CollectionDto } from './dto/CollectionDto';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
+import { MemoryStoredFile } from 'nestjs-form-data';
 
 @Injectable()
 export class CollectionCreator {
@@ -10,7 +10,7 @@ export class CollectionCreator {
 
   }
 
-  async createCollectionCall(collection: CollectionDto): Promise<Response> {
+  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, userId: string, address: string): Promise<Response> {
     //TBA We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they have, skip this function and return nothing
     //If they haven't, we create a collection for them
@@ -19,8 +19,7 @@ export class CollectionCreator {
     //TBA Upload collection image to IPFS here for the fetch below
     const ipfs = "IPFS image link";
     const url = this.configService.get("NFT_MODULE_URL");
-    const { metadata, address } = collection;
-    const { name, description = null } = metadata;
+
     var body = null;
 
     if (ipfs == null) {

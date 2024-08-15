@@ -1,15 +1,26 @@
-import { IsNotEmpty } from 'class-validator';
-
-export class Metadata {
-  @IsNotEmpty()
-  name: string;
-  @IsNotEmpty()
-  description: string;
-}
+import { IsString, IsNotEmpty } from 'class-validator';
+import { MemoryStoredFile, IsFile, MaxFileSize, HasMimeType } from 'nestjs-form-data';
 
 export class NftDto {
+  @IsFile()
+  @MaxFileSize(10e6) // 10MB
+  @HasMimeType(['image/jpeg', 'image/png'])
   @IsNotEmpty()
-  metadata: Metadata;
+  file: MemoryStoredFile;
+
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+
+  @IsString()
   @IsNotEmpty()
   address: string;
 }
