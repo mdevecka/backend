@@ -10,13 +10,7 @@ export class Gallery extends LabeledEntity {
   description: string;
 
   @Column('text')
-  street: string;
-
-  @Column('text')
-  city: string;
-
-  @Column('text')
-  postcode: string;
+  address: string;
 
   @ManyToOne(() => Country)
   country: Country;

@@ -6,7 +6,6 @@ import { ArtworkGenre } from './artwork-genre.entity';
 import { ArtworkMaterial } from './artwork-material.entity';
 import { ArtworkWorktype } from './artwork-worktype.entity';
 import { ArtworkTechnique } from './artwork-technique.entity';
-import { ArtworkCategory } from './artwork-category.entity';
 
 @Entity()
 export class Artwork extends LabeledEntity {
@@ -17,29 +16,32 @@ export class Artwork extends LabeledEntity {
   @ManyToOne(() => Artist)
   artist: Artist;
 
-  @Column({ type: "bytea", nullable: true })
+  @Column({ type: "bytea" })
   image: Buffer;
-
-  @Column({ type: 'text', nullable: true })
-  imageUrlTemp: string;
 
   @Column('text')
   year: string;
 
+  @Column({ type: 'boolean', default: false })
+  nft: boolean; // todo replace by relationship
+
+  @Column({ type: 'boolean', default: false })
+  ai: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  tags: string;
+
   @ManyToOne(() => ArtworkGenre)
   artworkGenre: ArtworkGenre;
-
-  @ManyToOne(() => ArtworkWorktype)
-  artworkWorktype: ArtworkWorktype;
-
-  @ManyToOne(() => ArtworkCategory)
-  artworkCategory: ArtworkCategory;
 
   @ManyToOne(() => ArtworkMaterial)
   artworkMaterial: ArtworkMaterial;
 
   @ManyToOne(() => ArtworkTechnique)
   artworkTechnique: ArtworkTechnique;
+
+  @ManyToOne(() => ArtworkWorktype)
+  artworkWorktype: ArtworkWorktype;
 
   @ManyToMany(() => Exhibition, ex => ex.artworks)
   exhibitions: Exhibition[];

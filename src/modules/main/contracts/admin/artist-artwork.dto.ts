@@ -10,11 +10,12 @@ export interface ArtistArtworkDto {
     born: string;
     biography: string;
   };
-  imageUrl: string;
   year: string;
+  nft: boolean;
+  ai: boolean;
+  tags: string;
   artworkGenre: OptionDto;
   artworkWorktype: OptionDto;
-  artworkCategory: OptionDto;
   artworkMaterial: OptionDto;
   artworkTechnique: OptionDto;
   measurements: string;

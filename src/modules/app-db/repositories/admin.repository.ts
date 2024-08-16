@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, ArtistCategory, ArtworkTechnique,
-  ArtworkCategory, ArtworkMaterial, ArtworkGenre, ArtworkWorktype
+  ArtworkMaterial, ArtworkGenre, ArtworkWorktype
 } from '../entities';
 
 @Injectable()
@@ -17,7 +17,6 @@ export class AdminRepository {
     @InjectRepository(Exhibition) private exhibitions: Repository<Exhibition>,
     @InjectRepository(Country) private countries: Repository<Country>,
     @InjectRepository(ArtistCategory) private artistCategories: Repository<ArtistCategory>,
-    @InjectRepository(ArtworkCategory) private artworkCategories: Repository<ArtworkCategory>,
     @InjectRepository(ArtworkTechnique) private artworkTechniques: Repository<ArtworkTechnique>,
     @InjectRepository(ArtworkMaterial) private artworkMaterials: Repository<ArtworkMaterial>,
     @InjectRepository(ArtworkGenre) private artworkGenres: Repository<ArtworkGenre>,
@@ -44,7 +43,6 @@ export class AdminRepository {
         artist: true,
         artworkGenre: true,
         artworkWorktype: true,
-        artworkCategory: true,
         artworkMaterial: true,
         artworkTechnique: true,
       },
@@ -90,7 +88,6 @@ export class AdminRepository {
         artist: true,
         artworkGenre: true,
         artworkWorktype: true,
-        artworkCategory: true,
         artworkMaterial: true,
         artworkTechnique: true,
       },
@@ -146,7 +143,6 @@ export class AdminRepository {
         artist: true,
         artworkGenre: true,
         artworkWorktype: true,
-        artworkCategory: true,
         artworkMaterial: true,
         artworkTechnique: true,
       },
@@ -179,7 +175,6 @@ export class AdminRepository {
         artist: true,
         artworkGenre: true,
         artworkWorktype: true,
-        artworkCategory: true,
         artworkMaterial: true,
         artworkTechnique: true,
       },
@@ -194,18 +189,12 @@ export class AdminRepository {
 
   async getCountryOptions() {
     return this.countries.find({
-      select: { id: true, name: true },
+      select: { id: true, name: true, code: true },
     });
   }
 
   async getArtistCategoryOptions() {
     return this.artistCategories.find({
-      select: { id: true, name: true },
-    });
-  }
-
-  async getArtworkCategoryOptions() {
-    return this.artworkCategories.find({
       select: { id: true, name: true },
     });
   }
@@ -268,6 +257,16 @@ export class AdminRepository {
         gallery: { user: { id: userId } },
       }
     });
+  }
+
+  async getArtworkImage(userId: string, id: string) {
+    return this.artworks.findOne({
+      select: { id: true, image: true },
+      where: {
+        id: id,
+        artist: { user: { id: userId } },
+      }
+    }).then(a => a?.image);
   }
 
 }

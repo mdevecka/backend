@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, NestMiddleware, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfig } from '@common/config';
+import { LogRequestMiddleware } from '@common/middleware';
 import { MainModule } from '@modules/.';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
@@ -25,4 +26,16 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
     MainModule,
   ],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+
+  constructor(private config: ConfigService<AppConfig>) {
+  }
+
+  configure(consumer: MiddlewareConsumer) {
+    const middlewares: { new(): NestMiddleware }[] = [];
+    if (this.config.get("LOG_REQUESTS") === "true") {
+      middlewares.push(LogRequestMiddleware);
+    }
+    consumer.apply(...middlewares).forRoutes('*');
+  }
+}

@@ -1,12 +1,11 @@
-import { OptionDto } from './option.dto';
+import { CountryDto } from './country.dto';
 
 export interface GalleryDetailDto {
   id: string;
+  name: string;
   description: string;
-  street: string;
-  city: string;
-  postcode: string;
-  country: OptionDto;
+  address: string;
+  country: CountryDto;
   gps: string;
   active: boolean;
 }

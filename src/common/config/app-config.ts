@@ -6,4 +6,5 @@ export interface AppConfig {
   POSTGRES_USER: string;
   POSTGRES_PASSWORD: string;
   POSTGRES_DATABASE: string;
+  LOG_REQUESTS: string;
 }

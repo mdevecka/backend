@@ -1,4 +1,5 @@
-import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException, Response, ParseUUIDPipe } from '@nestjs/common';
+import { Response as ExpressResponse } from 'express';
 import { AdminRepository } from '@modules/app-db/repositories';
 import { User } from '@modules/app-db/entities';
 import { OptionDto } from '../contracts/admin';
@@ -51,7 +52,7 @@ export class AdminController {
   }
 
   @Get('artist/:id')
-  async getArtistDetail(@Param('id') id: string) {
+  async getArtistDetail(@Param('id', ParseUUIDPipe) id: string) {
     const artist = await this.adminRepository.getArtistDetail(this.currentUser.id, id);
     if (artist == null)
       throw new NotFoundException();
@@ -59,7 +60,7 @@ export class AdminController {
   }
 
   @Get('artwork/:id')
-  async getArtworkDetail(@Param('id') id: string) {
+  async getArtworkDetail(@Param('id', ParseUUIDPipe) id: string) {
     const artwork = await this.adminRepository.getArtworkDetail(this.currentUser.id, id);
     if (artwork == null)
       throw new NotFoundException();
@@ -67,7 +68,7 @@ export class AdminController {
   }
 
   @Get('gallery/:id')
-  async getGalleryDetail(@Param('id') id: string) {
+  async getGalleryDetail(@Param('id', ParseUUIDPipe) id: string) {
     const gallery = await this.adminRepository.getGalleryDetail(this.currentUser.id, id);
     if (gallery == null)
       throw new NotFoundException();
@@ -75,7 +76,7 @@ export class AdminController {
   }
 
   @Get('exhibition/:id')
-  async getExhibitionDetail(@Param('id') id: string) {
+  async getExhibitionDetail(@Param('id', ParseUUIDPipe) id: string) {
     const exhibition = await this.adminRepository.getExhibitionDetail(this.currentUser.id, id);
     if (exhibition == null)
       throw new NotFoundException();
@@ -83,38 +84,33 @@ export class AdminController {
   }
 
   @Get('artwork/:id/exhibition')
-  async getArtworkExhibitions(@Param('id') id: string) {
+  async getArtworkExhibitions(@Param('id', ParseUUIDPipe) id: string) {
     return mapAsync(this.adminRepository.getArtworkExhibitions(this.currentUser.id, id), mapper.createArtworkExhibitionDto);
   }
 
   @Get('exhibition/:id/artwork')
-  async getExhibitionArtworks(@Param('id') id: string) {
+  async getExhibitionArtworks(@Param('id', ParseUUIDPipe) id: string) {
     return mapAsync(this.adminRepository.getExhibitionArtworks(this.currentUser.id, id), mapper.createExhibitionArtworkDto);
   }
 
   @Get('artist/:id/artwork')
-  async getArtistArtworks(@Param('id') id: string) {
+  async getArtistArtworks(@Param('id', ParseUUIDPipe) id: string) {
     return mapAsync(this.adminRepository.getArtistArtworks(this.currentUser.id, id), mapper.createArtistArtworkDto);
   }
 
   @Get('gallery/:id/exhibition')
-  async getGalleryExhibitions(@Param('id') id: string) {
+  async getGalleryExhibitions(@Param('id', ParseUUIDPipe) id: string) {
     return mapAsync(this.adminRepository.getGalleryExhibitions(this.currentUser.id, id), mapper.createGalleryExhibitionDto);
   }
 
   @Get('options/country')
   async getCountryOptions() {
-    return mapOptionsAsync(this.adminRepository.getCountryOptions());
+    return mapAsync(this.adminRepository.getCountryOptions(), mapper.createCountryDto);
   }
 
   @Get('options/artist_category')
   async getArtistCategoryOptions() {
     return mapOptionsAsync(this.adminRepository.getArtistCategoryOptions());
-  }
-
-  @Get('options/artwork_category')
-  async getArtworkCategoryOptions() {
-    return mapOptionsAsync(this.adminRepository.getArtworkCategoryOptions());
   }
 
   @Get('options/artwork_technique')
@@ -155,6 +151,14 @@ export class AdminController {
   @Get('options/exhibition')
   async getExhibitionOptions() {
     return mapOptionsAsync(this.adminRepository.getExhibitionOptions(this.currentUser.id));
+  }
+
+  @Get('artwork/:id/image')
+  async getArtworkImage(@Param('id', ParseUUIDPipe) id: string, @Response() res: ExpressResponse) {
+    const image = await this.adminRepository.getArtworkImage(this.currentUser.id, id);
+    if (image == null)
+      throw new NotFoundException();
+    res.set({ "Content-Type": "image/jpeg" }).send(image);
   }
 
 }

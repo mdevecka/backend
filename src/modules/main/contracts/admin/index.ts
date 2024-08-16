@@ -4,6 +4,7 @@ export * from './artist-detail.dto';
 export * from './artwork.dto';
 export * from './artwork-detail.dto';
 export * from './artwork-exhibition.dto';
+export * from './country.dto';
 export * from './exhibition.dto';
 export * from './exhibition-artwork.dto';
 export * from './exhibition-detail.dto';
