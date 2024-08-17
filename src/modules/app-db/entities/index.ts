@@ -12,3 +12,5 @@ export * from './exhibition.entity';
 export * from './gallery.entity';
 export * from './labeled.entity';
 export * from './user.entity';
+export * from './nft.entity';
+export * from './wallet.entity';
