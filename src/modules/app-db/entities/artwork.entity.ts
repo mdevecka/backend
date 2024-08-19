@@ -19,6 +19,9 @@ export class Artwork extends LabeledEntity {
   @Column({ type: "bytea" })
   image: Buffer;
 
+  @Column({ type: "text" })
+  imageMimeType: string;
+
   @Column('text')
   year: string;
 

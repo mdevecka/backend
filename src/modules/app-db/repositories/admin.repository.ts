@@ -261,12 +261,12 @@ export class AdminRepository {
 
   async getArtworkImage(userId: string, id: string) {
     return this.artworks.findOne({
-      select: { id: true, image: true },
+      select: { id: true, image: true, imageMimeType: true },
       where: {
         id: id,
         artist: { user: { id: userId } },
       }
-    }).then(a => a?.image);
+    }).then(a => (a != null) ? { image: a.image, mimeType: a.imageMimeType } : null);
   }
 
 }

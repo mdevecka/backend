@@ -155,10 +155,10 @@ export class AdminController {
 
   @Get('artwork/:id/image')
   async getArtworkImage(@Param('id', ParseUUIDPipe) id: string, @Response() res: ExpressResponse) {
-    const image = await this.adminRepository.getArtworkImage(this.currentUser.id, id);
-    if (image == null)
+    const item = await this.adminRepository.getArtworkImage(this.currentUser.id, id);
+    if (item == null)
       throw new NotFoundException();
-    res.set({ "Content-Type": "image/jpeg" }).send(image);
+    res.set({ "Content-Type": item.mimeType }).send(item.image);
   }
 
 }
