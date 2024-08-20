@@ -12,6 +12,6 @@ export class Nft extends BaseEntity {
     @ManyToOne(() => Wallet, wallet => wallet.nfts)
     wallet: Wallet;
 
-    @Column({ type: 'json', unique: true })
+    @Column({ type: 'jsonb', unique: true })
     nftData: JSON;
 }
