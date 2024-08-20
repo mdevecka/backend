@@ -9,4 +9,4 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
   controllers: [CollectionController],
   providers: [CollectionCreator],
 })
-export class CollectionModule { }
+export class CollectionModule {}
