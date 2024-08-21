@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Wallet } from './wallet.entity';
 import { Artwork } from './artwork.entity';
@@ -7,6 +7,7 @@ import { Artwork } from './artwork.entity';
 export class Nft extends BaseEntity {
 
     @OneToOne(() => Artwork, artwork => artwork.nft)
+    @JoinColumn()
     artwork: Artwork;
 
     @ManyToOne(() => Wallet, wallet => wallet.nfts)
