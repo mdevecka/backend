@@ -121,17 +121,24 @@ export class NftRepository {
   }
 
   //Assigns metadata that was queried from API
-  async assignNFTsMetadata(walletId: string, nfts: Nft[]){
+  async assignNFTsMetadata(userId: string, walletAddress: string, nfts: Nft[]){
     //Create new NFT in DB and increase index
     for (let i = 0; i < nfts.length; i++) {
-      const wallet = await this.wallets.findOneBy({ id: walletId });
+      if(!this.wallets.findOneBy({ walletAddress: walletAddress })){
+        const newWallet = new Wallet();
+        newWallet.walletAddress = walletAddress;
+        newWallet.user = await this.users.findOneBy({
+          id: userId
+        });
+        await this.assignWallet(newWallet, userId);
+      }
+      const wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
       var nft: Nft;
       nft.nftData = nfts[i].nftData;
       nft.wallet = wallet;
 
       wallet.nfts.push(nft);
       await this.nfts.save(nfts[i]);
-
     }
   }
 }
