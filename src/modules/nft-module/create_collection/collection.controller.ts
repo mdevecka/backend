@@ -7,7 +7,7 @@ import { FormDataRequest } from 'nestjs-form-data';
 export class CollectionController {
   constructor(private readonly appService: CollectionCreator) { }
 
-  @Post('generatecol')
+  @Post('collection')
   @FormDataRequest()
   async formUpload(@Body() form: CollectionDto) {
     const { file, name, description, address, userID } = form;

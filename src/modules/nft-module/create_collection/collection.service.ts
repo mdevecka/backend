@@ -3,10 +3,11 @@ import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
+import { NftRepository } from '@modules/app-db/repositories';
 
 @Injectable()
 export class CollectionCreator {
-  constructor(private configService: ConfigService<AppConfig>) {
+  constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>) {
 
   }
 
@@ -15,6 +16,10 @@ export class CollectionCreator {
     //If they have, skip this function and return nothing
     //If they haven't, we create a collection for them
 
+    const user = await this.nftRepo.getUser(userId);
+    if (user.collectionID != null) {
+      return null;
+    }
 
     //TBA Upload collection image to IPFS here for the fetch below
     const ipfs = "IPFS image link";
@@ -67,6 +72,19 @@ export class CollectionCreator {
       body: body
     });
 
-    return response;
+    //Save collection ID to user profile
+   
+    return await response.json();
+  }
+
+  async updateUserCollectionInDB(userId: string, collectionID: string) {
+    //Save collection ID to user profile once they confirm transaction
+    const save = await this.nftRepo.createUserCollection(userId, collectionID);
+    if (save) {
+      return save;
+    }
+    else {
+      return null;
+    }
   }
 }

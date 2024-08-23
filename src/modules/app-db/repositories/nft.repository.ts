@@ -16,6 +16,11 @@ export class NftRepository {
 
   ) { }
 
+  //Returns user from database
+  async getUser(userId: string) {
+    return this.users.findOneBy({ id: userId });
+  }
+
   //Returns user associated wallets
   async getUserWallets(userId: string) {
     return this.wallets.find({
@@ -102,7 +107,7 @@ export class NftRepository {
   }
 
   //Assign user own collection ID
-  async createUserCollection( userId: string, collectionID: number){
+  async createUserCollection( userId: string, collectionID: string){
     const user = await this.users.findOneBy({ id: userId });
     user.collectionID = collectionID;
     return this.users.save(user);
