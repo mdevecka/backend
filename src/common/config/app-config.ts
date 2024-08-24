@@ -8,4 +8,5 @@ export interface AppConfig {
   POSTGRES_DATABASE: string;
   WALLET_SECRET_KEY: string;
   NFT_MODULE_URL: string;
+  EVA_GALLERY_COLLECTION: string;
 }
