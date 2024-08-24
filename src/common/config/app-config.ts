@@ -9,4 +9,5 @@ export interface AppConfig {
   WALLET_SECRET_KEY: string;
   NFT_MODULE_URL: string;
   EVA_GALLERY_COLLECTION: string;
+  LOG_REQUESTS: string;
 }

@@ -18,29 +18,35 @@ export class Artwork extends LabeledEntity {
   @ManyToOne(() => Artist)
   artist: Artist;
 
-  @Column({ type: "bytea", nullable: true })
+  @Column({ type: "bytea" })
   image: Buffer;
 
-  @Column({ type: 'text', nullable: true })
-  imageUrlTemp: string;
+  @Column({ type: "text" })
+  imageMimeType: string;
 
   @Column('text')
   year: string;
 
+  @Column({ type: 'boolean', default: false })
+  nft: boolean; // todo replace by relationship
+
+  @Column({ type: 'boolean', default: false })
+  ai: boolean;
+
+  @Column({ type: 'text', nullable: true })
+  tags: string;
+
   @ManyToOne(() => ArtworkGenre)
   artworkGenre: ArtworkGenre;
-
-  @ManyToOne(() => ArtworkWorktype)
-  artworkWorktype: ArtworkWorktype;
-
-  @ManyToOne(() => ArtworkCategory)
-  artworkCategory: ArtworkCategory;
 
   @ManyToOne(() => ArtworkMaterial)
   artworkMaterial: ArtworkMaterial;
 
   @ManyToOne(() => ArtworkTechnique)
   artworkTechnique: ArtworkTechnique;
+
+  @ManyToOne(() => ArtworkWorktype)
+  artworkWorktype: ArtworkWorktype;
 
   @ManyToMany(() => Exhibition, ex => ex.artworks)
   exhibitions: Exhibition[];

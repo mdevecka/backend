@@ -7,6 +7,7 @@
     "build:prod": "cross-env NODE_ENV=production nest build --webpack",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -d ormconfig.ts ",
     "db:sync": "npm run typeorm schema:sync",
+    "db:create-sample-data": "ts-node -r tsconfig-paths/register create-sample-data.ts",
     "migration:generate": "npm run typeorm -- migration:generate",
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",

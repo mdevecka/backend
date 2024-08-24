@@ -1,5 +1,6 @@
 export interface ExhibitionDetailDto {
   id: string;
+  name: string;
   fromDate: string;
   toDate: string;
   curator: string;
@@ -7,9 +8,7 @@ export interface ExhibitionDetailDto {
     id: string;
     name: string;
     description: string;
-    street: string;
-    city: string;
-    postcode: string;
+    address: string;
     gps: string;
   }
   active: boolean;

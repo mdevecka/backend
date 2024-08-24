@@ -1,7 +1,6 @@
 export * from './artist.entity';
 export * from './artist-category.entity';
 export * from './artwork.entity';
-export * from './artwork-category.entity';
 export * from './artwork-genre.entity';
 export * from './artwork-material.entity';
 export * from './artwork-technique.entity';

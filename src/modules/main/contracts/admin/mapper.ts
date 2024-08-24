@@ -11,9 +11,10 @@ import { ArtworkExhibitionDto } from './artwork-exhibition.dto';
 import { GalleryExhibitionDto } from './gallery-exhibition.dto';
 import { ExhibitionArtworkDto } from './exhibition-artwork.dto';
 import { ArtistArtworkDto } from './artist-artwork.dto';
+import { CountryDto } from './country.dto';
 import { OptionDto } from './option.dto';
 import {
-  User, Artist, Artwork, Gallery, Exhibition
+  User, Artist, Artwork, Gallery, Exhibition, Country
 } from '@modules/app-db/entities';
 
 
@@ -24,13 +25,20 @@ export function createOptionDto(entity: { id: string, name: string }): OptionDto
   };
 }
 
+export function createCountryDto(country: Country): CountryDto {
+  return {
+    id: country.id,
+    name: country.name,
+    code: country.code,
+  };
+}
+
 export function createUserDto(user: User): UserDto {
   return {
     id: user.id,
     name: user.name,
     email: user.email,
     description: user.description,
-    avatarUrl: user.avatarUrlTemp,
   };
 }
 
@@ -40,7 +48,7 @@ export function createArtistDto(artist: Artist): ArtistDto {
     name: artist.name,
     born: artist.born,
     biography: artist.biography,
-    country: createOptionDto(artist.country),
+    country: createCountryDto(artist.country),
     artistCategory: createOptionDto(artist.artistCategory),
     active: artist.active,
   };
@@ -57,11 +65,12 @@ export function createArtworkDto(artwork: Artwork): ArtworkDto {
       born: artwork.artist.born,
       biography: artwork.artist.biography,
     },
-    imageUrl: artwork.imageUrlTemp,
     year: artwork.year,
+    nft: artwork.nft,
+    ai: artwork.ai,
+    tags: artwork.tags,
     artworkGenre: createOptionDto(artwork.artworkGenre),
     artworkWorktype: createOptionDto(artwork.artworkWorktype),
-    artworkCategory: createOptionDto(artwork.artworkCategory),
     artworkMaterial: createOptionDto(artwork.artworkMaterial),
     artworkTechnique: createOptionDto(artwork.artworkTechnique),
     measurements: artwork.measurements,
@@ -74,11 +83,10 @@ export function createArtworkDto(artwork: Artwork): ArtworkDto {
 export function createGalleryDto(gallery: Gallery): GalleryDto {
   return {
     id: gallery.id,
+    name: gallery.name,
     description: gallery.description,
-    street: gallery.street,
-    city: gallery.city,
-    postcode: gallery.postcode,
-    country: createOptionDto(gallery.country),
+    address: gallery.address,
+    country: createCountryDto(gallery.country),
     gps: gallery.gps,
     active: gallery.active,
   };
@@ -87,6 +95,7 @@ export function createGalleryDto(gallery: Gallery): GalleryDto {
 export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
   return {
     id: exhibition.id,
+    name: exhibition.name,
     fromDate: exhibition.fromDate.toISOString(),
     toDate: exhibition.toDate.toISOString(),
     curator: exhibition.curator,
@@ -94,9 +103,7 @@ export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
       id: exhibition.gallery.id,
       name: exhibition.gallery.name,
       description: exhibition.gallery.description,
-      street: exhibition.gallery.street,
-      city: exhibition.gallery.city,
-      postcode: exhibition.gallery.postcode,
+      address: exhibition.gallery.address,
       gps: exhibition.gallery.gps,
     },
     active: exhibition.active,
@@ -109,7 +116,7 @@ export function createArtistDetailDto(artist: Artist): ArtistDetailDto {
     name: artist.name,
     born: artist.born,
     biography: artist.biography,
-    country: createOptionDto(artist.country),
+    country: createCountryDto(artist.country),
     artistCategory: createOptionDto(artist.artistCategory),
     active: artist.active,
   };
@@ -126,11 +133,12 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
       born: artwork.artist.born,
       biography: artwork.artist.biography,
     },
-    imageUrl: artwork.imageUrlTemp,
     year: artwork.year,
+    nft: artwork.nft,
+    ai: artwork.ai,
+    tags: artwork.tags,
     artworkGenre: createOptionDto(artwork.artworkGenre),
     artworkWorktype: createOptionDto(artwork.artworkWorktype),
-    artworkCategory: createOptionDto(artwork.artworkCategory),
     artworkMaterial: createOptionDto(artwork.artworkMaterial),
     artworkTechnique: createOptionDto(artwork.artworkTechnique),
     measurements: artwork.measurements,
@@ -143,11 +151,10 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
 export function createGalleryDetailDto(gallery: Gallery): GalleryDetailDto {
   return {
     id: gallery.id,
+    name: gallery.name,
     description: gallery.description,
-    street: gallery.street,
-    city: gallery.city,
-    postcode: gallery.postcode,
-    country: createOptionDto(gallery.country),
+    address: gallery.address,
+    country: createCountryDto(gallery.country),
     gps: gallery.gps,
     active: gallery.active,
   };
@@ -156,6 +163,7 @@ export function createGalleryDetailDto(gallery: Gallery): GalleryDetailDto {
 export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDetailDto {
   return {
     id: exhibition.id,
+    name: exhibition.name,
     fromDate: exhibition.fromDate.toISOString(),
     toDate: exhibition.toDate.toISOString(),
     curator: exhibition.curator,
@@ -163,9 +171,7 @@ export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDet
       id: exhibition.gallery.id,
       name: exhibition.gallery.name,
       description: exhibition.gallery.description,
-      street: exhibition.gallery.street,
-      city: exhibition.gallery.city,
-      postcode: exhibition.gallery.postcode,
+      address: exhibition.gallery.address,
       gps: exhibition.gallery.gps,
     },
     active: exhibition.active,
@@ -175,9 +181,14 @@ export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDet
 export function createArtworkExhibitionDto(exhibition: Exhibition): ArtworkExhibitionDto {
   return {
     id: exhibition.id,
+    name: exhibition.name,
     fromDate: exhibition.fromDate.toISOString(),
     toDate: exhibition.toDate.toISOString(),
     curator: exhibition.curator,
+    gallery: {
+      id: exhibition.gallery.id,
+      name: exhibition.gallery.name,
+    },
     active: exhibition.active,
   };
 }
@@ -185,9 +196,14 @@ export function createArtworkExhibitionDto(exhibition: Exhibition): ArtworkExhib
 export function createGalleryExhibitionDto(exhibition: Exhibition): GalleryExhibitionDto {
   return {
     id: exhibition.id,
+    name: exhibition.name,
     fromDate: exhibition.fromDate.toISOString(),
     toDate: exhibition.toDate.toISOString(),
     curator: exhibition.curator,
+    gallery: {
+      id: exhibition.gallery.id,
+      name: exhibition.gallery.name,
+    },
     active: exhibition.active,
   };
 }
@@ -203,11 +219,12 @@ export function createExhibitionArtworkDto(artwork: Artwork): ExhibitionArtworkD
       born: artwork.artist.born,
       biography: artwork.artist.biography,
     },
-    imageUrl: artwork.imageUrlTemp,
     year: artwork.year,
+    nft: artwork.nft,
+    ai: artwork.ai,
+    tags: artwork.tags,
     artworkGenre: createOptionDto(artwork.artworkGenre),
     artworkWorktype: createOptionDto(artwork.artworkWorktype),
-    artworkCategory: createOptionDto(artwork.artworkCategory),
     artworkMaterial: createOptionDto(artwork.artworkMaterial),
     artworkTechnique: createOptionDto(artwork.artworkTechnique),
     measurements: artwork.measurements,
@@ -228,11 +245,12 @@ export function createArtistArtworkDto(artwork: Artwork): ArtistArtworkDto {
       born: artwork.artist.born,
       biography: artwork.artist.biography,
     },
-    imageUrl: artwork.imageUrlTemp,
     year: artwork.year,
+    nft: artwork.nft,
+    ai: artwork.ai,
+    tags: artwork.tags,
     artworkGenre: createOptionDto(artwork.artworkGenre),
     artworkWorktype: createOptionDto(artwork.artworkWorktype),
-    artworkCategory: createOptionDto(artwork.artworkCategory),
     artworkMaterial: createOptionDto(artwork.artworkMaterial),
     artworkTechnique: createOptionDto(artwork.artworkTechnique),
     measurements: artwork.measurements,
