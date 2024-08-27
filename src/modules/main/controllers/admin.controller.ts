@@ -1,8 +1,9 @@
-import { Controller, Get, Param, NotFoundException, Response, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Param, NotFoundException, Response, ParseUUIDPipe, UseGuards, Body } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { AdminRepository } from '@modules/app-db/repositories';
-import { User } from '@modules/app-db/entities';
-import { OptionDto } from '../contracts/admin';
+import { AuthService } from '@modules/auth/services';
+import { AuthGuard, SESSION_COOKIE, UserId, SessionId, Public } from '@modules/auth/helpers';
+import { OptionDto, LoginDto } from '../contracts/admin';
 import * as mapper from '../contracts/admin/mapper';
 
 function mapAsync<T, S>(list: Promise<T[]>, mapper: (item: T) => S): Promise<S[]> {
@@ -13,94 +14,102 @@ function mapOptionsAsync(list: Promise<{ id: string, name: string }[]>): Promise
   return mapAsync(list, mapper.createOptionDto);
 }
 
+@UseGuards(AuthGuard)
 @Controller('admin')
 export class AdminController {
 
-  private currentUser: User;
-
-  constructor(private adminRepository: AdminRepository) {
+  constructor(private adminRepository: AdminRepository, private authService: AuthService) {
   }
 
-  async onModuleInit() {
-    const users = await this.adminRepository.getUsers();
-    this.currentUser = users[0];
+  @Public()
+  @Post('login')
+  async login(@Body() login: LoginDto, @Response({ passthrough: true }) res: ExpressResponse) {
+    const sessionId = await this.authService.login(login.email, login.password);
+    res.cookie(SESSION_COOKIE, sessionId, { httpOnly: true, secure: true, sameSite: "strict" });
+    return { sessionId };
+  }
+
+  @Post('logout')
+  async logout(@SessionId() sessionId: string, @Response({ passthrough: true }) res: ExpressResponse) {
+    res.clearCookie(SESSION_COOKIE);
+    await this.authService.logout(sessionId);
   }
 
   @Get('user')
-  async getUser() {
-    return mapper.createUserDto(this.currentUser);
+  async getUser(@UserId() userId: string) {
+    return this.adminRepository.getUser(userId).then(user => mapper.createUserDto(user));
   }
 
   @Get('artist')
-  async getArtists() {
-    return mapAsync(this.adminRepository.getArtists(this.currentUser.id), mapper.createArtistDto);
+  async getArtists(@UserId() userId: string) {
+    return mapAsync(this.adminRepository.getArtists(userId), mapper.createArtistDto);
   }
 
   @Get('artwork')
-  async getArtworks() {
-    return mapAsync(this.adminRepository.getArtworks(this.currentUser.id), mapper.createArtworkDto);
+  async getArtworks(@UserId() userId: string) {
+    return mapAsync(this.adminRepository.getArtworks(userId), mapper.createArtworkDto);
   }
 
   @Get('gallery')
-  async getGalleries() {
-    return mapAsync(this.adminRepository.getGalleries(this.currentUser.id), mapper.createGalleryDto);
+  async getGalleries(@UserId() userId: string) {
+    return mapAsync(this.adminRepository.getGalleries(userId), mapper.createGalleryDto);
   }
 
   @Get('exhibition')
-  async getExhibitions() {
-    return mapAsync(this.adminRepository.getExhibitions(this.currentUser.id), mapper.createExhibitionDto);
+  async getExhibitions(@UserId() userId: string) {
+    return mapAsync(this.adminRepository.getExhibitions(userId), mapper.createExhibitionDto);
   }
 
   @Get('artist/:id')
-  async getArtistDetail(@Param('id', ParseUUIDPipe) id: string) {
-    const artist = await this.adminRepository.getArtistDetail(this.currentUser.id, id);
+  async getArtistDetail(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    const artist = await this.adminRepository.getArtistDetail(userId, id);
     if (artist == null)
       throw new NotFoundException();
     return mapper.createArtistDetailDto(artist);
   }
 
   @Get('artwork/:id')
-  async getArtworkDetail(@Param('id', ParseUUIDPipe) id: string) {
-    const artwork = await this.adminRepository.getArtworkDetail(this.currentUser.id, id);
+  async getArtworkDetail(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    const artwork = await this.adminRepository.getArtworkDetail(userId, id);
     if (artwork == null)
       throw new NotFoundException();
     return mapper.createArtworkDetailDto(artwork);
   }
 
   @Get('gallery/:id')
-  async getGalleryDetail(@Param('id', ParseUUIDPipe) id: string) {
-    const gallery = await this.adminRepository.getGalleryDetail(this.currentUser.id, id);
+  async getGalleryDetail(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    const gallery = await this.adminRepository.getGalleryDetail(userId, id);
     if (gallery == null)
       throw new NotFoundException();
     return mapper.createGalleryDetailDto(gallery);
   }
 
   @Get('exhibition/:id')
-  async getExhibitionDetail(@Param('id', ParseUUIDPipe) id: string) {
-    const exhibition = await this.adminRepository.getExhibitionDetail(this.currentUser.id, id);
+  async getExhibitionDetail(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    const exhibition = await this.adminRepository.getExhibitionDetail(userId, id);
     if (exhibition == null)
       throw new NotFoundException();
     return mapper.createExhibitionDetailDto(exhibition);
   }
 
   @Get('artwork/:id/exhibition')
-  async getArtworkExhibitions(@Param('id', ParseUUIDPipe) id: string) {
-    return mapAsync(this.adminRepository.getArtworkExhibitions(this.currentUser.id, id), mapper.createArtworkExhibitionDto);
+  async getArtworkExhibitions(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    return mapAsync(this.adminRepository.getArtworkExhibitions(userId, id), mapper.createArtworkExhibitionDto);
   }
 
   @Get('exhibition/:id/artwork')
-  async getExhibitionArtworks(@Param('id', ParseUUIDPipe) id: string) {
-    return mapAsync(this.adminRepository.getExhibitionArtworks(this.currentUser.id, id), mapper.createExhibitionArtworkDto);
+  async getExhibitionArtworks(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    return mapAsync(this.adminRepository.getExhibitionArtworks(userId, id), mapper.createExhibitionArtworkDto);
   }
 
   @Get('artist/:id/artwork')
-  async getArtistArtworks(@Param('id', ParseUUIDPipe) id: string) {
-    return mapAsync(this.adminRepository.getArtistArtworks(this.currentUser.id, id), mapper.createArtistArtworkDto);
+  async getArtistArtworks(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    return mapAsync(this.adminRepository.getArtistArtworks(userId, id), mapper.createArtistArtworkDto);
   }
 
   @Get('gallery/:id/exhibition')
-  async getGalleryExhibitions(@Param('id', ParseUUIDPipe) id: string) {
-    return mapAsync(this.adminRepository.getGalleryExhibitions(this.currentUser.id, id), mapper.createGalleryExhibitionDto);
+  async getGalleryExhibitions(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    return mapAsync(this.adminRepository.getGalleryExhibitions(userId, id), mapper.createGalleryExhibitionDto);
   }
 
   @Get('options/country')
@@ -134,28 +143,28 @@ export class AdminController {
   }
 
   @Get('options/gallery')
-  async getGalleryOptions() {
-    return mapOptionsAsync(this.adminRepository.getGalleryOptions(this.currentUser.id));
+  async getGalleryOptions(@UserId() userId: string) {
+    return mapOptionsAsync(this.adminRepository.getGalleryOptions(userId));
   }
 
   @Get('options/artwork')
-  async getArtworkOptions() {
-    return mapOptionsAsync(this.adminRepository.getArtworkOptions(this.currentUser.id));
+  async getArtworkOptions(@UserId() userId: string) {
+    return mapOptionsAsync(this.adminRepository.getArtworkOptions(userId));
   }
 
   @Get('options/artist')
-  async getArtistOptions() {
-    return mapOptionsAsync(this.adminRepository.getArtistOptions(this.currentUser.id));
+  async getArtistOptions(@UserId() userId: string) {
+    return mapOptionsAsync(this.adminRepository.getArtistOptions(userId));
   }
 
   @Get('options/exhibition')
-  async getExhibitionOptions() {
-    return mapOptionsAsync(this.adminRepository.getExhibitionOptions(this.currentUser.id));
+  async getExhibitionOptions(@UserId() userId: string) {
+    return mapOptionsAsync(this.adminRepository.getExhibitionOptions(userId));
   }
 
   @Get('artwork/:id/image')
-  async getArtworkImage(@Param('id', ParseUUIDPipe) id: string, @Response() res: ExpressResponse) {
-    const item = await this.adminRepository.getArtworkImage(this.currentUser.id, id);
+  async getArtworkImage(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string, @Response() res: ExpressResponse) {
+    const item = await this.adminRepository.getArtworkImage(userId, id);
     if (item == null)
       throw new NotFoundException();
     res.set({ "Content-Type": item.mimeType }).send(item.image);

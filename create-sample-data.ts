@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+import { hash } from 'bcrypt';
 import { NestFactory } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -61,9 +62,16 @@ async function main() {
   const users = await createEntities(User, [
     {
       "email": "lubo@ivancak.sk",
-      "password": "202cb962ac59075b964b07152d234b70",
+      "password": await hash("test", 10),
       "name": "Ľubo Ivančák",
       "description": "<p>grafik, programátor, tvorca počítačových hier</p>",
+      "avatar": getImage("users/avatar-01.jpg"),
+    },
+    {
+      "email": "john.snow@winterfell.castle",
+      "password": await hash("niteking", 10),
+      "name": "John Snow",
+      "description": "Lord Commander of the Night's Watch",
       "avatar": getImage("users/avatar-01.jpg"),
     }
   ]);
@@ -902,8 +910,8 @@ async function main() {
       "biography": "<p>Peter Koloman sa narodil v Bratislave, kde od malička prejavoval záujem o umenie a fotografiu. Jeho prvý fotoaparát dostal od svojho otca, ktorý ho inšpiroval k objavovaniu krásy okolo seba. Počas štúdií na Vysokej škole výtvarných umení sa zameriaval na portrétnu fotografiu a dokumentárne snímanie.</p>",
       "country": countries.find(c => c.code === "SK"),
       "artistCategory": artistCategories[1],
-      "user": users[0],
-    }
+      "user": users[1],
+    },
   ]);
   const artworks = await createEntities(Artwork, [
     {

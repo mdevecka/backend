@@ -16,6 +16,10 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=don't give away your secret!
 # main database
 POSTGRES_DATABASE=eva-gallery
+# duration in seconds until inactive user's session expires
+SESSION_LIFETIME=600
+# log incoming requests including url, response status and duration
+LOG_REQUESTS=true
 ```
 
 ## migrations

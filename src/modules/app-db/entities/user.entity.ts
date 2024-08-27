@@ -1,10 +1,11 @@
-import { Entity, Column } from 'typeorm';
+import { Entity, Column, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 
 @Entity()
 export class User extends LabeledEntity {
 
-  @Column('text')
+  @Index()
+  @Column('text', { unique: true })
   email: string;
 
   @Column('text')

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppDbModule } from '@modules/.';
+import { AppDbModule, AuthModule } from '@modules/.';
 import { AdminController } from './controllers';
 
 @Module({
-  imports: [AppDbModule],
+  imports: [AppDbModule, AuthModule],
   controllers: [AdminController],
   providers: [],
 })

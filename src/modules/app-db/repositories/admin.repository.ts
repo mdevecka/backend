@@ -27,6 +27,22 @@ export class AdminRepository {
     return this.users.find();
   }
 
+  async getUser(id: string) {
+    return this.users.findOne({
+      where: {
+        id: id,
+      }
+    });
+  }
+
+  async getUserByEmail(email: string) {
+    return this.users.findOne({
+      where: {
+        email: email,
+      }
+    });
+  }
+
   async getArtists(userId: string) {
     return this.artists.find({
       relations: {

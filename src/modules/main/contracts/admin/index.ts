@@ -11,6 +11,7 @@ export * from './exhibition-detail.dto';
 export * from './gallery.dto';
 export * from './gallery-detail.dto';
 export * from './gallery-exhibition.dto';
+export * from './login.dto';
 export * from './mapper';
 export * from './option.dto';
 export * from './user.dto';

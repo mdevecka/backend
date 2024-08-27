@@ -1,6 +1,7 @@
 import { Module, NestModule, NestMiddleware, MiddlewareConsumer } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
 import { AppConfig } from '@common/config';
 import { LogRequestMiddleware } from '@common/middleware';
 import { MainModule } from '@modules/.';
@@ -23,6 +24,8 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
       }),
       inject: [ConfigService],
     }),
+    // todo use Redis as cache provider
+    CacheModule.register({ isGlobal: true }),
     MainModule,
   ],
 })
