@@ -10,4 +10,7 @@ export interface AppConfig {
   NFT_MODULE_URL: string;
   EVA_GALLERY_COLLECTION: string;
   LOG_REQUESTS: string;
+  IPFS_URL: string;
+  IPFS_NAME: string;
+  IPFS_PASSWORD: string;
 }

@@ -3,24 +3,41 @@ import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
+import { create } from 'ipfs-http-client';
+import { NftRepository } from '@modules/app-db/repositories';
 
 @Injectable()
 export class NftCreator {
-  constructor(private configService: ConfigService<AppConfig>) {
+  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository) {
 
   }
 
   async createNFTCall(file: MemoryStoredFile, name: string, description: string, userId: string, address: string): Promise<Response> {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
-    //If they have, skip this function and return nothing
-    //If they haven't, we create a collection for them
+    //If they didnt return null and do nothing
 
+    if (await this.nftRepository.getUserCollectionID(userId) == null){
+      return null
+    }
 
-    //TBA Upload collection image to IPFS here for the fetch below
-    const ipfs = "IPFS image link";
+    const IPFS_NODE_URL = this.configService.get("IPFS_URL");
+    const username = this.configService.get("IPFS_NAME");
+    const password = this.configService.get("IPFS_PASSWORD");
+
+    const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
+
+    const client = create({
+      url: IPFS_NODE_URL,
+      headers: {
+        authorization: auth,
+      },
+    });
+    
+    const { cid } = await client.add(file.buffer);
+
     const url = this.configService.get("NFT_MODULE_URL");
 
-    const collectionID = 1 //TBA Fetch from DB to get users collection ID also add check if user has a collection ID
+    const collectionID = await this.nftRepository.getUserCollectionID(userId)
 
     const response = await fetch(url + "/collection/" + collectionID.toString() + "/asset", {
       method: 'PUT',
@@ -31,7 +48,7 @@ export class NftCreator {
         "metadata": {
           "name": name,
           "description": description,
-          "ipfs": ipfs,
+          "ipfs": cid,
           "author": address
         },
       })

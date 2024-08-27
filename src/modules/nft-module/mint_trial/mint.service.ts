@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
 import { MemoryStoredFile } from 'nestjs-form-data';
+import { create } from 'ipfs-http-client';
 
 
 @Injectable()
@@ -27,8 +28,20 @@ export class MintCreator {
 
     const collectionID = this.configService.get("EVA_GALLERY_COLLECTION")
 
-    //TBA Upload image to IPFS here for the fetch below
-    const ipfs = "IPFS image link";
+    const IPFS_NODE_URL = this.configService.get("IPFS_URL");
+    const username = this.configService.get("IPFS_NAME");
+    const password = this.configService.get("IPFS_PASSWORD");
+
+    const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
+
+    const client = create({
+      url: IPFS_NODE_URL,
+      headers: {
+        authorization: auth,
+      },
+    });
+    
+    const { cid } = await client.add(file.buffer);
 
 
     const response = await fetch(url + "/generatenft", {
@@ -40,7 +53,7 @@ export class MintCreator {
         "metadata": {
           "name": name,
           "description": description,
-          "ipfs": ipfs
+          "ipfs": cid
         },
         "collectionID": collectionID
       })

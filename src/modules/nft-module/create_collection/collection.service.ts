@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
 import { NftRepository } from '@modules/app-db/repositories';
+import { create } from 'ipfs-http-client';
 
 @Injectable()
 export class CollectionCreator {
@@ -21,13 +22,30 @@ export class CollectionCreator {
       return null;
     }
 
-    //TBA Upload collection image to IPFS here for the fetch below
-    const ipfs = "IPFS image link";
+    var cid = null
+
+    if (file!==null){
+      const IPFS_NODE_URL = this.configService.get("IPFS_URL");
+      const username = this.configService.get("IPFS_NAME");
+      const password = this.configService.get("IPFS_PASSWORD");
+  
+      const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
+  
+      const client = create({
+        url: IPFS_NODE_URL,
+        headers: {
+          authorization: auth,
+        },
+      });
+      
+      cid = await client.add(file.buffer);
+    }
+
     const url = this.configService.get("NFT_MODULE_URL");
 
     var body = null;
 
-    if (ipfs == null) {
+    if (cid == null) {
       body = JSON.stringify({
         "owner": address,
         "metadata": {
@@ -41,11 +59,11 @@ export class CollectionCreator {
         "owner": address,
         "metadata": {
           "name": name,
-          "ipfs": ipfs
+          "ipfs": cid
         },
       });
     }
-    else if(description == null && ipfs == null){
+    else if(description == null && cid == null){
       body = JSON.stringify({
         "owner": address,
         "metadata": {
@@ -59,7 +77,7 @@ export class CollectionCreator {
         "metadata": {
           "name": name,
           "description": description,
-          "ipfs": ipfs
+          "ipfs": cid
         },
       });
     }
