@@ -34,7 +34,7 @@ export class AuthGuard implements CanActivate {
 
   private getSessionFromRequest(req: ExpressRequest) {
     const authHeader = req.headers.authorization;
-    const match = /Bearer\s+(.*)+/.exec(authHeader);
+    const match = /^Bearer\s+(.*)$/.exec(authHeader);
     if (match != null)
       return match[1];
     return req.cookies[SESSION_COOKIE];
