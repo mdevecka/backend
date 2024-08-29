@@ -4,6 +4,8 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
+import { ValidationPipe } from '@nestjs/common';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,5 +19,6 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(config.get("PORT"));
+  app.useGlobalPipes(new ValidationPipe());
 }
 bootstrap();

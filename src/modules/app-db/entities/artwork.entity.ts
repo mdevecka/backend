@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, ManyToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, ManyToMany, OneToOne, JoinColumn } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Artist } from './artist.entity';
 import { Exhibition } from './exhibition.entity';
@@ -6,6 +6,8 @@ import { ArtworkGenre } from './artwork-genre.entity';
 import { ArtworkMaterial } from './artwork-material.entity';
 import { ArtworkWorktype } from './artwork-worktype.entity';
 import { ArtworkTechnique } from './artwork-technique.entity';
+import { ArtworkCategory } from './artwork-category.entity';
+import { Nft } from './nft.entity';
 
 @Entity()
 export class Artwork extends LabeledEntity {
@@ -61,4 +63,11 @@ export class Artwork extends LabeledEntity {
   @Column({ type: 'boolean', default: true })
   active: boolean
 
+  //Optional
+  @OneToOne(() => Nft, nft => nft.artwork, { nullable: true })
+  @JoinColumn()
+  nft: Nft;
+
+  @Column('boolean')
+  isNft: boolean; 
 }
