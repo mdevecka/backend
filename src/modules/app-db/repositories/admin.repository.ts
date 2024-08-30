@@ -277,12 +277,22 @@ export class AdminRepository {
 
   async getArtworkImage(userId: string, id: string) {
     return this.artworks.findOne({
-      select: { id: true, image: true, imageMimeType: true },
+      select: { id: true, image: { buffer: true, mimeType: true } },
       where: {
         id: id,
         artist: { user: { id: userId } },
       }
-    }).then(a => (a != null) ? { image: a.image, mimeType: a.imageMimeType } : null);
+    }).then(a => (a != null) ? { image: a.image?.buffer, mimeType: a.image?.mimeType } : null);
+  }
+
+  async getArtworkThumbnail(userId: string, id: string) {
+    return this.artworks.findOne({
+      select: { id: true, thumbnail: { buffer: true, mimeType: true } },
+      where: {
+        id: id,
+        artist: { user: { id: userId } },
+      }
+    }).then(a => (a != null) ? { image: a.thumbnail?.buffer, mimeType: a.thumbnail?.mimeType } : null);
   }
 
 }
