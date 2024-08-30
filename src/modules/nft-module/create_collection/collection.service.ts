@@ -24,20 +24,20 @@ export class CollectionCreator {
 
     var cid = null
 
-    if (file!==null){
+    if (file !== null) {
       const IPFS_NODE_URL = this.configService.get("IPFS_URL");
       const username = this.configService.get("IPFS_NAME");
       const password = this.configService.get("IPFS_PASSWORD");
-  
+
       const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
-  
+
       const client = create({
         url: IPFS_NODE_URL,
         headers: {
           authorization: auth,
         },
       });
-      
+
       cid = await client.add(file.buffer);
     }
 
@@ -63,7 +63,7 @@ export class CollectionCreator {
         },
       });
     }
-    else if(description == null && cid == null){
+    else if (description == null && cid == null) {
       body = JSON.stringify({
         "owner": address,
         "metadata": {
@@ -91,7 +91,7 @@ export class CollectionCreator {
     });
 
     //Save collection ID to user profile
-   
+
     return await response.json();
   }
 

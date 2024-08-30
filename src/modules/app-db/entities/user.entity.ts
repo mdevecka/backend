@@ -16,7 +16,7 @@ export class User extends LabeledEntity {
   @Column('text')
   description: string;
 
-  @Column({ type: "bytea" })
+  @Column({ type: "bytea", nullable: true })
   avatar: Buffer;
 
   @Column({ type: 'text', nullable: true })

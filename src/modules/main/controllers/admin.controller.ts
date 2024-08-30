@@ -170,4 +170,12 @@ export class AdminController {
     res.set({ "Content-Type": item.mimeType }).send(item.image);
   }
 
+  @Get('artwork/:id/thumbnail')
+  async getArtworkThumbnail(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string, @Response() res: ExpressResponse) {
+    const item = await this.adminRepository.getArtworkThumbnail(userId, id);
+    if (item == null)
+      throw new NotFoundException();
+    res.set({ "Content-Type": item.mimeType }).send(item.image);
+  }
+
 }

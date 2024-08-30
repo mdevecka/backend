@@ -6,8 +6,8 @@ import { ArtworkGenre } from './artwork-genre.entity';
 import { ArtworkMaterial } from './artwork-material.entity';
 import { ArtworkWorktype } from './artwork-worktype.entity';
 import { ArtworkTechnique } from './artwork-technique.entity';
-import { ArtworkCategory } from './artwork-category.entity';
 import { Nft } from './nft.entity';
+import { Image } from './image';
 
 @Entity()
 export class Artwork extends LabeledEntity {
@@ -18,17 +18,14 @@ export class Artwork extends LabeledEntity {
   @ManyToOne(() => Artist)
   artist: Artist;
 
-  @Column({ type: "bytea" })
-  image: Buffer;
+  @Column(() => Image)
+  image: Image;
 
-  @Column({ type: "text" })
-  imageMimeType: string;
+  @Column(() => Image)
+  thumbnail: Image;
 
   @Column('text')
   year: string;
-
-  @Column({ type: 'boolean', default: false })
-  nft: boolean; // todo replace by relationship
 
   @Column({ type: 'boolean', default: false })
   ai: boolean;
@@ -63,11 +60,10 @@ export class Artwork extends LabeledEntity {
   @Column({ type: 'boolean', default: true })
   active: boolean
 
-  //Optional
   @OneToOne(() => Nft, nft => nft.artwork, { nullable: true })
   @JoinColumn()
   nft: Nft;
 
-  @Column('boolean')
-  isNft: boolean; 
+  @Column('boolean', { default: true })
+  isNft: boolean;
 }

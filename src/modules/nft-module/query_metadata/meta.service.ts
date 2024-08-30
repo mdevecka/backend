@@ -21,10 +21,10 @@ export class MetaFetcher {
       url + "/nftmeta/userID/" + userID + "/address/" + address
     );
     const nftData = await response.json();
-    if(this.nftRepo.assignNFTsMetadata(userID ,address,nftData)){
+    if (this.nftRepo.assignNFTsMetadata(userID, address, nftData)) {
       return response;
     }
-    else{
+    else {
       return null
     }
   }

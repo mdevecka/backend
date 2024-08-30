@@ -7,7 +7,6 @@ import { NftRepository } from '@modules/app-db/repositories';
 import { MemoryStoredFile } from 'nestjs-form-data';
 import { create } from 'ipfs-http-client';
 
-
 @Injectable()
 export class MintCreator {
 
@@ -40,7 +39,7 @@ export class MintCreator {
         authorization: auth,
       },
     });
-    
+
     const { cid } = await client.add(file.buffer);
 
 

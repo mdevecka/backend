@@ -30,7 +30,7 @@ export class NftRepository {
       where: { user: { id: userId } }
     });
   }
-  
+
   //Returns all NFTs associated with a wallet address
   async getWalletNFTs(walletId: string) {
     return this.nfts.find({
@@ -89,7 +89,7 @@ export class NftRepository {
   }
 
   //Changes the owner of NFT in database
-  async changeOwner( nft: Nft, walletId: string) {
+  async changeOwner(nft: Nft, walletId: string) {
     const wallet = await this.wallets.findOneBy({ id: walletId });
     nft.wallet = wallet;
     wallet.nfts.push(nft);
@@ -99,37 +99,37 @@ export class NftRepository {
   }
 
   //Mints NFT for user as trial mint by Eva Gallery wallet
-  async trialMint( userId: string, artworkId: string ,nft: Nft, EvaGalleryWallet: Wallet) {
+  async trialMint(userId: string, artworkId: string, nft: Nft, EvaGalleryWallet: Wallet) {
     const user = await this.users.findOneBy({ id: userId });
     const savedNFT = await this.createNFT(nft, EvaGalleryWallet.id, artworkId);
     user.trialMint = savedNFT.id;
-    await this.users.save(user); 
+    await this.users.save(user);
   }
 
   //Assign user own collection ID
-  async createUserCollection( userId: string, collectionID: string){
+  async createUserCollection(userId: string, collectionID: string) {
     const user = await this.users.findOneBy({ id: userId });
     user.collectionID = collectionID;
     return this.users.save(user);
   }
 
   //Returns user collection ID
-  async getUserCollectionID( userId: string){
+  async getUserCollectionID(userId: string) {
     const user = await this.users.findOneBy({ id: userId });
     return user.collectionID;
   }
 
   //Returns trial minted NFT id
-  async getTrialMinted(userId: string){
+  async getTrialMinted(userId: string) {
     const user = await this.users.findOneBy({ id: userId });
     return user.trialMint;
   }
 
   //Assigns metadata that was queried from API
-  async assignNFTsMetadata(userId: string, walletAddress: string, nfts: Nft[]){
+  async assignNFTsMetadata(userId: string, walletAddress: string, nfts: Nft[]) {
     //Create new NFT in DB and increase index
     for (let i = 0; i < nfts.length; i++) {
-      if(!this.wallets.findOneBy({ walletAddress: walletAddress })){
+      if (!this.wallets.findOneBy({ walletAddress: walletAddress })) {
         const newWallet = new Wallet();
         newWallet.walletAddress = walletAddress;
         newWallet.user = await this.users.findOneBy({

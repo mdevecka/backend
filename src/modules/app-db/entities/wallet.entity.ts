@@ -6,12 +6,12 @@ import { Nft } from './nft.entity';
 @Entity()
 export class Wallet extends BaseEntity {
 
-    @ManyToOne(() => User, user => user.wallets)
-    user: User;
+  @ManyToOne(() => User, user => user.wallets)
+  user: User;
 
-    @Column('text', { unique: true })
-    walletAddress: string;
+  @Column('text', { unique: true })
+  walletAddress: string;
 
-    @OneToMany(() => Nft, nft => nft.wallet)
-    nfts: Nft[];
+  @OneToMany(() => Nft, nft => nft.wallet)
+  nfts: Nft[];
 }

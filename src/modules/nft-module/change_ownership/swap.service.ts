@@ -11,7 +11,7 @@ export class SwapCreator {
 
   }
 
-  async createSwapCall(swapData: SwapDto, collectionID: string, assetID: string ): Promise<Response> {
+  async createSwapCall(swapData: SwapDto, collectionID: string, assetID: string): Promise<Response> {
     //We check if user has the right to change ownership of the NFT, if they haven't already claimed their NFT and if they 
     //havent then create call to change ownership of NFT to their desired address
 
@@ -25,7 +25,7 @@ export class SwapCreator {
 
     const { address } = swapData;
 
-    const response = await fetch(url + "/transfer/collection/" + collectionID.toString() + "/asset/" + assetID.toString(),  {
+    const response = await fetch(url + "/transfer/collection/" + collectionID.toString() + "/asset/" + assetID.toString(), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

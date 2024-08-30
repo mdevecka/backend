@@ -10,4 +10,4 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
   controllers: [MintController],
   providers: [MintCreator],
 })
-export class MintModule {}
+export class MintModule { }

@@ -16,7 +16,7 @@ export class NftCreator {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they didnt return null and do nothing
 
-    if (await this.nftRepository.getUserCollectionID(userId) == null){
+    if (await this.nftRepository.getUserCollectionID(userId) == null) {
       return null
     }
 
@@ -32,7 +32,7 @@ export class NftCreator {
         authorization: auth,
       },
     });
-    
+
     const { cid } = await client.add(file.buffer);
 
     const url = this.configService.get("NFT_MODULE_URL");
