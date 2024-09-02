@@ -15,7 +15,7 @@ export class SwapCreator {
     //We check if user has the right to change ownership of the NFT, if they haven't already claimed their NFT and if they 
     //havent then create call to change ownership of NFT to their desired address
 
-    const user = await this.nftRepo.getUser(swapData.address);
+    const user = await this.nftRepo.getUserByWallet(swapData.address);
 
     if (user.trialMintClaimed == true) {
       return null;
@@ -25,7 +25,7 @@ export class SwapCreator {
 
     const { address } = swapData;
 
-    const response = await fetch(url + "/transfer/collection/" + collectionID.toString() + "/asset/" + assetID.toString(), {
+    const response = await fetch(`${url}/transfer/collection/${collectionID}/asset/${assetID}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -43,7 +43,7 @@ export class SwapCreator {
     //We check if user has the right to change ownership of the NFT, if they haven't already claimed their NFT and if they 
     //havent then create call to change ownership of NFT to their desired address
 
-    const user = await this.nftRepo.getUser(address);
+    const user = await this.nftRepo.getUserByWallet(address);
 
     if (user.trialMintClaimed == true) {
       return null;
@@ -53,9 +53,10 @@ export class SwapCreator {
 
     for (let i = 0; i < nft.length; i++) {
       if (nft[i].id == assetID) {
-        const owner = await this.nftRepo.changeOwner(nft[i], address);
-        if (owner) {
-          return owner;
+        const nftArt = await this.nftRepo.changeOwner(nft[i], address);
+        await this.nftRepo.claimTrialMint(user.id);
+        if (nftArt) {
+          return nftArt;
         }
         else {
           return null;

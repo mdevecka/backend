@@ -14,4 +14,5 @@ export interface AppConfig {
   IPFS_URL: string;
   IPFS_NAME: string;
   IPFS_PASSWORD: string;
+  WSS_PROVIDER: string;
 }

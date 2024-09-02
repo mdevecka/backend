@@ -3,7 +3,7 @@ import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
-import { create } from 'ipfs-http-client';
+const { create } = require('ipfs-http-client');
 import { NftRepository } from '@modules/app-db/repositories';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class NftCreator {
 
     const collectionID = await this.nftRepository.getUserCollectionID(userId)
 
-    const response = await fetch(url + "/collection/" + collectionID.toString() + "/asset", {
+    const response = await fetch(`${url}/collection/${collectionID}/asset`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -48,7 +48,7 @@ export class NftCreator {
         "metadata": {
           "name": name,
           "description": description,
-          "ipfs": cid,
+          "image": cid,
           "author": address
         },
       })

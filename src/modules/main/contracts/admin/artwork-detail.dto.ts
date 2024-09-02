@@ -1,3 +1,4 @@
+import { Nft } from '@modules/app-db/entities';
 import { OptionDto } from './option.dto';
 
 export interface ArtworkDetailDto {
@@ -11,7 +12,7 @@ export interface ArtworkDetailDto {
     biography: string;
   };
   year: string;
-  nft: boolean;
+  nft: Nft;
   ai: boolean;
   tags: string;
   artworkGenre: OptionDto;

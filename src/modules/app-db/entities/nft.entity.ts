@@ -3,16 +3,22 @@ import { BaseEntity } from './base.entity';
 import { Wallet } from './wallet.entity';
 import { Artwork } from './artwork.entity';
 
+export interface NftData {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+}
+
 @Entity()
 export class Nft extends BaseEntity {
 
   @OneToOne(() => Artwork, artwork => artwork.nft)
-  @JoinColumn()
   artwork: Artwork;
 
   @ManyToOne(() => Wallet, wallet => wallet.nfts)
   wallet: Wallet;
 
-  @Column({ type: 'jsonb', unique: true })
-  nftData: JSON;
+  @Column({ type: 'json', unique: true })
+  nftData: NftData;
 }

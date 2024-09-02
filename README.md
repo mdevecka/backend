@@ -20,6 +20,20 @@ POSTGRES_DATABASE=eva-gallery
 SESSION_LIFETIME=600
 # log incoming requests including url, response status and duration
 LOG_REQUESTS=true
+# Secret 12/24 word phrase for wallet that will do trialmint
+WALLET_SECRET_KEY: string;
+# URL for NFT MODULE
+NFT_MODULE_URL: string;
+# Hardcoded collection ID that will be used for trial mint
+EVA_GALLERY_COLLECTION: string;
+# IPFS node URL address
+IPFS_URL: string;
+# IPFS node user name authentification
+IPFS_NAME: string;
+# IPFS node password authentification
+IPFS_PASSWORD: string;
+# Provider for blockchain interaction
+WSS_PROVIDER: string;
 ```
 
 ## migrations

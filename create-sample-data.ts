@@ -74,9 +74,9 @@ async function main() {
           "name": "Ľubo Ivančák",
           "description": "<p>grafik, programátor, tvorca počítačových hier</p>",
           "avatar": getImage("users/avatar-01.jpg"),
-          "trialMint": "todo",
+          "trialMint": "null",
           "trialMintClaimed": false,
-          "collectionID": "todo",
+          "collectionID": "null",
         },
         {
           "email": "john.snow@winterfell.castle",
@@ -84,9 +84,9 @@ async function main() {
           "name": "John Snow",
           "description": "Lord Commander of the Night's Watch",
           "avatar": getImage("users/avatar-01.jpg"),
-          "trialMint": "todo",
+          "trialMint": "null",
           "trialMintClaimed": false,
-          "collectionID": "todo",
+          "collectionID": "null",
         }
       ]);
       const countries = await createEntities(Country, [

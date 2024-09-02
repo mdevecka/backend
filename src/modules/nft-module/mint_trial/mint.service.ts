@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
 import { MemoryStoredFile } from 'nestjs-form-data';
-import { create } from 'ipfs-http-client';
+const { create } = require('ipfs-http-client');
 
 @Injectable()
 export class MintCreator {
@@ -43,7 +43,7 @@ export class MintCreator {
     const { cid } = await client.add(file.buffer);
 
 
-    const response = await fetch(url + "/generatenft", {
+    const response = await fetch(`${url}/generatenft`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -52,14 +52,14 @@ export class MintCreator {
         "metadata": {
           "name": name,
           "description": description,
-          "ipfs": cid
+          "image": cid
         },
         "collectionID": collectionID
       })
     });
 
     //Create Api instance
-    const wsProvider = new WsProvider('wss://westmint-rpc-tn.dwellir.com');
+    const wsProvider = this.configService.get("WSS_PROVIDER");
     const api = await ApiPromise.create({ provider: wsProvider });
 
 

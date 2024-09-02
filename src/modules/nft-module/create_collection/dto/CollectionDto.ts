@@ -3,7 +3,7 @@ import { MemoryStoredFile, IsFile, MaxFileSize, HasMimeType } from 'nestjs-form-
 
 export class CollectionDto {
   @IsFile()
-  @MaxFileSize(10e6) // 10MB
+  //@MaxFileSize(10e6) // 10MB
   @HasMimeType(['image/jpeg', 'image/png'])
   file: MemoryStoredFile;
   @IsNotEmpty()

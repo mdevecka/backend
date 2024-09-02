@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
 import { NftRepository } from '@modules/app-db/repositories';
-import { create } from 'ipfs-http-client';
+const { create } = require('ipfs-http-client');
 
 @Injectable()
 export class CollectionCreator {
@@ -12,7 +12,7 @@ export class CollectionCreator {
 
   }
 
-  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, userId: string, address: string): Promise<Response> {
+  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, address: string, userId: string): Promise<Response> {
     //TBA We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they have, skip this function and return nothing
     //If they haven't, we create a collection for them
@@ -22,9 +22,9 @@ export class CollectionCreator {
       return null;
     }
 
-    var cid = null
+    let cid = null
 
-    if (file !== null) {
+    if (file != null) {
       const IPFS_NODE_URL = this.configService.get("IPFS_URL");
       const username = this.configService.get("IPFS_NAME");
       const password = this.configService.get("IPFS_PASSWORD");
@@ -43,7 +43,7 @@ export class CollectionCreator {
 
     const url = this.configService.get("NFT_MODULE_URL");
 
-    var body = null;
+    let body = null;
 
     if (cid == null) {
       body = JSON.stringify({
@@ -82,7 +82,7 @@ export class CollectionCreator {
       });
     }
 
-    const response = await fetch(url + "/collection", {
+    const response = await fetch(`${url}/collection`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -97,12 +97,6 @@ export class CollectionCreator {
 
   async updateUserCollectionInDB(userId: string, collectionID: string) {
     //Save collection ID to user profile once they confirm transaction
-    const save = await this.nftRepo.createUserCollection(userId, collectionID);
-    if (save) {
-      return save;
-    }
-    else {
-      return null;
-    }
+    return await this.nftRepo.createUserCollection(userId, collectionID);;
   }
 }
