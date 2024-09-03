@@ -81,8 +81,8 @@ export class NftRepository {
   }
 
   //Changes the owner of NFT in database
-  async changeOwner(nft: Nft, walletId: string) {
-    const wallet = await this.wallets.findOneBy({ id: walletId });
+  async changeOwner(nft: Nft, walletAddress: string) {
+    const wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
     nft.wallet = wallet;
 
     return this.nfts.save(nft);

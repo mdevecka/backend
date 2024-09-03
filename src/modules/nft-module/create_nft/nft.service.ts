@@ -12,7 +12,7 @@ export class NftCreator {
 
   }
 
-  async createNFTCall(file: MemoryStoredFile, name: string, description: string, userId: string, address: string): Promise<Response> {
+  async createNFTCall(file: MemoryStoredFile, name: string, description: string, userId: string, address: string): Promise<string> {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they didnt return null and do nothing
 
@@ -54,6 +54,6 @@ export class NftCreator {
       })
     });
 
-    return response;
+    return response.toString();
   }
 }

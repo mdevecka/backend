@@ -12,7 +12,7 @@ export class CollectionCreator {
 
   }
 
-  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, address: string, userId: string): Promise<Response> {
+  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, address: string, userId: string): Promise<string> {
     //TBA We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they have, skip this function and return nothing
     //If they haven't, we create a collection for them
@@ -90,13 +90,11 @@ export class CollectionCreator {
       body: body
     });
 
-    //Save collection ID to user profile
-
-    return await response.json();
+    return await response.toString();
   }
 
-  async updateUserCollectionInDB(userId: string, collectionID: string) {
+  async updateUserCollectionInDB(userId: string, collectionID: string): Promise<void> {
     //Save collection ID to user profile once they confirm transaction
-    return await this.nftRepo.createUserCollection(userId, collectionID);;
+    await this.nftRepo.createUserCollection(userId, collectionID);
   }
 }

@@ -1,16 +1,24 @@
-import { Controller, Body, Post, Param } from '@nestjs/common';
+import { Controller, Body, Param, Put } from '@nestjs/common';
 import { SwapCreator } from './swap.service';
 import { SwapDto } from './dto/SwapDto';
+import { SwapResponseDto } from './dto/SwapResponseDto';
 
 @Controller('ownership')
 export class SwapController {
   constructor(private readonly appService: SwapCreator) { }
 
-  @Post('transfer/collection/:collectionID/asset/:assetID')
-  GetCollection(
+  @Put('transfer/collection/:collectionID/asset/:assetID')
+  async GetSwapCall(
     @Body() swapData: SwapDto,
     @Param("collectionID") collectionID: string,
-    @Param("assetID") assetID: string) {
-    return this.appService.createSwapCall(swapData, collectionID, assetID);
+    @Param("assetID") assetID: string): Promise<SwapResponseDto> {
+      const callData = await this.appService.createSwapCall(swapData, collectionID, assetID);
+      return { callData };
+    }
+
+  @Put('updateDB/account/:accountAddress')
+  async  UpdateDB(
+    @Param("accountAddress") accountAddress: string,): Promise<void> {
+    await this.appService.swapNFTOwnershipInDB(accountAddress);
   }
 }
