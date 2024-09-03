@@ -139,7 +139,7 @@ export class NftRepository {
       newWallet.user = await this.users.findOneBy({
         id: userId
       });
-      await this.assignWallet(newWallet, userId);
+      await this.wallets.save(newWallet);
     }
 
     const nftObjects: Array<{ id: string, name: string, description?: string, image: string }> = JSON.parse(nfts);
