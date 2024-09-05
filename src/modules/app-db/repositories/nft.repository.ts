@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
-  User, Artwork, Nft, Wallet
+  User, Artwork, Nft, Wallet,
+  NftData
 } from '../entities';
 
 @Injectable()
@@ -63,11 +64,13 @@ export class NftRepository {
   }
 
   //Creates NFT
-  async createNFT(nft: Nft, walletId: string, artworkId: string) {
+  async createNFT(nft_data: NftData, walletId: string, artworkId: string) {
     const wallet = await this.wallets.findOneBy({ id: walletId });
     const artwork = await this.artworks.findOneBy({ id: artworkId });
+    const nft = new Nft();
     nft.artwork = artwork;
     nft.wallet = wallet;
+    nft.nftData = nft_data;
 
     return this.nfts.save(nft);
   }
@@ -102,10 +105,11 @@ export class NftRepository {
   }
 
   //Mints NFT for user as trial mint by Eva Gallery wallet
-  async trialMint(userId: string, artworkId: string, nft: Nft, EvaGalleryWallet: Wallet) {
+  async trialMint(userId: string, artworkId: string, nft: NftData, EvaGalleryWallet: string) {
     const user = await this.users.findOneBy({ id: userId });
-    const savedNFT = await this.createNFT(nft, EvaGalleryWallet.id, artworkId);
-    user.trialMint = savedNFT.id;
+    const wallet = await this.wallets.findOneBy({ walletAddress: EvaGalleryWallet });
+    const savedNFT = await this.createNFT(nft, wallet.id, artworkId);
+    user.trialMint = savedNFT.nftData.id;
     await this.users.save(user);
   }
 
@@ -130,40 +134,56 @@ export class NftRepository {
 
 
 
-  //Assigns metadata that was queried from API
-  async assignNFTsMetadata(userId: string, walletAddress: string, nfts: string) {
-    //Create new NFT in DB and increase index
-    if (! await this.wallets.findOneBy({ walletAddress: walletAddress })) {
-      const newWallet = new Wallet();
-      newWallet.walletAddress = walletAddress;
-      newWallet.user = await this.users.findOneBy({
-        id: userId
-      });
-      await this.wallets.save(newWallet);
+  /// Assigns metadata that was queried from API
+async assignNFTsMetadata(userId: string, walletAddress: string, nfts: Response) {
+  // Create new Wallet in DB if it doesn't exist
+  let wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
+  if (!wallet) {
+    const newWallet = new Wallet();
+    newWallet.walletAddress = walletAddress;
+    newWallet.user = await this.users.findOneBy({ id: userId });
+    await this.wallets.save(newWallet);
+    wallet = newWallet;
+  }
+
+  // Initialize nfts array if it's not already initialized
+  if (!wallet.nfts) {
+    wallet.nfts = [];
+  }
+
+  const nfts_parsed = await nfts.json();
+
+  const nftObjects = nfts_parsed.map(({ id, name, image, metadata }) => ({
+    id,
+    name,
+    image,
+    metadata
+  }));
+
+  // Parse data provided by API and assign name, description, and image to NFT
+  for (const nftData of nftObjects) {
+    const { id, name, metadata = null, image } = nftData;
+
+    // Create a new NFT instance
+    const nft = new Nft();
+    nft.nftData = {
+      id, // Assign the id to nftData
+      name,
+      metadata,
+      image
+    };
+    nft.wallet = wallet;
+
+    //Check if NFT exists
+    if (await this.nfts.findOneBy({ nftData: nft.nftData  })) {
+        console.log(`NFT with id ${id} already exists in the database`);
+    }
+    else{
+      // Save the NFT to the database and associate it with the wallet
+      wallet.nfts.push(nft); // Push the NFT to the wallet's nfts array
+      await this.nfts.save(nft); // Save the NFT to the database      
     }
 
-    const nftObjects: Array<{ id: string, name: string, description?: string, image: string }> = JSON.parse(nfts);
-
-    const wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
-    //Parse data provided by API and assign name, description and image to NFT
-    for (const nftData of nftObjects) {
-      // Destructure and provide default values for missing fields
-      const { id, name, description = null, image } = nftData;
-  
-      // Create a new NFT instance
-      const nft = new Nft();
-      nft.nftData = {
-        id,        // Assign the id to nftData
-        name,
-        description, // This will be `null` if `description` is not present in the JSON
-        image
-      };
-      nft.wallet = wallet;
-
-      // Save the NFT to the database and associate it with the wallet
-      wallet.nfts.push(nft);
-      await this.nfts.save(nft);
-    
     }
   }
 }

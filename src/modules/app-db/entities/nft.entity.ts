@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Wallet } from './wallet.entity';
 import { Artwork } from './artwork.entity';
@@ -6,7 +6,7 @@ import { Artwork } from './artwork.entity';
 export interface NftData {
   id: string;
   name: string;
-  description: string;
+  metadata: string;
   image: string;
 }
 
@@ -19,6 +19,6 @@ export class Nft extends BaseEntity {
   @ManyToOne(() => Wallet, wallet => wallet.nfts)
   wallet: Wallet;
 
-  @Column({ type: 'json', unique: true })
+  @Column({ type: 'jsonb', unique: true })
   nftData: NftData;
 }
