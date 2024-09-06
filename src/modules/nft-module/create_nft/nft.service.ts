@@ -12,7 +12,7 @@ export class NftCreator {
 
   }
 
-  async createNFTCall(file: MemoryStoredFile, name: string, description: string, userId: string, address: string): Promise<string> {
+  async createNFTCall(file: MemoryStoredFile, name: string, metadata: string, address: string, userId: string): Promise<Response> {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they didnt return null and do nothing
 
@@ -20,40 +20,44 @@ export class NftCreator {
       return null
     }
 
-    const IPFS_NODE_URL = this.configService.get("IPFS_URL");
-    const username = this.configService.get("IPFS_NAME");
-    const password = this.configService.get("IPFS_PASSWORD");
+    let cid = null
 
-    const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
-
-    const client = create({
-      url: IPFS_NODE_URL,
-      headers: {
-        authorization: auth,
-      },
-    });
-
-    const { cid } = await client.add(file.buffer);
+    try {
+      const IPFS_NODE_URL = this.configService.get("IPFS_URL");
+      const username = this.configService.get("IPFS_NAME");
+      const password = this.configService.get("IPFS_PASSWORD");
+  
+      const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
+      const client = create({
+        url: IPFS_NODE_URL,
+        headers: {
+          authorization: auth,
+        },
+      });
+      cid = await client.add(file.buffer);
+    } catch (error) {
+      console.error('Error adding file to IPFS:', error);
+      throw new Error('Failed to add file to IPFS');
+    }
 
     const url = this.configService.get("NFT_MODULE_URL");
 
     const collectionID = await this.nftRepository.getUserCollectionID(userId)
-
+    console.log(collectionID);
     const response = await fetch(`${url}/collection/${collectionID}/asset`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "metadata": {
+        "meta": {
           "name": name,
-          "description": description,
-          "image": cid,
+          "metadata": metadata,
+          "image": `ipfs://ipfs/${cid.path}`,
           "author": address
         },
       })
     });
-
-    return response.toString();
+    return await response.json();
   }
 }

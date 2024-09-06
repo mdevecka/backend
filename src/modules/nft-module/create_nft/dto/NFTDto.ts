@@ -14,11 +14,11 @@ export class NftDto {
 
   @IsString()
   @IsNotEmpty()
-  description: string;
+  metadata: string;
 
   @IsString()
   @IsNotEmpty()
-  userId: string;
+  userID: string;
 
   @IsString()
   @IsNotEmpty()

@@ -8,11 +8,11 @@ import { NFTResponseDto } from './dto/NFTResponseDto';
 export class NftController {
   constructor(private readonly appService: NftCreator) { }
 
-  @Put('generatenft')
+  @Put('create')
   @FormDataRequest()
   async formUpload(@Body() form: NftDto) : Promise<NFTResponseDto> {
-    const { file, name, description, userId, address } = form;
-    const callData = await this.appService.createNFTCall(file, name, description, userId, address);
+    const { file, name, metadata, userID, address } = form;
+    const callData = await this.appService.createNFTCall(file, name, metadata, address, userID);
     return { callData };
   }
 
