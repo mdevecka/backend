@@ -19,7 +19,7 @@ export class NftRepository {
 
   //Returns user from database
   async getUser(userId: string) {
-    return this.users.findOneBy({ id: userId });
+    return await this.users.findOneBy({ id: userId });
   }
 
   //Returns user associated wallets

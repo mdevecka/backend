@@ -11,15 +11,15 @@ export class CollectionController {
   @Put('create')
   @FormDataRequest()
   async formUpload(@Body() form: CollectionDto): Promise<CollectionResponseDto> {
-    const { file, name, description, address, userID } = form;
-    const callData = await this.appService.createCollectionCall(file, name, description, address, userID);
+    const { file, name, metadata, address, userID } = form;
+    const callData = await this.appService.createCollectionCall(file, name, metadata, address, userID);
     return { callData };
   }
 
-  @Put('updateDB/account/:accountAddress/collection/:collectionID')
+  @Put('updateDB/user/:userID/collection/:collectionID')
   async UpdateDB(
-    @Param("accountAddress") accountAddress: string,
+    @Param("userID") userID: string,
     @Param("collectionID") collectionID: string ): Promise<void> {
-    await this.appService.updateUserCollectionInDB(accountAddress, collectionID);
+    await this.appService.updateUserCollectionInDB(userID, collectionID);
   }
 }
