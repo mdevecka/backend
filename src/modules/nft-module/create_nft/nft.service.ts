@@ -53,7 +53,7 @@ export class NftCreator {
         "meta": {
           "name": name,
           "metadata": metadata,
-          "image": `ipfs://ipfs/${cid.path}`,
+          "image": cid.path,
           "author": address
         },
       })

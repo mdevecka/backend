@@ -61,7 +61,7 @@ export class CollectionCreator {
         "owner": address,
         "meta": {
           "name": name,
-          "image": `ipfs://ipfs/${cid.path}`
+          "image": cid.path
         },
       });
     }
@@ -79,7 +79,7 @@ export class CollectionCreator {
         "meta": {
           "name": name,
           "metadata": description,
-          "image": `ipfs://ipfs/${cid.path}`
+          "image": cid.path
         },
       });
     }
