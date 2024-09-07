@@ -33,12 +33,12 @@ export class NftRepository {
   }
 
   //Returns all NFTs associated with a wallet address
-  async getWalletNFTs(walletId: string) {
+  async getWalletNFTs(walletAddress: string) {
     return this.nfts.find({
       relations: {
         wallet: true,
       },
-      where: { wallet: { id: walletId } }
+      where: { wallet: { walletAddress: walletAddress } }
     });
   }
 
@@ -99,9 +99,13 @@ export class NftRepository {
   }
 
   //Get user associated with wallet
-  async getUserByWallet(walletId: string) {
-    const wallet = await this.wallets.findOneBy({ id: walletId });
-    return wallet.user;
+  async getUserByWallet(walletAddress: string) {
+    const wallet = await this.wallets.findOne({
+      where: { walletAddress },
+      relations: ['user'],  // Include the 'user' relation
+    });
+  
+    return wallet ? wallet.user : null; // Return the user from the wallet
   }
 
   //Mints NFT for user as trial mint by Eva Gallery wallet

@@ -1,3 +1,3 @@
 export class SwapResponseDto {
-    callData: string;
+    callData: Response;
   }

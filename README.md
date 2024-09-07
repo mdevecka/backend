@@ -34,6 +34,8 @@ IPFS_NAME: string;
 IPFS_PASSWORD: string;
 # Provider for blockchain interaction
 WSS_PROVIDER: string;
+# Eva gallery wallet address
+EVA_GALLERY_WALLET_ADDRESS: string;
 ```
 
 ## migrations
