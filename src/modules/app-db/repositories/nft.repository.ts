@@ -113,7 +113,7 @@ export class NftRepository {
     const user = await this.users.findOneBy({ id: userId });
     const wallet = await this.wallets.findOneBy({ walletAddress: EvaGalleryWallet });
     const savedNFT = await this.createNFT(nft, wallet.id, artworkId);
-    user.trialMint = savedNFT.nftData.id;
+    user.trialMint = savedNFT.id;
     await this.users.save(user);
   }
 

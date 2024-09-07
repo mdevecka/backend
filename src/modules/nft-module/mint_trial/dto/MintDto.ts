@@ -10,8 +10,9 @@ export class MintDto {
   @IsNotEmpty()
   name: string;
   @IsNotEmpty()
-  description: string;
+  metadata: string;
   @IsNotEmpty()
   userId: string;
-
+  @IsNotEmpty()
+  artworkId: string;
 }
