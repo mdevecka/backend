@@ -1,18 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
-const { create } = require('ipfs-http-client');
+import { create } from 'ipfs-http-client';
 import { NftRepository } from '@modules/app-db/repositories';
 
 @Injectable()
 export class NftCreator {
+  private readonly logger = new Logger(NftCreator.name)
   constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository) {
 
   }
 
-  async createNFTCall(file: MemoryStoredFile, name: string, metadata: string, address: string, userId: string): Promise<Response> {
+  async createNFTCall(file: MemoryStoredFile, name: string, metadata: string, address: string, userId: string): Promise<string> {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they didnt return null and do nothing
 
@@ -26,7 +27,7 @@ export class NftCreator {
       const IPFS_NODE_URL = this.configService.get("IPFS_URL");
       const username = this.configService.get("IPFS_NAME");
       const password = this.configService.get("IPFS_PASSWORD");
-  
+
       const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
       const client = create({
         url: IPFS_NODE_URL,
@@ -36,14 +37,14 @@ export class NftCreator {
       });
       cid = await client.add(file.buffer);
     } catch (error) {
-      console.error('Error adding file to IPFS:', error);
+      this.logger.error('Error adding file to IPFS:', error);
       throw new Error('Failed to add file to IPFS');
     }
 
     const url = this.configService.get("NFT_MODULE_URL");
 
     const collectionID = await this.nftRepository.getUserCollectionID(userId)
-    console.log(collectionID);
+    this.logger.log(collectionID);
     const response = await fetch(`${url}/collection/${collectionID}/asset`, {
       method: 'PUT',
       headers: {

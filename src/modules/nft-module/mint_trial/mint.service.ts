@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import '@polkadot/api-augment';
 import { ApiPromise, Keyring, WsProvider } from '@polkadot/api'
 import { ConfigService } from '@nestjs/config';
@@ -6,11 +6,11 @@ import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
 import { MemoryStoredFile } from 'nestjs-form-data';
 import { NftData } from '@modules/app-db/entities';
-const { create } = require('ipfs-http-client');
+import { create } from 'ipfs-http-client';
 
 @Injectable()
 export class MintCreator {
-
+  private readonly logger = new Logger(MintCreator.name)
   constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository) {
 
   }
@@ -35,7 +35,7 @@ export class MintCreator {
       const IPFS_NODE_URL = this.configService.get("IPFS_URL");
       const username = this.configService.get("IPFS_NAME");
       const password = this.configService.get("IPFS_PASSWORD");
-  
+
       const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
       const client = create({
         url: IPFS_NODE_URL,
@@ -45,7 +45,7 @@ export class MintCreator {
       });
       cid = await client.add(file.buffer);
     } catch (error) {
-      console.error('Error adding file to IPFS:', error);
+      this.logger.error('Error adding file to IPFS:', error);
       throw new Error('Failed to add file to IPFS');
     }
 

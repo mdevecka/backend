@@ -1,6 +1,5 @@
 import { Entity, Column, Index, OneToMany } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
-import { Nft } from './nft.entity';
 import { Wallet } from './wallet.entity';
 
 @Entity()

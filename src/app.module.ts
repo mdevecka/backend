@@ -31,7 +31,7 @@ import { SwapModule } from '@modules/nft-module/change_ownership/swap.module';
     }),
     // todo use Redis as cache provider
     CacheModule.register({ isGlobal: true }),
-    MainModule, 
+    MainModule,
     MintModule, CollectionModule, NftModule, MetadataModule, SwapModule
   ],
 })

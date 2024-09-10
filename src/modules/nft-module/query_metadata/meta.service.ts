@@ -21,7 +21,7 @@ export class MetaFetcher {
       `${url}/address/${address}`
     );
 
-    await this.nftRepo.assignNFTsMetadata(userID, address, response) 
+    await this.nftRepo.assignNFTsMetadata(userID, address, response)
     return response;
   }
 }

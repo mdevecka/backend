@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
 import { NftRepository } from '@modules/app-db/repositories';
-const { create } = require('ipfs-http-client');
+import { create } from 'ipfs-http-client';
 
 @Injectable()
 export class CollectionCreator {
+  private readonly logger = new Logger(CollectionCreator.name)
   constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>) {
-
   }
 
-  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, address: string, userId: string): Promise<Response> {
+  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, address: string, userId: string): Promise<string> {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they have, skip this function and return nothing
     //If they haven't, we create a collection for them
@@ -29,7 +29,7 @@ export class CollectionCreator {
         const IPFS_NODE_URL = this.configService.get("IPFS_URL");
         const username = this.configService.get("IPFS_NAME");
         const password = this.configService.get("IPFS_PASSWORD");
-    
+
         const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
         const client = create({
           url: IPFS_NODE_URL,
@@ -39,7 +39,7 @@ export class CollectionCreator {
         });
         cid = await client.add(file.buffer);
       } catch (error) {
-        console.error('Error adding file to IPFS:', error);
+        this.logger.error('Error adding file to IPFS:', error);
         throw new Error('Failed to add file to IPFS');
       }
     }

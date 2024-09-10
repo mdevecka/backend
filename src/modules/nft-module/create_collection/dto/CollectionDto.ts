@@ -1,9 +1,8 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
-import { MemoryStoredFile, IsFile, MaxFileSize, HasMimeType } from 'nestjs-form-data';
+import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
 
 export class CollectionDto {
   @IsFile()
-  //@MaxFileSize(10e6) // 10MB
   @IsOptional()
   @HasMimeType(['image/jpeg', 'image/png'])
   file: MemoryStoredFile;

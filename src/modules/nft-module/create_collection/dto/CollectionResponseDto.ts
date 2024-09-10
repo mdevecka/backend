@@ -1,3 +1,3 @@
 export class CollectionResponseDto {
-    callData: Response;
-  }
+  callData: string;
+}

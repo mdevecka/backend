@@ -1,3 +1,3 @@
 export class NFTResponseDto {
-    callData: Response;
-  }
+  callData: string;
+}

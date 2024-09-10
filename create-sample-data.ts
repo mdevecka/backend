@@ -79,16 +79,16 @@ async function main() {
             image: "ipfs blabla",
           },
         },
-      {
-        artwork: null,
-        wallet: null,
-        nftData: {
-          id: "425-9",
-          name: "Random NFT",
-          metadata: "Wow such nice",
-          image: "ipfs blabla",
+        {
+          artwork: null,
+          wallet: null,
+          nftData: {
+            id: "425-9",
+            name: "Random NFT",
+            metadata: "Wow such nice",
+            image: "ipfs blabla",
+          }
         }
-      }  
       ]);
 
       const wallets = await createEntities(entities.Wallet, [
