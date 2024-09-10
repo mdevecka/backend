@@ -12,7 +12,7 @@ export interface ArtistArtworkDto {
     biography: string;
   };
   year: string;
-  nft: Nft;
+  //nft: boolean;
   ai: boolean;
   tags: string;
   artworkGenre: OptionDto;
