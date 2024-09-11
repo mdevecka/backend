@@ -1,4 +1,4 @@
-import { Controller, Body, Param, Put, UseGuards } from '@nestjs/common';
+import { Controller, Body, Param, Put, BadRequestException, UseGuards } from '@nestjs/common';
 import { SwapCreator } from './swap.service';
 import { SwapDto } from './dto/SwapDto';
 import { SwapResponseDto } from './dto/SwapResponseDto';
@@ -16,7 +16,13 @@ export class SwapController {
     @UserId() userId: string,
     @Param("assetID") assetID: string): Promise<SwapResponseDto> {
     const callData = await this.appService.createSwapCall(swapData, collectionID, assetID, userId);
-    return { callData };
+    if(callData == null || callData == 'null') {
+      throw new BadRequestException('An error occurred while creating swap call, please check your parameters');
+
+    }
+    else{
+      return { callData }  
+    }
   }
 
   @Put('updateDB/account/:accountAddress')

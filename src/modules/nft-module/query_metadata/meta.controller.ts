@@ -18,15 +18,18 @@ export class MetaController {
     try {
       const data = await this.appService.fetchMetadata(userId, address);
       if (!data) {
-        this.logger.error("Error fetching metadata")
-        return null;
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: 'Couldnt save metadata',
+        });
       }
       else {
         return res.status(HttpStatus.OK).json(data);
       }
     } catch (error) {
       this.logger.error(error)
-      return null;
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: 'An error occurred while fetching metadata',
+      });
     }
   }
 }
