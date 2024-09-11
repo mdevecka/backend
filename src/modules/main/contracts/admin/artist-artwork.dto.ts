@@ -1,4 +1,3 @@
-import { Nft } from '@modules/app-db/entities';
 import { OptionDto } from './option.dto';
 
 export interface ArtistArtworkDto {

@@ -16,12 +16,12 @@ export class SwapController {
     @UserId() userId: string,
     @Param("assetID") assetID: string): Promise<SwapResponseDto> {
     const callData = await this.appService.createSwapCall(swapData, collectionID, assetID, userId);
-    if(callData == null || callData == 'null') {
+    if (callData == null || callData == 'null') {
       throw new BadRequestException('An error occurred while creating swap call, please check your parameters');
 
     }
-    else{
-      return { callData }  
+    else {
+      return { callData }
     }
   }
 
