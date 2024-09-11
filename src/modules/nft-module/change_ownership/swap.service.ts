@@ -11,14 +11,14 @@ export class SwapCreator {
 
   }
 
-  async createSwapCall(swapData: SwapDto, collectionID: string, assetID: string): Promise<string> {
+  async createSwapCall(swapData: SwapDto, collectionID: string, assetID: string, userId: string): Promise<string> {
     //We check if user has the right to change ownership of the NFT, if they haven't already claimed their NFT and if they 
     //havent then create call to change ownership of NFT to their desired address
 
     const user = await this.nftRepo.getUserByWallet(swapData.address);
 
     //These checks might need to be changed in the future when we allow users to transfer ownership within APP.
-    if (!user || user.trialMintClaimed == true || user.trialMint == null || user.trialMint == 'null') {
+    if (!user || user.trialMintClaimed == true || user.trialMint == null || user.trialMint == 'null' || user.id != userId) {
       return null;
     }
 
@@ -38,7 +38,7 @@ export class SwapCreator {
     return response.json();
   }
 
-  async swapNFTOwnershipInDB(address: string): Promise<void> {
+  async swapNFTOwnershipInDB(address: string, userId: string): Promise<void> {
     //We change ownership of NFT in database
     //We check if user has the right to change ownership of the NFT, if they haven't already claimed their NFT and if they 
     //havent then create call to change ownership of NFT to their desired address
@@ -46,7 +46,7 @@ export class SwapCreator {
     const user = await this.nftRepo.getUserByWallet(address);
 
     //These checks might need to be changed in the future when we allow users to transfer ownership within APP.
-    if (!user || user.trialMintClaimed == true || user.trialMint == null || user.trialMint == 'null') {
+    if (!user || user.trialMintClaimed == true || user.trialMint == null || user.trialMint == 'null' || user.id != userId) {
       return null;
     }
 

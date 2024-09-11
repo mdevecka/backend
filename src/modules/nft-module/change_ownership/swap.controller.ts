@@ -2,7 +2,7 @@ import { Controller, Body, Param, Put, UseGuards } from '@nestjs/common';
 import { SwapCreator } from './swap.service';
 import { SwapDto } from './dto/SwapDto';
 import { SwapResponseDto } from './dto/SwapResponseDto';
-import { AuthGuard } from '@modules/auth/helpers';
+import { AuthGuard, UserId } from '@modules/auth/helpers';
 
 @UseGuards(AuthGuard)
 @Controller('ownership')
@@ -13,8 +13,9 @@ export class SwapController {
   async getSwapCall(
     @Body() swapData: SwapDto,
     @Param("collectionID") collectionID: string,
+    @UserId() userId: string,
     @Param("assetID") assetID: string): Promise<SwapResponseDto> {
-    const callData = await this.appService.createSwapCall(swapData, collectionID, assetID);
+    const callData = await this.appService.createSwapCall(swapData, collectionID, assetID, userId);
     return { callData };
   }
 
