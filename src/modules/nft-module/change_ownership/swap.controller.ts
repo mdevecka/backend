@@ -21,7 +21,8 @@ export class SwapController {
 
   @Put('updateDB/account/:accountAddress')
   async updateDB(
-    @Param("accountAddress") accountAddress: string,): Promise<void> {
-    await this.appService.swapNFTOwnershipInDB(accountAddress);
+    @Param("accountAddress") accountAddress: string, @UserId() userId: string,
+  ): Promise<void> {
+    await this.appService.swapNFTOwnershipInDB(accountAddress, userId);
   }
 }
