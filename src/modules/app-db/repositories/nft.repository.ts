@@ -121,6 +121,9 @@ export class NftRepository {
   //Assign user own collection ID
   async createUserCollection(userId: string, collectionID: string) {
     const user = await this.users.findOneBy({ id: userId });
+    if (user.collectionID != null) {
+      return null;
+    }
     user.collectionID = collectionID;
     return this.users.save(user);
   }

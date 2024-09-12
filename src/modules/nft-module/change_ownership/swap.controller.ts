@@ -29,6 +29,9 @@ export class SwapController {
   async updateDB(
     @Param("accountAddress") accountAddress: string, @UserId() userId: string,
   ): Promise<void> {
-    await this.appService.swapNFTOwnershipInDB(accountAddress, userId);
+    const response = await this.appService.swapNFTOwnershipInDB(accountAddress, userId);
+    if (response === null) {
+      throw new BadRequestException('An error occurred while updating database, please check your parameters');
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
@@ -97,6 +97,9 @@ export class CollectionCreator {
 
   async updateUserCollectionInDB(userId: string, collectionID: string): Promise<void> {
     //Save collection ID to user profile once they confirm transaction
-    await this.nftRepo.createUserCollection(userId, collectionID);
+    const response = await this.nftRepo.createUserCollection(userId, collectionID);
+    if (response === null) {
+      throw new BadRequestException('An error occurred while updating database, please check your parameters');
+    }
   }
 }

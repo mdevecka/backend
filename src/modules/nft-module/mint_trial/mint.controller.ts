@@ -1,4 +1,4 @@
-import { Controller, Body, Put, UseGuards } from '@nestjs/common';
+import { Controller, Body, Put, UseGuards, BadRequestException } from '@nestjs/common';
 import { MintCreator } from './mint.service';
 import { AuthGuard, UserId } from '@modules/auth/helpers';
 import { MintDto } from './dto/MintDto';
@@ -13,6 +13,9 @@ export class MintController {
   @FormDataRequest()
   async formUpload(@Body() form: MintDto, @UserId() userId: string): Promise<void> {
     const { file, name, metadata, artworkId } = form;
-    await this.appService.createMint(file, name, metadata, userId, artworkId);
+    const response = await this.appService.createMint(file, name, metadata, userId, artworkId);
+    if (response === null) {
+      throw new BadRequestException('An error occurred while updating database, please check your parameters');
+    }
   }
 }

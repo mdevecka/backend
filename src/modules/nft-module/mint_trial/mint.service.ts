@@ -107,6 +107,7 @@ export class MintCreator {
 
 
             await this.nftRepository.trialMint(user.id, artworkId, nft, EvaGalleryWalletAddress)
+            return;
           }
         }
       });

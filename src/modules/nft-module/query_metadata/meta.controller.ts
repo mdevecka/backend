@@ -1,7 +1,6 @@
-import { Controller, Get, Res, HttpStatus, Param, Logger, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Logger, UseGuards, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { AuthGuard, UserId } from '@modules/auth/helpers';
 import { MetaFetcher } from './meta.service';
-import { Response } from 'express';
 
 @UseGuards(AuthGuard)
 @Controller('metadata')
@@ -12,24 +11,19 @@ export class MetaController {
 
   @Get('/nftmeta/address/:address')
   async getCollection(
-    @Res() res: Response,
     @Param("address") address: string,
     @UserId() userId: string) {
     try {
       const data = await this.appService.fetchMetadata(userId, address);
       if (!data) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Couldnt save metadata',
-        });
+        throw new BadRequestException('An error occurred while fetching metadata, please check your parameters');
       }
       else {
-        return res.status(HttpStatus.OK).json(data);
+        return data;
       }
     } catch (error) {
       this.logger.error(error)
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: 'An error occurred while fetching metadata',
-      });
+      throw new InternalServerErrorException('An internal server error occurred while fetching metadata.');
     }
   }
 }

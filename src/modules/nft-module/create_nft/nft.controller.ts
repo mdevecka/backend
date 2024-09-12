@@ -1,4 +1,4 @@
-import { Controller, Body, Put, UseGuards } from '@nestjs/common';
+import { Controller, Body, Put, UseGuards, BadRequestException } from '@nestjs/common';
 import { NftCreator } from './nft.service';
 import { NftDto } from './dto/NFTDto';
 import { FormDataRequest } from 'nestjs-form-data';
@@ -15,7 +15,12 @@ export class NftController {
   async formUpload(@Body() form: NftDto, @UserId() userId: string): Promise<NFTResponseDto> {
     const { file, name, metadata, address } = form;
     const callData = await this.appService.createNFTCall(file, name, metadata, address, userId);
-    return { callData };
+    if (callData == null || callData == 'null') {
+      throw new BadRequestException('An error occurred while creating nft call, please check your parameters');
+    }
+    else {
+      return { callData }
+    }
   }
 
 }
