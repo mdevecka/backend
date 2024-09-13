@@ -11,5 +11,5 @@ export interface ExhibitionDetailDto {
     address: string;
     gps: string;
   }
-  active: boolean;
+  public: boolean;
 }

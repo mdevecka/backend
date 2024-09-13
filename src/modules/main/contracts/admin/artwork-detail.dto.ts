@@ -21,5 +21,5 @@ export interface ArtworkDetailDto {
   measurements: string;
   width: number;
   height: number;
-  active: boolean;
+  public: boolean;
 }

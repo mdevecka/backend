@@ -23,6 +23,6 @@ export class Exhibition extends LabeledEntity {
   artworks: Artwork[];
 
   @Column({ type: 'boolean', default: true })
-  active: boolean;
+  public: boolean;
 
 }

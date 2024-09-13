@@ -10,7 +10,8 @@ import { Repository, DataSource, DeepPartial, getMetadataArgsStorage } from 'typ
 import { AppConfig } from '@common/config';
 import {
   BaseEntity, User, Country, Artist, ArtistCategory, Artwork, ArtworkGenre, ArtworkMaterial,
-  ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition
+  ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition, Nft,
+  UnityRoom, UnityWall, UnityImage, UnityLamp, UnityItem, UnityItemType,
 } from '@modules/app-db/entities';
 import * as entities from '@modules/app-db/entities';
 
@@ -27,10 +28,6 @@ function getImage(name: string) {
     imageCache.set(path, imageData);
   }
   return imageData;
-}
-
-async function createThumbnail(image: Buffer) {
-  return sharp(image).resize({ width: 480 }).toFormat('jpg').toBuffer();
 }
 
 @Module({
@@ -73,7 +70,7 @@ async function main() {
           "password": await hash("test", 10),
           "name": "Ľubo Ivančák",
           "description": "<p>grafik, programátor, tvorca počítačových hier</p>",
-          "avatar": getImage("users/avatar-01.jpg"),
+          "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
           "trialMint": "todo",
           "trialMintClaimed": false,
           "collectionID": "todo",
@@ -83,7 +80,7 @@ async function main() {
           "password": await hash("niteking", 10),
           "name": "John Snow",
           "description": "Lord Commander of the Night's Watch",
-          "avatar": getImage("users/avatar-01.jpg"),
+          "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
           "trialMint": "todo",
           "trialMintClaimed": false,
           "collectionID": "todo",
@@ -932,11 +929,8 @@ async function main() {
           "name": "Liptovské Hole",
           "description": "<p>Liptovské Hole je jedno z typických diel Martina Benku, ktoré zachytáva idylický obraz slovenského vidieka. Dielo zobrazuje skupinu roľníkov pracujúcich na poli počas žatvy. Benka svojím jedinečným štýlom zvýrazňuje dynamiku pohybu a harmóniu medzi človekom a prírodou. V popredí vidíme postavy roľníkov v tradičných krojoch, ktoré sú pre Benku charakteristické. Na pozadí sa rozprestierajú zelené kopce a modrá obloha, čo pridáva obrazu pocit pokoja a rovnováhy. Toto dielo nielen oslavuje pracovný život slovenského ľudu, ale aj krásu a jedinečnosť slovenskej krajiny.</p>",
           "image": { buffer: getImage("artworks/01.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/01.jpg")), mimeType: "image/jpeg" },
           "year": "1925",
           "measurements": "68 x 43 cm",
-          "width": 1,
-          "height": 0,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -947,11 +941,8 @@ async function main() {
           "name": "Za dedinou",
           "description": "",
           "image": { buffer: getImage("artworks/02.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/02.jpg")), mimeType: "image/jpeg" },
           "year": "1920",
           "measurements": "62,5 x 44,5 cm",
-          "width": 1,
-          "height": 0,
           "artist": artists[1],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -962,11 +953,8 @@ async function main() {
           "name": "Sklabina Valley",
           "description": "",
           "image": { buffer: getImage("artworks/03.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/03.jpg")), mimeType: "image/jpeg" },
           "year": "1935",
           "measurements": "132 x 100 cm",
-          "width": 1,
-          "height": 1,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -977,11 +965,8 @@ async function main() {
           "name": "Z Liptova",
           "description": "",
           "image": { buffer: getImage("artworks/04.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/04.jpg")), mimeType: "image/jpeg" },
           "year": "1937",
           "measurements": "100 x 132 cm",
-          "width": 1,
-          "height": 1,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -992,11 +977,8 @@ async function main() {
           "name": "Drevári",
           "description": "",
           "image": { buffer: getImage("artworks/05.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/05.jpg")), mimeType: "image/jpeg" },
           "year": "1933",
           "measurements": "67 x 46 cm",
-          "width": 1,
-          "height": 0,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -1007,11 +989,8 @@ async function main() {
           "name": "Štúdia – Revúca",
           "description": "",
           "image": { buffer: getImage("artworks/06.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/06.jpg")), mimeType: "image/jpeg" },
           "year": "1933",
           "measurements": "32.5 x 44 cm",
-          "width": 0,
-          "height": 0,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -1022,11 +1001,8 @@ async function main() {
           "name": "WOMEN FARMERS II",
           "description": "",
           "image": { buffer: getImage("artworks/07.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/07.jpg")), mimeType: "image/jpeg" },
           "year": "1948",
           "measurements": "30 x 40 cm",
-          "width": 0,
-          "height": 0,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -1037,11 +1013,8 @@ async function main() {
           "name": "Outside the village",
           "description": "",
           "image": { buffer: getImage("artworks/08.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/08.jpg")), mimeType: "image/jpeg" },
           "year": "1932",
           "measurements": "62,5 x 44 cm",
-          "width": 1,
-          "height": 0,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -1052,11 +1025,8 @@ async function main() {
           "name": "Barn",
           "description": "",
           "image": { buffer: getImage("artworks/09.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/09.jpg")), mimeType: "image/jpeg" },
           "year": "1929",
           "measurements": "38 x 30 cm",
-          "width": 0,
-          "height": 0,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -1067,11 +1037,8 @@ async function main() {
           "name": "MOŘE U CAPRI",
           "description": "",
           "image": { buffer: getImage("artworks/10.jpg"), mimeType: "image/jpeg" },
-          "thumbnail": { buffer: await createThumbnail(getImage("artworks/10.jpg")), mimeType: "image/jpeg" },
           "year": "1927",
           "measurements": "52 x 35x5 cm",
-          "width": 1,
-          "height": 0,
           "artist": artists[0],
           "artworkGenre": artworkGenres[0],
           "artworkWorktype": artworkWorktypes[0],
@@ -1137,6 +1104,245 @@ async function main() {
           "curator": "Tomáš Lukačka",
           "gallery": galleries[3],
           "artworks": [artworks[7], artworks[9]],
+        }
+      ]);
+      const itemTypes = await createEntities(UnityItemType, [
+        {
+          "name": "Plant-01"
+        },
+        {
+          "name": "Plant-02"
+        },
+        {
+          "name": "Plant-03"
+        },
+        {
+          "name": "Plant-04"
+        },
+        {
+          "name": "Plant-05"
+        },
+        {
+          "name": "Bench-01"
+        },
+        {
+          "name": "Bench-02"
+        },
+        {
+          "name": "Bench-03"
+        },
+        {
+          "name": "Bench-04"
+        },
+        {
+          "name": "Bench-05"
+        },
+        {
+          "name": "Figure-01"
+        },
+        {
+          "name": "Figure-02"
+        },
+        {
+          "name": "Figure-03"
+        }
+      ]);
+      const items = await createEntities(UnityItem, [
+        {
+          "itemType": itemTypes[0],
+          "x": 3.8,
+          "y": 0.0,
+          "z": 4.2,
+          "rotation": 0
+        },
+        {
+          "itemType": itemTypes[1],
+          "x": -4,
+          "y": 0.0,
+          "z": 4,
+          "rotation": -180
+        },
+        {
+          "itemType": itemTypes[3],
+          "x": 2.8,
+          "y": 0.0,
+          "z": -1.5,
+          "rotation": 0
+        },
+        {
+          "itemType": itemTypes[5],
+          "x": 2.7,
+          "y": 0.0,
+          "z": 0,
+          "rotation": 90
+        },
+        {
+          "itemType": itemTypes[6],
+          "x": -1.6,
+          "y": 0.0,
+          "z": 2.6,
+          "rotation": 0
+        },
+        {
+          "itemType": itemTypes[10],
+          "x": -2.6,
+          "y": 0.0,
+          "z": 0.32,
+          "rotation": -74
+        },
+        {
+          "itemType": itemTypes[11],
+          "x": 1.6,
+          "y": 0.0,
+          "z": 2.6,
+          "rotation": 0
+        },
+        {
+          "itemType": itemTypes[12],
+          "x": -1.6,
+          "y": 0.0,
+          "z": -3.0,
+          "rotation": -180
+        }
+      ]);
+      const lamps = await createEntities(UnityLamp, [
+        {
+          "x": 0,
+          "y": 3.5,
+          "z": 0,
+          "range": 10,
+          "shadow": true
+        },
+        {
+          "x": -3,
+          "y": 3.5,
+          "z": -2,
+          "range": 10,
+          "shadow": false
+        },
+        {
+          "x": 1.5,
+          "y": 3.5,
+          "z": -1.8,
+          "range": 10,
+          "shadow": false
+        }
+      ]);
+      const images = await createEntities(UnityImage, [
+        {
+          "artwork": artworks[0],
+          "x": 2,
+          "y": 1.8,
+          "scale": 2
+        },
+        {
+          "artwork": artworks[1],
+          "x": 4,
+          "y": 1.4,
+          "scale": 2
+        },
+        {
+          "artwork": artworks[2],
+          "x": 7,
+          "y": 1.6,
+          "scale": 1.8
+        },
+        {
+          "artwork": artworks[4],
+          "x": 2,
+          "y": 1.6,
+          "scale": 2
+        },
+        {
+          "artwork": artworks[8],
+          "x": 4,
+          "y": 1.6,
+          "scale": 2
+        },
+        {
+          "artwork": artworks[1],
+          "x": 6,
+          "y": 1.6,
+          "scale": 2
+        },
+        {
+          "artwork": artworks[5],
+          "x": 2,
+          "y": 1.4,
+          "scale": 2
+        },
+        {
+          "artwork": artworks[6],
+          "x": 4,
+          "y": 1.6,
+          "scale": 3
+        },
+        {
+          "artwork": artworks[7],
+          "x": 6,
+          "y": 1.6,
+          "scale": 2
+        }
+      ]);
+      const walls = await createEntities(UnityWall, [
+        {
+          "x": 0,
+          "y": 0,
+          "z": 5,
+          "rotation": 0,
+          "width": 10,
+          "height": 3.6,
+          "thick": 0.15,
+          "color": "#3983bb",
+          "images": [images[0], images[1], images[2]],
+        },
+        {
+          "x": 5,
+          "y": 0,
+          "z": 0,
+          "rotation": 90,
+          "width": 10,
+          "height": 3.6,
+          "thick": 0.15,
+          "color": "#bb6739",
+          "images": [images[3], images[4], images[5]],
+        },
+        {
+          "x": 1.5,
+          "y": 0,
+          "z": -5,
+          "rotation": 180,
+          "width": 7,
+          "height": 3.6,
+          "thick": 0.15,
+          "color": "#f2d4c4",
+          "images": [images[6], images[7], images[8]],
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "z": 10,
+          "rotation": 180,
+          "width": 10,
+          "height": 3.6,
+          "thick": 0.15,
+          "color": "#aaa",
+          "opacity": 1,
+          "artwork": artworks[9],
+        },
+      ]);
+      const rooms = await createEntities(UnityRoom, [
+        {
+          "name": "Malá sála",
+          "x": 0,
+          "y": 0,
+          "width": 10,
+          "length": 10,
+          "height": 3.6,
+          "walls": walls,
+          "lamps": lamps,
+          "items": items,
+          "exhibition": exhibitions[0],
         }
       ]);
     });

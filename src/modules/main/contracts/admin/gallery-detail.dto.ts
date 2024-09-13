@@ -7,5 +7,5 @@ export interface GalleryDetailDto {
   address: string;
   country: CountryDto;
   gps: string;
-  active: boolean;
+  public: boolean;
 }

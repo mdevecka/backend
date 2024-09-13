@@ -1,7 +1,7 @@
 import { Entity, Column, Index, OneToMany } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
-import { Nft } from './nft.entity';
 import { Wallet } from './wallet.entity';
+import { Image } from './image';
 
 @Entity()
 export class User extends LabeledEntity {
@@ -16,11 +16,8 @@ export class User extends LabeledEntity {
   @Column('text')
   description: string;
 
-  @Column({ type: "bytea", nullable: true })
-  avatar: Buffer;
-
-  @Column({ type: 'text', nullable: true })
-  avatarUrlTemp: string;
+  @Column(() => Image)
+  avatar: Image;
 
   @Column('text')
   trialMint: string;
@@ -33,4 +30,5 @@ export class User extends LabeledEntity {
 
   @OneToMany(() => Wallet, wallet => wallet.user)
   wallets: Wallet[];
+
 }

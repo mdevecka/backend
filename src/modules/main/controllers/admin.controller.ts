@@ -40,6 +40,14 @@ export class AdminController {
     return this.adminRepository.getUser(userId).then(user => mapper.createUserDto(user));
   }
 
+  @Get('user/avatar')
+  async getUserAvatar(@UserId() userId: string, @Response() res: ExpressResponse) {
+    const item = await this.adminRepository.getUserAvatar(userId);
+    if (item == null)
+      throw new NotFoundException();
+    res.set({ "Content-Type": item.mimeType }).send(item.image);
+  }
+
   @Get('artist')
   async getArtists(@UserId() userId: string) {
     return mapAsync(this.adminRepository.getArtists(userId), mapper.createArtistDto);
@@ -58,6 +66,11 @@ export class AdminController {
   @Get('exhibition')
   async getExhibitions(@UserId() userId: string) {
     return mapAsync(this.adminRepository.getExhibitions(userId), mapper.createExhibitionDto);
+  }
+
+  @Get('room')
+  async getRooms(@UserId() userId: string) {
+    return mapAsync(this.adminRepository.getRooms(userId), mapper.createRoomDto);
   }
 
   @Get('artist/:id')
@@ -100,6 +113,11 @@ export class AdminController {
   @Get('exhibition/:id/artwork')
   async getExhibitionArtworks(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
     return mapAsync(this.adminRepository.getExhibitionArtworks(userId, id), mapper.createExhibitionArtworkDto);
+  }
+
+  @Get('exhibition/:id/room')
+  async getExhibitionRooms(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    return mapAsync(this.adminRepository.getExhibitionRooms(userId, id), mapper.createExhibitionRoomDto);
   }
 
   @Get('artist/:id/artwork')
@@ -176,6 +194,36 @@ export class AdminController {
     if (item == null)
       throw new NotFoundException();
     res.set({ "Content-Type": item.mimeType }).send(item.image);
+  }
+
+  @Get('artwork/:id/unity-image')
+  async getArtworkUnityImage(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string, @Response() res: ExpressResponse) {
+    const item = await this.adminRepository.getArtworkUnityImage(userId, id);
+    if (item == null)
+      throw new NotFoundException();
+    res.set({ "Content-Type": item.mimeType }).send(item.image);
+  }
+
+  @Get('designer/room/:id')
+  async getDesignerRoom(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    const room = await this.adminRepository.getDesignerRoom(userId, id);
+    if (room == null)
+      throw new NotFoundException();
+    return mapper.createDesignerRoomDto(room);
+  }
+
+  @Get('designer/room/:id/artwork')
+  async getDesignerRoomArtworks(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    const info = await this.adminRepository.getRoomExhibitionInfo(userId, id);
+    if (info == null)
+      throw new NotFoundException();
+    const artworks = this.adminRepository.getExhibitionArtworks(userId, info.exhibition.id);
+    return mapAsync(artworks, (artwork) => mapper.createDesignerArtworkDto(artwork, info.exhibition));
+  }
+
+  @Get('designer/library')
+  async getDesignerItemLibrary() {
+    return mapAsync(this.adminRepository.getItemTypes(), mapper.createDesignerLibraryItemDto);
   }
 
 }

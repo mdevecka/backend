@@ -8,5 +8,5 @@ export interface GalleryExhibitionDto {
     id: string;
     name: string;
   }
-  active: boolean;
+  public: boolean;
 }

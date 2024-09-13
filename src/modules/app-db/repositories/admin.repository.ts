@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, ArtistCategory, ArtworkTechnique,
-  ArtworkMaterial, ArtworkGenre, ArtworkWorktype
+  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType
 } from '../entities';
 
 @Injectable()
@@ -21,6 +21,8 @@ export class AdminRepository {
     @InjectRepository(ArtworkMaterial) private artworkMaterials: Repository<ArtworkMaterial>,
     @InjectRepository(ArtworkGenre) private artworkGenres: Repository<ArtworkGenre>,
     @InjectRepository(ArtworkWorktype) private artworkWorktypes: Repository<ArtworkWorktype>,
+    @InjectRepository(UnityRoom) private unityRooms: Repository<UnityRoom>,
+    @InjectRepository(UnityItemType) private unityItemTypes: Repository<UnityItemType>,
   ) { }
 
   async getUsers() {
@@ -49,7 +51,7 @@ export class AdminRepository {
         country: true,
         artistCategory: true,
       },
-      where: { user: { id: userId } }
+      where: { userId: userId }
     });
   }
 
@@ -62,7 +64,7 @@ export class AdminRepository {
         artworkMaterial: true,
         artworkTechnique: true,
       },
-      where: { artist: { user: { id: userId } } }
+      where: { artist: { userId: userId } }
     });
   }
 
@@ -72,7 +74,7 @@ export class AdminRepository {
         user: true,
         country: true,
       },
-      where: { user: { id: userId } }
+      where: { userId: userId }
     });
   }
 
@@ -81,7 +83,45 @@ export class AdminRepository {
       relations: {
         gallery: true,
       },
-      where: { gallery: { user: { id: userId } } }
+      where: { gallery: { userId: userId } }
+    });
+  }
+
+  async getRooms(userId: string) {
+    return this.unityRooms.find({
+      relations: {
+        exhibition: { gallery: true },
+      },
+      where: {
+        exhibition: {
+          gallery: { userId: userId },
+        }
+      }
+    });
+  }
+
+  async getRoomExhibitionInfo(userId: string, id: string) {
+    return this.unityRooms.findOne({
+      select: {
+        id: true,
+        exhibition: {
+          id: true,
+          name: true,
+          gallery: {
+            id: true,
+            name: true,
+          }
+        }
+      },
+      relations: {
+        exhibition: { gallery: true }
+      },
+      where: {
+        id: id,
+        exhibition: {
+          gallery: { userId: userId },
+        }
+      }
     });
   }
 
@@ -93,7 +133,7 @@ export class AdminRepository {
       },
       where: {
         id: id,
-        user: { id: userId }
+        userId: userId,
       }
     });
   }
@@ -109,7 +149,7 @@ export class AdminRepository {
       },
       where: {
         id: id,
-        artist: { user: { id: userId } },
+        artist: { userId: userId },
       }
     });
   }
@@ -117,12 +157,11 @@ export class AdminRepository {
   async getGalleryDetail(userId: string, id: string) {
     return this.galleries.findOne({
       relations: {
-        user: true,
         country: true,
       },
       where: {
         id: id,
-        user: { id: userId }
+        userId: userId,
       }
     });
   }
@@ -134,7 +173,7 @@ export class AdminRepository {
       },
       where: {
         id: id,
-        gallery: { user: { id: userId } }
+        gallery: { userId: userId }
       }
     });
   }
@@ -148,7 +187,7 @@ export class AdminRepository {
         artworks: {
           id: id
         },
-        gallery: { user: { id: userId } },
+        gallery: { userId: userId },
       }
     });
   }
@@ -166,7 +205,18 @@ export class AdminRepository {
         exhibitions: {
           id: id
         },
-        artist: { user: { id: userId } },
+        artist: { userId: userId },
+      }
+    });
+  }
+
+  async getExhibitionRooms(userId: string, id: string) {
+    return this.unityRooms.find({
+      where: {
+        exhibition: {
+          id: id,
+          gallery: { userId: userId },
+        }
       }
     });
   }
@@ -179,7 +229,7 @@ export class AdminRepository {
       where: {
         gallery: {
           id: id,
-          user: { id: userId }
+          userId: userId
         },
       }
     });
@@ -197,7 +247,7 @@ export class AdminRepository {
       where: {
         artist: {
           id: id,
-          user: { id: userId }
+          userId: userId
         },
       }
     });
@@ -243,7 +293,7 @@ export class AdminRepository {
     return this.galleries.find({
       select: { id: true, name: true },
       where: {
-        user: { id: userId },
+        userId: userId,
       }
     });
   }
@@ -252,7 +302,7 @@ export class AdminRepository {
     return this.artists.find({
       select: { id: true, name: true },
       where: {
-        user: { id: userId },
+        userId: userId,
       }
     });
   }
@@ -261,7 +311,7 @@ export class AdminRepository {
     return this.artworks.find({
       select: { id: true, name: true },
       where: {
-        artist: { user: { id: userId } },
+        artist: { userId: userId },
       }
     });
   }
@@ -270,7 +320,7 @@ export class AdminRepository {
     return this.exhibitions.find({
       select: { id: true, name: true },
       where: {
-        gallery: { user: { id: userId } },
+        gallery: { userId: userId },
       }
     });
   }
@@ -280,7 +330,7 @@ export class AdminRepository {
       select: { id: true, image: { buffer: true, mimeType: true } },
       where: {
         id: id,
-        artist: { user: { id: userId } },
+        artist: { userId: userId },
       }
     }).then(a => (a != null) ? { image: a.image?.buffer, mimeType: a.image?.mimeType } : null);
   }
@@ -290,7 +340,7 @@ export class AdminRepository {
       select: { id: true, thumbnail: { buffer: true, mimeType: true } },
       where: {
         id: id,
-        artist: { user: { id: userId } },
+        artist: { userId: userId },
       }
     }).then(a => (a != null) ? { image: a.thumbnail?.buffer, mimeType: a.thumbnail?.mimeType } : null);
   }

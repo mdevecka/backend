@@ -14,3 +14,4 @@ export * from './labeled.entity';
 export * from './nft.entity';
 export * from './user.entity';
 export * from './wallet.entity';
+export * from './unity';

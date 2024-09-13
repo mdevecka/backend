@@ -8,5 +8,5 @@ export interface ArtistDetailDto {
   biography: string;
   country: CountryDto;
   artistCategory: OptionDto;
-  active: boolean;
+  public: boolean;
 }

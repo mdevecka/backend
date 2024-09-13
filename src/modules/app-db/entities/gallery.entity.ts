@@ -19,9 +19,12 @@ export class Gallery extends LabeledEntity {
   gps: string;
 
   @Column({ type: 'boolean', default: true })
-  active: boolean;
+  public: boolean;
 
   @ManyToOne(() => User)
   user: User;
+
+  @Column({ nullable: true })
+  userId: string;
 
 }

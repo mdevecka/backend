@@ -20,9 +20,12 @@ export class Artist extends LabeledEntity {
   artistCategory: ArtistCategory;
 
   @Column({ type: 'boolean', default: true })
-  active: boolean
+  public: boolean
 
   @ManyToOne(() => User)
   user: User;
+
+  @Column({ nullable: true })
+  userId: string;
 
 }

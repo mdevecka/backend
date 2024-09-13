@@ -10,11 +10,16 @@ import { ExhibitionDetailDto } from './exhibition-detail.dto';
 import { ArtworkExhibitionDto } from './artwork-exhibition.dto';
 import { GalleryExhibitionDto } from './gallery-exhibition.dto';
 import { ExhibitionArtworkDto } from './exhibition-artwork.dto';
+import { ExhibitionRoomDto } from './exhibition-room.dto';
 import { ArtistArtworkDto } from './artist-artwork.dto';
+import { RoomDto } from './room.dto';
+import { DesignerRoomDto } from './designer-room.dto';
+import { DesignerArtworkDto } from './designer-artwork.dto';
+import { DesignerLibraryItemDto } from './designer-library-item.dto';
 import { CountryDto } from './country.dto';
 import { OptionDto } from './option.dto';
 import {
-  User, Artist, Artwork, Gallery, Exhibition, Country
+  User, Artist, Artwork, Gallery, Exhibition, Country, UnityRoom, UnityItemType
 } from '@modules/app-db/entities';
 
 
@@ -50,7 +55,7 @@ export function createArtistDto(artist: Artist): ArtistDto {
     biography: artist.biography,
     country: createCountryDto(artist.country),
     artistCategory: createOptionDto(artist.artistCategory),
-    active: artist.active,
+    public: artist.public,
   };
 }
 
@@ -76,7 +81,7 @@ export function createArtworkDto(artwork: Artwork): ArtworkDto {
     measurements: artwork.measurements,
     width: artwork.width,
     height: artwork.height,
-    active: artwork.active,
+    public: artwork.public,
   };
 }
 
@@ -88,7 +93,7 @@ export function createGalleryDto(gallery: Gallery): GalleryDto {
     address: gallery.address,
     country: createCountryDto(gallery.country),
     gps: gallery.gps,
-    active: gallery.active,
+    public: gallery.public,
   };
 }
 
@@ -106,7 +111,7 @@ export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
       address: exhibition.gallery.address,
       gps: exhibition.gallery.gps,
     },
-    active: exhibition.active,
+    public: exhibition.public,
   };
 }
 
@@ -118,7 +123,7 @@ export function createArtistDetailDto(artist: Artist): ArtistDetailDto {
     biography: artist.biography,
     country: createCountryDto(artist.country),
     artistCategory: createOptionDto(artist.artistCategory),
-    active: artist.active,
+    public: artist.public,
   };
 }
 
@@ -144,7 +149,7 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
     measurements: artwork.measurements,
     width: artwork.width,
     height: artwork.height,
-    active: artwork.active,
+    public: artwork.public,
   };
 }
 
@@ -156,7 +161,7 @@ export function createGalleryDetailDto(gallery: Gallery): GalleryDetailDto {
     address: gallery.address,
     country: createCountryDto(gallery.country),
     gps: gallery.gps,
-    active: gallery.active,
+    public: gallery.public,
   };
 }
 
@@ -174,7 +179,7 @@ export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDet
       address: exhibition.gallery.address,
       gps: exhibition.gallery.gps,
     },
-    active: exhibition.active,
+    public: exhibition.public,
   };
 }
 
@@ -189,7 +194,7 @@ export function createArtworkExhibitionDto(exhibition: Exhibition): ArtworkExhib
       id: exhibition.gallery.id,
       name: exhibition.gallery.name,
     },
-    active: exhibition.active,
+    public: exhibition.public,
   };
 }
 
@@ -204,7 +209,7 @@ export function createGalleryExhibitionDto(exhibition: Exhibition): GalleryExhib
       id: exhibition.gallery.id,
       name: exhibition.gallery.name,
     },
-    active: exhibition.active,
+    public: exhibition.public,
   };
 }
 
@@ -230,7 +235,7 @@ export function createExhibitionArtworkDto(artwork: Artwork): ExhibitionArtworkD
     measurements: artwork.measurements,
     width: artwork.width,
     height: artwork.height,
-    active: artwork.active,
+    public: artwork.public,
   };
 }
 
@@ -256,6 +261,108 @@ export function createArtistArtworkDto(artwork: Artwork): ArtistArtworkDto {
     measurements: artwork.measurements,
     width: artwork.width,
     height: artwork.height,
-    active: artwork.active,
+    public: artwork.public,
+  };
+}
+
+export function createExhibitionRoomDto(room: UnityRoom): ExhibitionRoomDto {
+  return {
+    id: room.id,
+    name: room.name,
+    x: room.x,
+    y: room.y,
+    width: room.width,
+    height: room.height,
+    length: room.length,
+  };
+}
+
+export function createRoomDto(room: UnityRoom): RoomDto {
+  return {
+    id: room.id,
+    name: room.name,
+    x: room.x,
+    y: room.y,
+    width: room.width,
+    height: room.height,
+    length: room.length,
+    exhibition: createExhibitionDto(room.exhibition),
+  };
+}
+
+export function createDesignerRoomDto(room: UnityRoom): DesignerRoomDto {
+  return {
+    id: room.id,
+    name: room.name,
+    x: room.x,
+    y: room.y,
+    width: room.width,
+    height: room.height,
+    length: room.length,
+    exhibitionId: room.exhibitionId,
+    walls: room.walls.map(wall => ({
+      id: wall.id,
+      x: wall.x,
+      y: wall.y,
+      z: wall.z,
+      rotation: wall.rotation,
+      width: wall.width,
+      height: wall.height,
+      thick: wall.thick,
+      color: wall.color,
+      opacity: wall.opacity,
+      artworkId: wall.artworkId,
+      images: wall.images.map(image => ({
+        id: image.id,
+        x: image.x,
+        y: image.y,
+        scale: image.scale,
+        artworkId: image.artworkId,
+      })),
+    })),
+    lamps: room.lamps.map(lamp => ({
+      id: lamp.id,
+      x: lamp.x,
+      y: lamp.y,
+      z: lamp.z,
+      range: lamp.range,
+      shadow: lamp.shadow,
+    })),
+    items: room.items.map(item => ({
+      id: item.id,
+      x: item.x,
+      y: item.y,
+      z: item.z,
+      rotation: item.rotation,
+      itemTypeId: item.itemTypeId,
+    })),
+  };
+}
+
+export function createDesignerArtworkDto(artwork: Artwork, exhibition: Exhibition): DesignerArtworkDto {
+  return {
+    id: artwork.id,
+    src: `/admin/artwork/${artwork.id}/unity-image`,
+    width: artwork.width,
+    height: artwork.height,
+    name: artwork.name,
+    artist: artwork.artist.name,
+    worktype: artwork.artworkWorktype.name,
+    material: artwork.artworkMaterial.name,
+    technique: artwork.artworkTechnique.name,
+    measurements: artwork.measurements,
+    exhibition: exhibition.name,
+    gallery: exhibition.gallery.name,
+    year: artwork.year,
+    urlArtwork: `/admin/artwork/${artwork.id}`,
+    urlExhibition: `/admin/exhibition/${exhibition.id}`,
+    urlGallery: `/admin/gallery/${exhibition.gallery.id}`,
+  };
+}
+
+export function createDesignerLibraryItemDto(itemType: UnityItemType): DesignerLibraryItemDto {
+  return {
+    id: itemType.id,
+    name: itemType.name,
   };
 }
