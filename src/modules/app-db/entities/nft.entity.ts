@@ -3,6 +3,13 @@ import { BaseEntity } from './base.entity';
 import { Wallet } from './wallet.entity';
 import { Artwork } from './artwork.entity';
 
+export interface NftData {
+  id: string;
+  name: string;
+  metadata: string;
+  image: string;
+}
+
 @Entity()
 export class Nft extends BaseEntity {
 
@@ -13,5 +20,5 @@ export class Nft extends BaseEntity {
   wallet: Wallet;
 
   @Column({ type: 'jsonb', unique: true })
-  nftData: object;
+  nftData: NftData;
 }

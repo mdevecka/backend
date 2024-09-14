@@ -11,21 +11,21 @@ export class SwapCreator {
 
   }
 
-  async createSwapCall(swapData: SwapDto, collectionID: string, assetID: string): Promise<Response> {
+  async createSwapCall(swapData: SwapDto, collectionID: string, assetID: string, userId: string): Promise<string> {
     //We check if user has the right to change ownership of the NFT, if they haven't already claimed their NFT and if they 
     //havent then create call to change ownership of NFT to their desired address
 
-    const user = await this.nftRepo.getUser(swapData.address);
+    const user = await this.nftRepo.getUserByWallet(swapData.address);
 
-    if (user.trialMintClaimed == true) {
+    //These checks might need to be changed in the future when we allow users to transfer ownership within APP.
+    if (user == null || user.trialMintClaimed == true || user.trialMint == null || user.trialMint == 'null' || user.id != userId) {
       return null;
     }
 
     const url = this.configService.get("NFT_MODULE_URL");
 
     const { address } = swapData;
-
-    const response = await fetch(url + "/transfer/collection/" + collectionID.toString() + "/asset/" + assetID.toString(), {
+    const response = await fetch(`${url}/transfer/collection/${collectionID}/asset/${assetID}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -35,33 +35,30 @@ export class SwapCreator {
       })
     });
 
-    return response;
+    return response.json();
   }
 
-  async swapNFTOwnershipInDB(EvaGalleryCollection: string, assetID: string, address: string) {
+  async swapNFTOwnershipInDB(address: string, userId: string): Promise<void> {
     //We change ownership of NFT in database
     //We check if user has the right to change ownership of the NFT, if they haven't already claimed their NFT and if they 
     //havent then create call to change ownership of NFT to their desired address
 
-    const user = await this.nftRepo.getUser(address);
+    const user = await this.nftRepo.getUserByWallet(address);
 
-    if (user.trialMintClaimed == true) {
+    //These checks might need to be changed in the future when we allow users to transfer ownership within APP.
+    if (user == null || user.trialMintClaimed == true || user.trialMint == null || user.trialMint == 'null' || user.id != userId) {
       return null;
     }
 
-    const nft = await this.nftRepo.getWalletNFTs(EvaGalleryCollection);
+    const EvaGalleryWalletAddress = this.configService.get("EVA_GALLERY_WALLET_ADDRESS");
+    const nft = await this.nftRepo.getWalletNFTs(EvaGalleryWalletAddress);
 
     for (let i = 0; i < nft.length; i++) {
-      if (nft[i].id == assetID) {
-        const owner = await this.nftRepo.changeOwner(nft[i], address);
-        if (owner) {
-          return owner;
-        }
-        else {
-          return null;
-        }
+      if (nft[i].id == user.trialMint) {
+        await this.nftRepo.changeOwner(nft[i], address);
+        await this.nftRepo.claimTrialMint(user.id);
+        return;
       }
     }
-    return null;
   }
 }

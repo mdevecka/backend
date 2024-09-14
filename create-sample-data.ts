@@ -64,6 +64,38 @@ async function main() {
         const entities = items.map(item => repo.create(item));
         return repo.save(entities);
       };
+      const nfts = await createEntities(entities.Nft, [
+        {
+          artwork: null,
+          wallet: null,
+          nftData: {
+            id: "425-8",
+            name: "Random NFT",
+            metadata: "NFT meta",
+            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7aay",
+          },
+        },
+        {
+          artwork: null,
+          wallet: null,
+          nftData: {
+            id: "425-9",
+            name: "Random NFT 2",
+            metadata: "Great artwork",
+            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7bby",
+          }
+        }
+      ]);
+      const wallets = await createEntities(entities.Wallet, [
+        {
+          walletAddress: "0x1234567890",
+          nfts: [nfts[0]],
+        },
+        {
+          walletAddress: "0x0987654321",
+          nfts: [nfts[1]],
+        },
+      ]);
       const users = await createEntities(User, [
         {
           "email": "lubo@ivancak.sk",
@@ -71,9 +103,7 @@ async function main() {
           "name": "Ľubo Ivančák",
           "description": "<p>grafik, programátor, tvorca počítačových hier</p>",
           "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
-          "trialMint": "todo",
-          "trialMintClaimed": false,
-          "collectionID": "todo",
+          "wallets": [wallets[0]],
         },
         {
           "email": "john.snow@winterfell.castle",
@@ -81,9 +111,7 @@ async function main() {
           "name": "John Snow",
           "description": "Lord Commander of the Night's Watch",
           "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
-          "trialMint": "todo",
-          "trialMintClaimed": false,
-          "collectionID": "todo",
+          "wallets": [wallets[1]],
         }
       ]);
       const countries = await createEntities(Country, [
@@ -936,6 +964,7 @@ async function main() {
           "artworkWorktype": artworkWorktypes[0],
           "artworkMaterial": artworkMaterials[0],
           "artworkTechnique": artworkTechniques[0],
+          "nft": nfts[0],
         },
         {
           "name": "Za dedinou",

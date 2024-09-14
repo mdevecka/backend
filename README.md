@@ -20,6 +20,22 @@ POSTGRES_DATABASE=eva-gallery
 SESSION_LIFETIME=600
 # log incoming requests including url, response status and duration
 LOG_REQUESTS=true
+# Secret 12/24 word phrase for wallet that will do trialmint
+WALLET_SECRET_KEY=
+# URL for NFT MODULE
+NFT_MODULE_URL=http://localhost:3000;
+# Hardcoded collection ID that will be used for trial mint
+EVA_GALLERY_COLLECTION=1;
+# IPFS node URL address
+IPFS_URL=http://147.1.1.0;
+# IPFS node user name authentification
+IPFS_NAME=ipfsnode;
+# IPFS node password authentification
+IPFS_PASSWORD=ipfspass;
+# Provider for blockchain interaction
+WSS_PROVIDER=wss://kusama-asset-hub-rpc.polkadot.io;
+# Eva gallery wallet address
+EVA_GALLERY_WALLET_ADDRESS=DdiySauWxbBeQxUaHzFETA7qhzY53aFiENACtYZQ3Cno127;
 ```
 
 ## migrations

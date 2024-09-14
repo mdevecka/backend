@@ -3,10 +3,11 @@ import { MintController } from './mint.controller';
 import { MintCreator } from './mint.service';
 import { AppDbModule } from '@modules/app-db';
 import { NestjsFormDataModule } from 'nestjs-form-data';
+import { AuthModule } from '@modules/auth/auth.module';
 
 
 @Module({
-  imports: [AppDbModule, NestjsFormDataModule],
+  imports: [AppDbModule, NestjsFormDataModule, AuthModule],
   controllers: [MintController],
   providers: [MintCreator],
 })

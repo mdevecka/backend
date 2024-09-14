@@ -19,13 +19,13 @@ export class User extends LabeledEntity {
   @Column(() => Image)
   avatar: Image;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   trialMint: string;
 
-  @Column('boolean')
+  @Column('boolean', { default: false })
   trialMintClaimed: boolean;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   collectionID: string;
 
   @OneToMany(() => Wallet, wallet => wallet.user)

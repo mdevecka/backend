@@ -93,9 +93,6 @@ export class Artwork extends LabeledEntity {
   @Column({ nullable: true })
   nftId: string;
 
-  @Column('boolean', { default: true })
-  isNft: boolean;
-
   @AfterLoad()
   afterLoad() {
     this._lastImage = this.image?.buffer;

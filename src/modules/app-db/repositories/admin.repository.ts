@@ -345,4 +345,43 @@ export class AdminRepository {
     }).then(a => (a != null) ? { image: a.thumbnail?.buffer, mimeType: a.thumbnail?.mimeType } : null);
   }
 
+  async getArtworkUnityImage(userId: string, id: string) {
+    return this.artworks.findOne({
+      select: { id: true, unityImage: { buffer: true, mimeType: true } },
+      where: {
+        id: id,
+        artist: { userId: userId },
+      }
+    }).then(a => (a != null) ? { image: a.unityImage?.buffer, mimeType: a.unityImage?.mimeType } : null);
+  }
+
+  async getUserAvatar(userId: string) {
+    return this.users.findOne({
+      select: { avatar: { buffer: true, mimeType: true } },
+      where: {
+        id: userId,
+      }
+    }).then(a => (a != null) ? { image: a.avatar?.buffer, mimeType: a.avatar?.mimeType } : null);
+  }
+
+  async getDesignerRoom(userId: string, id: string) {
+    return this.unityRooms.findOne({
+      relations: {
+        walls: { images: true },
+        lamps: true,
+        items: true,
+      },
+      where: {
+        id: id,
+        exhibition: {
+          gallery: { userId: userId },
+        }
+      }
+    });
+  }
+
+  async getItemTypes() {
+    return this.unityItemTypes.find();
+  }
+
 }

@@ -7,6 +7,10 @@ import { LogRequestMiddleware } from '@common/middleware';
 import { MainModule } from '@modules/.';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { MintModule } from '@modules/nft-module/mint_trial/mint.module';
+import { CollectionModule } from '@modules/nft-module/create_collection/collection.module';
+import { NftModule } from '@modules/nft-module/create_nft/nft.module';
+import { MetadataModule } from '@modules/nft-module/query_metadata/meta.module';
+import { SwapModule } from '@modules/nft-module/change_ownership/swap.module';
 
 @Module({
   imports: [
@@ -27,8 +31,8 @@ import { MintModule } from '@modules/nft-module/mint_trial/mint.module';
     }),
     // todo use Redis as cache provider
     CacheModule.register({ isGlobal: true }),
-    MainModule, 
-    MintModule,
+    MainModule,
+    MintModule, CollectionModule, NftModule, MetadataModule, SwapModule
   ],
 })
 export class AppModule implements NestModule {

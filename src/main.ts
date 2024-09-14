@@ -18,6 +18,5 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
   await app.listen(config.get("PORT"));
-  app.useGlobalPipes(new ValidationPipe());
 }
 bootstrap();

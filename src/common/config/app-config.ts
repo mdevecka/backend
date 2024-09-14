@@ -11,7 +11,9 @@ export interface AppConfig {
   WALLET_SECRET_KEY: string;
   NFT_MODULE_URL: string;
   EVA_GALLERY_COLLECTION: string;
+  EVA_GALLERY_WALLET_ADDRESS: string;
   IPFS_URL: string;
   IPFS_NAME: string;
   IPFS_PASSWORD: string;
+  WSS_PROVIDER: string;
 }
