@@ -4,7 +4,6 @@ import { ApiPromise, Keyring, WsProvider } from '@polkadot/api'
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
-import { MemoryStoredFile } from 'nestjs-form-data';
 import { NftData } from '@modules/app-db/entities';
 import { create } from 'ipfs-http-client';
 
@@ -15,12 +14,14 @@ export class MintCreator {
 
   }
 
-  async createMint(file: MemoryStoredFile, name: string, metadata: string, userId: string, artworkId: string): Promise<Response> {
+  async createMint(userId: string, artworkId: string): Promise<Response> {
     //First we check if user has the right to mint an NFT, if they have already minted an NFT we return null
     //If they haven't we create the NFT for them
 
     const user = await this.nftRepository.getUser(userId);
-    if (!user && user.trialMintClaimed == true && user.trialMint != null && user.trialMint != 'null') {
+    const artwork = await this.nftRepository.getArtwork(artworkId);
+
+    if (!user && !artwork && user.trialMintClaimed == true && user.trialMint != null && user.trialMint != 'null') {
       return null;
     }
 
@@ -30,11 +31,25 @@ export class MintCreator {
 
 
     let cid = null
+    let metadataCid = null
 
     try {
       const IPFS_NODE_URL = this.configService.get("IPFS_URL");
       const username = this.configService.get("IPFS_NAME");
       const password = this.configService.get("IPFS_PASSWORD");
+
+
+      //Create metadata
+      const metadata = JSON.stringify({
+        description: artwork.description,
+        artist: artwork.artist,
+        year: artwork.year,
+        artworkGenre: artwork.artworkGenre,
+        artworkMaterial: artwork.artworkMaterial,
+        artworkTechnique: artwork.artworkTechnique,
+        artworkWorktype: artwork.artworkWorktype,
+        measurements: artwork.measurements,
+      });
 
       const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
       const client = create({
@@ -43,12 +58,14 @@ export class MintCreator {
           authorization: auth,
         },
       });
-      cid = await client.add(file.buffer);
+      cid = await client.add(artwork.image.buffer);
+      metadataCid = await client.add(metadata);
     } catch (error) {
       this.logger.error('Error adding file to IPFS:', error);
       throw new Error('Failed to add file to IPFS');
     }
 
+    
 
     const response = await fetch(`${url}/collection/${collectionID}/asset`, {
       method: 'PUT',
@@ -57,8 +74,8 @@ export class MintCreator {
       },
       body: JSON.stringify({
         "meta": {
-          "name": name,
-          "metadata": metadata,
+          "name": artwork.name,
+          "metadata": metadataCid.path,
           "image": cid.path,
           "author": EvaGalleryWalletAddress
         },
@@ -100,8 +117,8 @@ export class MintCreator {
             // No dispatch error, transaction should be successful, add to DB
             const nft: NftData = {
               id: `${collectionID}-${nftID}`,
-              name: name,
-              metadata: metadata,
+              name: artwork.name,
+              metadata: metadataCid.path,
               image: cid.path
             }
 
