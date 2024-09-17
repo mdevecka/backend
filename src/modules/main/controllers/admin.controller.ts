@@ -204,6 +204,19 @@ export class AdminController {
     res.set({ "Content-Type": item.mimeType }).send(item.image);
   }
 
+  @Get('nft')
+  async getNfts(@UserId() userId: string) {
+    return mapAsync(this.adminRepository.getNfts(userId), mapper.createNftDto);
+  }
+
+  @Get('nft/:id')
+  async getNftDetail(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    const item = await this.adminRepository.getNftDetail(userId, id);
+    if (item == null)
+      throw new NotFoundException();
+    return mapper.createNftDetailDto(item);
+  }
+
   @Get('designer/room/:id')
   async getDesignerRoom(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
     const room = await this.adminRepository.getDesignerRoom(userId, id);

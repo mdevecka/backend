@@ -62,14 +62,26 @@ export class Artwork extends LabeledEntity {
   @ManyToOne(() => ArtworkGenre)
   artworkGenre: ArtworkGenre;
 
+  @Column({ nullable: true })
+  artworkGenreId: string;
+
   @ManyToOne(() => ArtworkMaterial)
   artworkMaterial: ArtworkMaterial;
+
+  @Column({ nullable: true })
+  artworkMaterialId: string;
 
   @ManyToOne(() => ArtworkTechnique)
   artworkTechnique: ArtworkTechnique;
 
+  @Column({ nullable: true })
+  artworkTechniqueId: string;
+
   @ManyToOne(() => ArtworkWorktype)
   artworkWorktype: ArtworkWorktype;
+
+  @Column({ nullable: true })
+  artworkWorktypeId: string;
 
   @ManyToMany(() => Exhibition, ex => ex.artworks)
   exhibitions: Exhibition[];

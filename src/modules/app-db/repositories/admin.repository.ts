@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, ArtistCategory, ArtworkTechnique,
-  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType
+  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft
 } from '../entities';
 
 @Injectable()
@@ -23,6 +23,7 @@ export class AdminRepository {
     @InjectRepository(ArtworkWorktype) private artworkWorktypes: Repository<ArtworkWorktype>,
     @InjectRepository(UnityRoom) private unityRooms: Repository<UnityRoom>,
     @InjectRepository(UnityItemType) private unityItemTypes: Repository<UnityItemType>,
+    @InjectRepository(Nft) private nfts: Repository<Nft>,
   ) { }
 
   async getUsers() {
@@ -382,6 +383,29 @@ export class AdminRepository {
 
   async getItemTypes() {
     return this.unityItemTypes.find();
+  }
+
+  async getNfts(userId: string) {
+    return this.nfts.find({
+      relations: {
+        artwork: true,
+      },
+      where: {
+        wallet: { userId: userId }
+      }
+    });
+  }
+
+  async getNftDetail(userId: string, id: string) {
+    return this.nfts.findOne({
+      relations: {
+        artwork: true,
+      },
+      where: {
+        id: id,
+        wallet: { userId: userId }
+      }
+    });
   }
 
 }

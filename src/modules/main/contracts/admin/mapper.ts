@@ -16,10 +16,12 @@ import { RoomDto } from './room.dto';
 import { DesignerRoomDto } from './designer-room.dto';
 import { DesignerArtworkDto } from './designer-artwork.dto';
 import { DesignerLibraryItemDto } from './designer-library-item.dto';
+import { NftDto } from './nft.dto';
+import { NftDetailDto } from './nft-detail.dto';
 import { CountryDto } from './country.dto';
 import { OptionDto } from './option.dto';
 import {
-  User, Artist, Artwork, Gallery, Exhibition, Country, UnityRoom, UnityItemType
+  User, Artist, Artwork, Gallery, Exhibition, Country, UnityRoom, UnityItemType, Nft,
 } from '@modules/app-db/entities';
 
 
@@ -71,7 +73,7 @@ export function createArtworkDto(artwork: Artwork): ArtworkDto {
       biography: artwork.artist.biography,
     },
     year: artwork.year,
-    nft: (artwork.nftId != null),
+    nftId: artwork.nftId,
     ai: artwork.ai,
     tags: artwork.tags,
     artworkGenre: createOptionDto(artwork.artworkGenre),
@@ -139,7 +141,7 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
       biography: artwork.artist.biography,
     },
     year: artwork.year,
-    nft: (artwork.nftId != null),
+    nftId: artwork.nftId,
     ai: artwork.ai,
     tags: artwork.tags,
     artworkGenre: createOptionDto(artwork.artworkGenre),
@@ -225,7 +227,7 @@ export function createExhibitionArtworkDto(artwork: Artwork): ExhibitionArtworkD
       biography: artwork.artist.biography,
     },
     year: artwork.year,
-    nft: (artwork.nftId != null),
+    nftId: artwork.nftId,
     ai: artwork.ai,
     tags: artwork.tags,
     artworkGenre: createOptionDto(artwork.artworkGenre),
@@ -251,7 +253,7 @@ export function createArtistArtworkDto(artwork: Artwork): ArtistArtworkDto {
       biography: artwork.artist.biography,
     },
     year: artwork.year,
-    nft: (artwork.nftId != null),
+    nftId: artwork.nftId,
     ai: artwork.ai,
     tags: artwork.tags,
     artworkGenre: createOptionDto(artwork.artworkGenre),
@@ -287,6 +289,66 @@ export function createRoomDto(room: UnityRoom): RoomDto {
     height: room.height,
     length: room.length,
     exhibition: createExhibitionDto(room.exhibition),
+  };
+}
+
+export function createNftDto(nft: Nft): NftDto {
+  return {
+    id: nft.id,
+    walletId: nft.walletId,
+    nftData: {
+      id: nft.nftData.id,
+      name: nft.nftData.name,
+      metadata: nft.nftData.metadata,
+      image: nft.nftData.image,
+    },
+    artwork: {
+      id: nft.artwork.id,
+      name: nft.artwork.name,
+      description: nft.artwork.description,
+      artistId: nft.artwork.artistId,
+      year: nft.artwork.year,
+      ai: nft.artwork.ai,
+      tags: nft.artwork.tags,
+      artworkGenreId: nft.artwork.artworkGenreId,
+      artworkWorktypeId: nft.artwork.artworkWorktypeId,
+      artworkMaterialId: nft.artwork.artworkMaterialId,
+      artworkTechniqueId: nft.artwork.artworkTechniqueId,
+      measurements: nft.artwork.measurements,
+      width: nft.artwork.width,
+      height: nft.artwork.height,
+      public: nft.artwork.public,
+    }
+  };
+}
+
+export function createNftDetailDto(nft: Nft): NftDetailDto {
+  return {
+    id: nft.id,
+    walletId: nft.walletId,
+    nftData: {
+      id: nft.nftData.id,
+      name: nft.nftData.name,
+      metadata: nft.nftData.metadata,
+      image: nft.nftData.image,
+    },
+    artwork: {
+      id: nft.artwork.id,
+      name: nft.artwork.name,
+      description: nft.artwork.description,
+      artistId: nft.artwork.artistId,
+      year: nft.artwork.year,
+      ai: nft.artwork.ai,
+      tags: nft.artwork.tags,
+      artworkGenreId: nft.artwork.artworkGenreId,
+      artworkWorktypeId: nft.artwork.artworkWorktypeId,
+      artworkMaterialId: nft.artwork.artworkMaterialId,
+      artworkTechniqueId: nft.artwork.artworkTechniqueId,
+      measurements: nft.artwork.measurements,
+      width: nft.artwork.width,
+      height: nft.artwork.height,
+      public: nft.artwork.public,
+    }
   };
 }
 

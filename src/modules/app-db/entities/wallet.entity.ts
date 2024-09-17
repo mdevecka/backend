@@ -9,6 +9,9 @@ export class Wallet extends BaseEntity {
   @ManyToOne(() => User, user => user.wallets)
   user: User;
 
+  @Column({ nullable: true })
+  userId: string;
+
   @Column('text', { unique: true })
   walletAddress: string;
 
