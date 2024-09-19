@@ -19,9 +19,9 @@ export class MintCreator {
     //If they haven't we create the NFT for them
 
     const user = await this.nftRepository.getUser(userId);
-    const artwork = await this.nftRepository.getArtwork(artworkId);
+    const artwork = await this.nftRepository.getArtwork(userId, artworkId);
 
-    if (!user && !artwork && user.trialMintClaimed == true && user.trialMint != null && user.trialMint != 'null') {
+    if (!artwork && user.trialMintClaimed == true && user.trialMint != null) {
       return null;
     }
 
@@ -40,7 +40,7 @@ export class MintCreator {
 
 
       //Create metadata
-      const metadata = JSON.stringify({
+      const description = JSON.stringify({
         description: artwork.description,
         artist: artwork.artist,
         year: artwork.year,
@@ -59,13 +59,15 @@ export class MintCreator {
         },
       });
       cid = await client.add(artwork.image.buffer);
+      const metadata = JSON.stringify({ "name": artwork.name, "image": cid.path, "description": description });
+
       metadataCid = await client.add(metadata);
     } catch (error) {
       this.logger.error('Error adding file to IPFS:', error);
       throw new Error('Failed to add file to IPFS');
     }
 
-    
+
 
     const response = await fetch(`${url}/collection/${collectionID}/asset`, {
       method: 'PUT',
@@ -73,12 +75,8 @@ export class MintCreator {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "meta": {
-          "name": artwork.name,
-          "metadata": metadataCid.path,
-          "image": cid.path,
-          "author": EvaGalleryWalletAddress
-        },
+        "author": EvaGalleryWalletAddress,
+        "metadata": metadataCid.path,
       })
     });
 

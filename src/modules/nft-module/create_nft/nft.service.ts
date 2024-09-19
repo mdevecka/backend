@@ -16,9 +16,8 @@ export class NftCreator {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they didnt return null and do nothing
 
-    const artwork = await this.nftRepository.getArtwork(artworkId);
-    const user = await this.nftRepository.getUser(userId);
-    if (!user || !artwork) {
+    const artwork = await this.nftRepository.getArtwork(userId, artworkId);
+    if (!artwork) {
       return null
     }
 
@@ -32,7 +31,7 @@ export class NftCreator {
       const password = this.configService.get("IPFS_PASSWORD");
 
       //Create metadata
-      const metadata = JSON.stringify({
+      const description = JSON.stringify({
         description: artwork.description,
         artist: artwork.artist,
         year: artwork.year,
@@ -51,6 +50,8 @@ export class NftCreator {
         },
       });
       cid = await client.add(artwork.image.buffer);
+      const metadata = JSON.stringify({ "name": artwork.name, "image": cid.path, "description": description });
+
       metadataCid = await client.add(metadata);
     } catch (error) {
       this.logger.error('Error adding file to IPFS:', error);
@@ -67,12 +68,8 @@ export class NftCreator {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "meta": {
-          "name": artwork.name,
-          "metadata": metadataCid.path,
-          "image": cid.path,
-          "author": address
-        },
+        "author": address,
+        "metadata": metadataCid.path,
       })
     });
     return await response.json();
@@ -80,72 +77,62 @@ export class NftCreator {
 
   async updateNFTCall(artworkId: string, userId: string): Promise<string> {
 
-    const artwork = await this.nftRepository.getArtwork(artworkId);
-    const user = await this.nftRepository.getUser(userId);
-    if (!user || !artwork) {
+    const artwork = await this.nftRepository.getArtwork(userId, artworkId);
+    if (!artwork) {
       return null
     }
 
-    //check if user owns artwork
-    const artworks = await this.adminRepository.getArtworks(userId);
-    //check for matching artwork
-    for (let i = 0; i < artworks.length; i++) {
-      if (artworks[i].id == artworkId) {
-        let cid = null
-        let metadataCid = null
+    let cid = null
+    let metadataCid = null
 
-        try {
-          const IPFS_NODE_URL = this.configService.get("IPFS_URL");
-          const username = this.configService.get("IPFS_NAME");
-          const password = this.configService.get("IPFS_PASSWORD");
+    try {
+      const IPFS_NODE_URL = this.configService.get("IPFS_URL");
+      const username = this.configService.get("IPFS_NAME");
+      const password = this.configService.get("IPFS_PASSWORD");
 
-          //Create metadata
-          const metadata = JSON.stringify({
-            description: artwork.description,
-            artist: artwork.artist,
-            year: artwork.year,
-            artworkGenre: artwork.artworkGenre,
-            artworkMaterial: artwork.artworkMaterial,
-            artworkTechnique: artwork.artworkTechnique,
-            artworkWorktype: artwork.artworkWorktype,
-            measurements: artwork.measurements,
-          });
+      //Create metadata
+      const description = JSON.stringify({
+        description: artwork.description,
+        artist: artwork.artist,
+        year: artwork.year,
+        artworkGenre: artwork.artworkGenre,
+        artworkMaterial: artwork.artworkMaterial,
+        artworkTechnique: artwork.artworkTechnique,
+        artworkWorktype: artwork.artworkWorktype,
+        measurements: artwork.measurements,
+      });
 
-          const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
-          const client = create({
-            url: IPFS_NODE_URL,
-            headers: {
-              authorization: auth,
-            },
-          });
-          cid = await client.add(artwork.image.buffer);
-          metadataCid = await client.add(metadata);
-        } catch (error) {
-          this.logger.error('Error adding file to IPFS:', error);
-          throw new Error('Failed to add file to IPFS');
-        }
+      const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
+      const client = create({
+        url: IPFS_NODE_URL,
+        headers: {
+          authorization: auth,
+        },
+      });
+      cid = await client.add(artwork.image.buffer);
+      const metadata = JSON.stringify({ "name": artwork.name, "image": cid.path, "description": description });
 
-        const url = this.configService.get("NFT_MODULE_URL");
-
-        const colAndArtId = artwork.nft.nftData.id;
-
-        const response = await fetch(`${url}/update/asset/${colAndArtId}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            "meta": {
-              "name": artwork.name,
-              "metadata": metadataCid.path,
-              "image": cid.path,
-            },
-          })
-        });
-        return await response.json();
-      }
+      metadataCid = await client.add(metadata);
+    } catch (error) {
+      this.logger.error('Error adding file to IPFS:', error);
     }
+
+    const url = this.configService.get("NFT_MODULE_URL");
+
+    const colAndArtId = artwork.nft.nftData.id;
+
+    const response = await fetch(`${url}/update/asset/${colAndArtId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "metadata": metadataCid.path,
+      })
+    });
+    return await response.json();
   }
+
 
   async updateNftInDB(artworkId: string, userId: string): Promise<void> {
     //TBA

@@ -23,6 +23,8 @@ export class CollectionCreator {
     }
 
     let cid = null
+    let cidMeta = null
+    let body = null;
 
     if (file != null) {
       try {
@@ -38,6 +40,21 @@ export class CollectionCreator {
           },
         });
         cid = await client.add(file.buffer);
+
+        if (cid == null) {
+          body = JSON.stringify({ "name": name, "description": description });
+        }
+        else if (description == null) {
+          body = JSON.stringify({ "name": name, "image": cid.path });
+        }
+        else if (description == null && cid == null) {
+          body = JSON.stringify({ "name": name });
+        }
+        else {
+          body = JSON.stringify({ "name": name, "image": cid.path, "description": description });
+        }
+
+        cidMeta = await client.add(body)
       } catch (error) {
         this.logger.error('Error adding file to IPFS:', error);
         throw new Error('Failed to add file to IPFS');
@@ -46,41 +63,30 @@ export class CollectionCreator {
 
     const url = this.configService.get("NFT_MODULE_URL");
 
-    let body = null;
+
     if (cid == null) {
       body = JSON.stringify({
         "owner": address,
-        "meta": {
-          "name": name,
-          "metadata": description
-        },
+        "metadata": cidMeta.path
       });
     }
     else if (description == null) {
       body = JSON.stringify({
         "owner": address,
-        "meta": {
-          "name": name,
-          "image": cid.path
-        },
+        "metadata": cidMeta.path
+
       });
     }
     else if (description == null && cid == null) {
       body = JSON.stringify({
         "owner": address,
-        "meta": {
-          "name": name
-        },
+        "metadata": cidMeta.path
       });
     }
     else {
       body = JSON.stringify({
         "owner": address,
-        "meta": {
-          "name": name,
-          "metadata": description,
-          "image": cid.path
-        },
+        "metadata": cidMeta.path
       });
     }
 

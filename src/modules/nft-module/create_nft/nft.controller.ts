@@ -13,7 +13,7 @@ export class NftController {
   async nftCreate(@Param("artworkId") artworkId: string, @Body() form: NftDto, @UserId() userId: string): Promise<NFTResponseDto> {
     const { address } = form;
     const callData = await this.appService.createNFTCall(artworkId, address, userId);
-    if (callData == null || callData == 'null') {
+    if (callData == null) {
       throw new BadRequestException('An error occurred while creating nft call, please check your parameters');
     }
     else {
@@ -24,7 +24,7 @@ export class NftController {
   @Put('update/artwork/:artworkId')
   async updateNft(@Param("artworkId") artworkId: string, @UserId() userId: string): Promise<NFTResponseDto> {
     const callData = await this.appService.updateNFTCall(artworkId, userId);
-    if (callData == null || callData == 'null') {
+    if (callData == null) {
       throw new BadRequestException('An error occurred while updating nft call, please check your parameters');
     }
     else {

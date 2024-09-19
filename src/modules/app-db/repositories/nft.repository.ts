@@ -118,8 +118,12 @@ export class NftRepository {
     await this.users.save(user);
   }
 
-  async getArtwork(artworkId: string) {
-    return this.artworks.findOneBy({ id: artworkId });
+  async getArtwork(userId: string, artworkId: string) {
+    const artwork = await this.artworks.findOneBy({ id: artworkId });
+    //We check if artwork belongs to user
+    if (artwork && artwork.artist.user.id == userId) {
+      return artwork;
+    }
   }
 
   //Assign user own collection ID
