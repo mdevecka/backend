@@ -134,7 +134,26 @@ export class NftCreator {
   }
 
 
-  async updateNftInDB(artworkId: string, userId: string): Promise<void> {
-    //TBA
+  async updateNftInDB(metadataLink: string, artworkId: string, userId: string): Promise<void> {
+    const artwork = await this.nftRepository.getArtwork(userId, artworkId);
+    if (!artwork) {
+      return null
+    }
+    const nft = await this.nftRepository.getNFT(artwork.nft.id);
+    if (!nft) {
+      return null
+    }
+    const name = artwork.name;
+    //First load metadata from IPFS
+    const metadata = await fetch(`https://ipfs.io/ipfs/${metadataLink}`);
+    const metadataJson = await metadata.json();
+    const image = metadataJson.image;
+
+    //Get nft metadata and update name, metadata, image columns
+    nft.nftData.image = image;
+    nft.nftData.name = name;
+    nft.nftData.metadata = metadataLink;
+    await this.nftRepository.updateNFT(nft.id, nft.nftData);
+
   }
 }

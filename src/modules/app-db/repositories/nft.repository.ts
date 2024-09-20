@@ -64,6 +64,16 @@ export class NftRepository {
     return nft?.nftData
   }
 
+  async getNFT(nftId: string) {
+    return this.nfts.findOneBy({ id: nftId });
+  }
+
+  async updateNFT(nftId: string, nftData: NftData) {
+    const nft = await this.nfts.findOneBy({ id: nftId });
+    nft.nftData = nftData;
+    return this.nfts.save(nft);
+  }
+
   //Creates NFT
   async createNFT(nft_data: NftData, walletId: string, artworkId: string) {
     const wallet = await this.wallets.findOneBy({ id: walletId });
