@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import { Public, UserId } from '@modules/auth/helpers';
+import { Controller, Get, Param, UseGuards, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { AuthGuard, UserId } from '@modules/auth/helpers';
 import { MetaFetcher } from './meta.service';
 
-@Public()
+@UseGuards(AuthGuard)
 @Controller('metadata')
 export class MetaController {
   private readonly logger = new Logger(MetaController.name)
