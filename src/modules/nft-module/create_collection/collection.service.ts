@@ -1,26 +1,20 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
-import { NftRepository } from '@modules/app-db/repositories';
 import { create } from 'ipfs-http-client';
 
 @Injectable()
 export class CollectionCreator {
   private readonly logger = new Logger(CollectionCreator.name)
-  constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>) {
+  constructor(private configService: ConfigService<AppConfig>) {
   }
 
-  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, address: string, userId: string): Promise<string> {
+  async createCollectionCall(file: MemoryStoredFile, name: string, description: string, address: string): Promise<string> {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they have, skip this function and return nothing
     //If they haven't, we create a collection for them
-
-    const user = await this.nftRepo.getUser(userId);
-    if (user.collectionID != null && user.collectionID != 'null') {
-      return null;
-    }
 
     let cid = null
     let cidMeta = null
@@ -99,13 +93,5 @@ export class CollectionCreator {
     });
 
     return await response.json();
-  }
-
-  async updateUserCollectionInDB(userId: string, collectionID: string): Promise<void> {
-    //Save collection ID to user profile once they confirm transaction
-    const response = await this.nftRepo.createUserCollection(userId, collectionID);
-    if (response === null) {
-      throw new BadRequestException('An error occurred while updating database, please check your parameters');
-    }
   }
 }

@@ -9,10 +9,10 @@ import { AuthGuard, UserId } from '@modules/auth/helpers';
 export class NftController {
   constructor(private readonly appService: NftCreator) { }
 
-  @Put('create/artwork/:artworkId')
-  async nftCreate(@Param("artworkId") artworkId: string, @Body() form: NftDto, @UserId() userId: string): Promise<NFTResponseDto> {
+  @Put('create/collection/:collectionId/artwork/:artworkId')
+  async nftCreate(@Param("collectionId") collectionId: string, @Param("artworkId") artworkId: string, @Body() form: NftDto, @UserId() userId: string): Promise<NFTResponseDto> {
     const { address } = form;
-    const callData = await this.appService.createNFTCall(artworkId, address, userId);
+    const callData = await this.appService.createNFTCall(collectionId, artworkId, address, userId);
     if (callData == null) {
       throw new BadRequestException('An error occurred while creating nft call, please check your parameters');
     }

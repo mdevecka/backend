@@ -27,9 +27,6 @@ export class User extends LabeledEntity {
   @Column('boolean', { default: false })
   trialMintClaimed: boolean;
 
-  @Column('text', { nullable: true })
-  collectionID: string;
-
   @OneToMany(() => Wallet, wallet => wallet.user)
   wallets: Wallet[];
 }

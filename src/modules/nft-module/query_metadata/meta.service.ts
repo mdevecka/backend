@@ -11,7 +11,7 @@ export class MetaFetcher {
 
   }
 
-  async fetchMetadata(userID: string, address: string): Promise<Response> {
+  async fetchNFTMetadata(userID: string, address: string): Promise<string> {
     //We will fetch metadata for user and save them to the database, 
     //this call is made each time user loads their profile to see NFTS
     //Returns 200 ok if successful so project can fetch from DB
@@ -21,7 +21,22 @@ export class MetaFetcher {
       `${url}/address/${address}`
     );
 
-    await this.nftRepo.assignNFTsMetadata(userID, address, response)
-    return response;
+    const data = await response.json(); // Read the response body once
+
+    await this.nftRepo.assignNFTsMetadata(userID, address, JSON.stringify(data));
+    return JSON.stringify(data); // Return the stringified JSON data
+  }
+
+  async fetchColMetadata(userID: string, address: string): Promise<string> {
+    const url = this.configService.get("NFT_MODULE_URL");
+
+    const response = await fetch(
+      `${url}/collection/address/${address}`
+    );
+
+    const data = await response.json(); // Read the response body once
+
+    await this.nftRepo.assignColsMetadata(userID, address, JSON.stringify(data));
+    return JSON.stringify(data); // Return the stringified JSON data
   }
 }

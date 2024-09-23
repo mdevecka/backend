@@ -10,4 +10,4 @@ import { AuthModule } from '@modules/auth/auth.module';
   controllers: [MintController],
   providers: [MintCreator],
 })
-export class MintModule { }
+export class MintModule {}

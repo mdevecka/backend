@@ -91,14 +91,37 @@ async function main() {
         }
       ]);
 
+      const collections = await createEntities(entities.Collection, [
+        {
+          wallet: null,
+          colData: {
+            id: "425-8",
+            name: "Random NFT",
+            metadata: "Wow such great NFT",
+            image: "ipfs blabla",
+          },
+        },
+        {
+          wallet: null,
+          colData: {
+            id: "425-9",
+            name: "Random NFT",
+            metadata: "Wow such nice",
+            image: "ipfs blabla",
+          }
+        }
+      ]);
+
       const wallets = await createEntities(entities.Wallet, [
         {
           walletAddress: "0x1234567890",
           nfts: nfts.slice(0, 1),
+          collections: collections.slice(0, 1),
         },
         {
           walletAddress: "0x0987654321",
           nfts: nfts.slice(1, 2),
+          collections: collections.slice(1, 2),
         },
       ]);
 
@@ -111,7 +134,7 @@ async function main() {
           "avatar": getImage("users/avatar-01.jpg"),
           "trialMint": "null",
           "trialMintClaimed": false,
-          "collectionID": "null",
+          wallets: wallets.slice(0, 1),
         },
         {
           "email": "john.snow@winterfell.castle",
@@ -121,7 +144,7 @@ async function main() {
           "avatar": getImage("users/avatar-01.jpg"),
           "trialMint": "null",
           "trialMintClaimed": false,
-          "collectionID": "null",
+          wallets: wallets.slice(1, 2),
         }
       ]);
       const countries = await createEntities(Country, [

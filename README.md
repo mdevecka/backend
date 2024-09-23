@@ -23,19 +23,19 @@ LOG_REQUESTS=true
 # Secret 12/24 word phrase for wallet that will do trialmint
 WALLET_SECRET_KEY= bla bla bla bla bla bla bla bla bla bla bla bla;
 # URL for NFT MODULE
-NFT_MODULE_URL=http://localhost:3000;
+NFT_MODULE_URL=http://localhost:3000
 # Hardcoded collection ID that will be used for trial mint
 EVA_GALLERY_COLLECTION=1;
 # IPFS node URL address
-IPFS_URL=http://147.1.1.0;
+IPFS_URL=http://147.1.1.0
 # IPFS node user name authentification
-IPFS_NAME=ipfsnode;
+IPFS_NAME=ipfsnode
 # IPFS node password authentification
-IPFS_PASSWORD=ipfspass;
+IPFS_PASSWORD=ipfspass
 # Provider for blockchain interaction
-WSS_PROVIDER=wss://kusama-asset-hub-rpc.polkadot.io;
+WSS_PROVIDER=wss://kusama-asset-hub-rpc.polkadot.io
 # Eva gallery wallet address
-EVA_GALLERY_WALLET_ADDRESS=DdiySauWxbBeQxUaHzFETA7qhzY53aFiENACtYZQ3Cno127;
+EVA_GALLERY_WALLET_ADDRESS=DdiySauWxbBeQxUaHzFETA7qhzY53aFiENACtYZQ3Cno127
 ```
 
 ## migrations
