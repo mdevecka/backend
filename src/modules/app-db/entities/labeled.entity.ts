@@ -14,6 +14,8 @@ export abstract class LabeledEntity extends BaseEntity {
   @BeforeInsert()
   @BeforeUpdate()
   updateLabel() {
+    if (this.name == null)
+      return;
     this.label = slugify(this.name, { lower: true });
   }
 

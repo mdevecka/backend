@@ -6,7 +6,7 @@ import { Nft } from './nft.entity';
 @Entity()
 export class Wallet extends BaseEntity {
 
-  @ManyToOne(() => User, user => user.wallets)
+  @ManyToOne(() => User, user => user.wallets, { onDelete: 'CASCADE' })
   user: User;
 
   @Column({ nullable: true })

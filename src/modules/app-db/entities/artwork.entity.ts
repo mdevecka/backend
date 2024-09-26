@@ -27,6 +27,7 @@ async function createThumbnail(image: Buffer) {
 const unityTextureSize = 2048;
 
 @Entity()
+@Index(['name', 'artistId'], { unique: true })
 @Index(['label', 'artistId'], { unique: true })
 export class Artwork extends LabeledEntity {
 
@@ -35,7 +36,7 @@ export class Artwork extends LabeledEntity {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @ManyToOne(() => Artist)
+  @ManyToOne(() => Artist, { onDelete: 'CASCADE' })
   artist: Artist;
 
   @Column({ nullable: true })
@@ -83,16 +84,16 @@ export class Artwork extends LabeledEntity {
   @Column({ nullable: true })
   artworkWorktypeId: string;
 
-  @ManyToMany(() => Exhibition, ex => ex.artworks)
+  @ManyToMany(() => Exhibition, ex => ex.artworks, { onDelete: 'CASCADE' })
   exhibitions: Exhibition[];
 
   @Column('text')
   measurements: string;
 
-  @Column('integer')
+  @Column('integer', { nullable: true })
   width: number;
 
-  @Column('integer')
+  @Column('integer', { nullable: true })
   height: number;
 
   @Column({ type: 'boolean', default: true })
@@ -122,10 +123,10 @@ export class Artwork extends LabeledEntity {
         this.width = imageInfo.width;
         this.height = imageInfo.height;
       } else {
-        this.thumbnail = { buffer: null, mimeType: null };
-        this.unityImage = { buffer: null, mimeType: null };
-        this.width = 0;
-        this.height = 0;
+        this.thumbnail = Image.empty;
+        this.unityImage = Image.empty;
+        this.width = null;
+        this.height = null;
       }
       this._lastImage = buffer;
     }

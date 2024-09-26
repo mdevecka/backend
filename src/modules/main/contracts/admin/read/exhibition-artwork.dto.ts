@@ -1,4 +1,4 @@
-import { OptionDto } from './option.dto';
+import { OptionDto } from '@common/helpers';
 
 export interface ExhibitionArtworkDto {
   id: string;

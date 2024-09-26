@@ -19,7 +19,7 @@ import { DesignerLibraryItemDto } from './designer-library-item.dto';
 import { NftDto } from './nft.dto';
 import { NftDetailDto } from './nft-detail.dto';
 import { CountryDto } from './country.dto';
-import { OptionDto } from './option.dto';
+import { OptionDto } from '@common/helpers';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, UnityRoom, UnityItemType, Nft,
 } from '@modules/app-db/entities';

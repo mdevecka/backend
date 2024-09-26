@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 import { AppDbModule, AuthModule } from '@modules/.';
-import { AdminController } from './controllers';
+import { AdminLoginController, AdminReadController, AdminWriteController } from './controllers';
 
 @Module({
-  imports: [AppDbModule, AuthModule],
-  controllers: [AdminController],
+  imports: [AppDbModule, AuthModule, NestjsFormDataModule],
+  controllers: [AdminLoginController, AdminReadController, AdminWriteController],
   providers: [],
 })
 export class MainModule { }

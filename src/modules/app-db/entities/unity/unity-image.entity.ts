@@ -15,13 +15,13 @@ export class UnityImage extends BaseEntity {
   @Column('float')
   scale: number;
 
-  @ManyToOne(() => Artwork)
+  @ManyToOne(() => Artwork, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   artwork: Artwork;
 
   @Column({ nullable: true })
   artworkId: string;
 
-  @ManyToOne(() => UnityWall, wall => wall.images)
+  @ManyToOne(() => UnityWall, wall => wall.images, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   wall: UnityWall;
 
 }

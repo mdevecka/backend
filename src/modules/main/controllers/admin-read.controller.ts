@@ -1,38 +1,15 @@
-import { Controller, Get, Post, Param, NotFoundException, Response, ParseUUIDPipe, UseGuards, Body } from '@nestjs/common';
+import { Controller, Get, Param, NotFoundException, Response, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { AdminRepository } from '@modules/app-db/repositories';
-import { AuthService } from '@modules/auth/services';
-import { AuthGuard, SESSION_COOKIE, UserId, SessionId, Public } from '@modules/auth/helpers';
-import { OptionDto, LoginDto } from '../contracts/admin';
-import * as mapper from '../contracts/admin/mapper';
-
-function mapAsync<T, S>(list: Promise<T[]>, mapper: (item: T) => S): Promise<S[]> {
-  return list.then(items => items.map(mapper));
-}
-
-function mapOptionsAsync(list: Promise<{ id: string, name: string }[]>): Promise<OptionDto[]> {
-  return mapAsync(list, mapper.createOptionDto);
-}
+import { AuthGuard, UserId } from '@modules/auth/helpers';
+import { mapAsync, mapOptionsAsync } from '@common/helpers';
+import * as mapper from '../contracts/admin/read/mapper';
 
 @UseGuards(AuthGuard)
 @Controller('admin')
-export class AdminController {
+export class AdminReadController {
 
-  constructor(private adminRepository: AdminRepository, private authService: AuthService) {
-  }
-
-  @Public()
-  @Post('login')
-  async login(@Body() login: LoginDto, @Response({ passthrough: true }) res: ExpressResponse) {
-    const sessionId = await this.authService.login(login.email, login.password);
-    res.cookie(SESSION_COOKIE, sessionId, { httpOnly: true, secure: true, sameSite: "strict" });
-    return { sessionId };
-  }
-
-  @Post('logout')
-  async logout(@SessionId() sessionId: string, @Response({ passthrough: true }) res: ExpressResponse) {
-    res.clearCookie(SESSION_COOKIE);
-    await this.authService.logout(sessionId);
+  constructor(private adminRepository: AdminRepository) {
   }
 
   @Get('user')
@@ -107,26 +84,36 @@ export class AdminController {
 
   @Get('artwork/:id/exhibition')
   async getArtworkExhibitions(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    if (!await this.adminRepository.hasArtwork(userId, id))
+      throw new NotFoundException();
     return mapAsync(this.adminRepository.getArtworkExhibitions(userId, id), mapper.createArtworkExhibitionDto);
   }
 
   @Get('exhibition/:id/artwork')
   async getExhibitionArtworks(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    if (!await this.adminRepository.hasExhibition(userId, id))
+      throw new NotFoundException();
     return mapAsync(this.adminRepository.getExhibitionArtworks(userId, id), mapper.createExhibitionArtworkDto);
   }
 
   @Get('exhibition/:id/room')
   async getExhibitionRooms(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    if (!await this.adminRepository.hasExhibition(userId, id))
+      throw new NotFoundException();
     return mapAsync(this.adminRepository.getExhibitionRooms(userId, id), mapper.createExhibitionRoomDto);
   }
 
   @Get('artist/:id/artwork')
   async getArtistArtworks(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    if (!await this.adminRepository.hasArtist(userId, id))
+      throw new NotFoundException();
     return mapAsync(this.adminRepository.getArtistArtworks(userId, id), mapper.createArtistArtworkDto);
   }
 
   @Get('gallery/:id/exhibition')
   async getGalleryExhibitions(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+    if (!await this.adminRepository.hasGallery(userId, id))
+      throw new NotFoundException();
     return mapAsync(this.adminRepository.getGalleryExhibitions(userId, id), mapper.createGalleryExhibitionDto);
   }
 

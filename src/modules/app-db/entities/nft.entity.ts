@@ -16,7 +16,7 @@ export class Nft extends BaseEntity {
   @OneToOne(() => Artwork, artwork => artwork.nft)
   artwork: Artwork;
 
-  @ManyToOne(() => Wallet, wallet => wallet.nfts)
+  @ManyToOne(() => Wallet, wallet => wallet.nfts, { onDelete: 'CASCADE' })
   wallet: Wallet;
 
   @Column({ nullable: true })

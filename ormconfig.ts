@@ -5,9 +5,10 @@ import { NestFactory } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
+import { filterEntities } from '@common/helpers';
 import * as entities from '@modules/app-db/entities';
 
-const allEntities = Object.values(entities).filter(e => e instanceof Function);
+const allEntities = filterEntities(Object.values(entities));
 
 @Module({
   imports: [

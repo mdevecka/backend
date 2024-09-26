@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminRepository, NftRepository } from './repositories';
+import { filterEntities } from '@common/helpers';
 import * as entities from './entities';
 
-const allEntities = Object.values(entities).filter(e => e instanceof Function);
+const allEntities = filterEntities(Object.values(entities));
 
 @Module({
   imports: [TypeOrmModule.forFeature(allEntities)],

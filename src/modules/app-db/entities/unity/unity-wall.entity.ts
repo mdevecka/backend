@@ -34,16 +34,16 @@ export class UnityWall extends BaseEntity {
   @Column('float', { default: 1 })
   opacity: number;
 
-  @ManyToOne(() => Artwork)
+  @ManyToOne(() => Artwork, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   artwork: Artwork;
 
   @Column({ nullable: true })
   artworkId: string;
 
-  @ManyToOne(() => UnityRoom, room => room.walls)
+  @ManyToOne(() => UnityRoom, room => room.walls, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   room: UnityRoom;
 
-  @OneToMany(() => UnityImage, image => image.wall)
+  @OneToMany(() => UnityImage, image => image.wall, { cascade: ['insert', 'update'] })
   images: UnityImage[];
 
 }

@@ -20,7 +20,7 @@ export class UnityLamp extends BaseEntity {
   @Column('boolean')
   shadow: boolean;
 
-  @ManyToOne(() => UnityRoom, room => room.lamps)
+  @ManyToOne(() => UnityRoom, room => room.lamps, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   room: UnityRoom;
 
 }

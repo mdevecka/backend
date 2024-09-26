@@ -26,19 +26,19 @@ export class UnityRoom extends BaseEntity {
   @Column('float')
   length: number;
 
-  @ManyToOne(() => Exhibition)
+  @ManyToOne(() => Exhibition, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   exhibition: Exhibition;
 
   @Column({ nullable: true })
   exhibitionId: string;
 
-  @OneToMany(() => UnityWall, wall => wall.room)
+  @OneToMany(() => UnityWall, wall => wall.room, { cascade: ['insert', 'update'] })
   walls: UnityWall[];
 
-  @OneToMany(() => UnityLamp, lamp => lamp.room)
+  @OneToMany(() => UnityLamp, lamp => lamp.room, { cascade: ['insert', 'update'] })
   lamps: UnityLamp[];
 
-  @OneToMany(() => UnityItem, item => item.room)
+  @OneToMany(() => UnityItem, item => item.room, { cascade: ['insert', 'update'] })
   items: UnityItem[];
 
 }

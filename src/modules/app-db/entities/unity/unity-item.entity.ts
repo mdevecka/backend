@@ -24,7 +24,7 @@ export class UnityItem extends BaseEntity {
   @Column({ nullable: true })
   itemTypeId: string;
 
-  @ManyToOne(() => UnityRoom, room => room.items)
+  @ManyToOne(() => UnityRoom, room => room.items, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   room: UnityRoom;
 
 }

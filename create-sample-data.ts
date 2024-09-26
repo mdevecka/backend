@@ -8,6 +8,7 @@ import { TypeOrmModule, InjectRepository, getRepositoryToken } from '@nestjs/typ
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { Repository, DataSource, DeepPartial, getMetadataArgsStorage } from 'typeorm';
 import { AppConfig } from '@common/config';
+import { filterEntities } from '@common/helpers';
 import {
   BaseEntity, User, Country, Artist, ArtistCategory, Artwork, ArtworkGenre, ArtworkMaterial,
   ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition, Nft,
@@ -15,7 +16,7 @@ import {
 } from '@modules/app-db/entities';
 import * as entities from '@modules/app-db/entities';
 
-const allEntities = Object.values(entities).filter(e => e instanceof Function);
+const allEntities = filterEntities(Object.values(entities));
 
 const imageRootPath = "../frontend/public";
 const imageCache = new Map<string, Buffer>();
