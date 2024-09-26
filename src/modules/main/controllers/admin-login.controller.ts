@@ -19,14 +19,6 @@ export class AdminLoginController {
     return { sessionId };
   }
 
-  @Public()
-  @Get('auto-login')
-  async autoLogin(@Response({ passthrough: true }) res: ExpressResponse) {
-    const sessionId = await this.authService.login("lubo@ivancak.sk", "test");
-    res.cookie(SESSION_COOKIE, sessionId, { httpOnly: true, secure: true, sameSite: "strict" });
-    return { sessionId };
-  }
-
   @Post('logout')
   async logout(@SessionId() sessionId: string, @Response({ passthrough: true }) res: ExpressResponse) {
     res.clearCookie(SESSION_COOKIE);
