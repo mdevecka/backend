@@ -142,6 +142,12 @@ export class NftRepository {
     await this.users.save(user);
   }
 
+  async payTrialMint(userId: string) {
+    const user = await this.users.findOneBy({ id: userId });
+    user.trialMintPaid = true;
+    await this.users.save(user);
+  }
+
   async getArtwork(userId: string, artworkId: string) {
     // Include userId condition directly in the findOneBy query
     const artwork = await this.artworks.findOne({

@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
-import { create } from 'ipfs-http-client';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 
 @Injectable()
@@ -21,42 +20,18 @@ export class NftCreator {
       return null
     }
 
-    let cid = null
-    let metadataCid = null
+    //Create metadata
+    const description = JSON.stringify({
+      description: artwork.description,
+      artist: artwork.artist,
+      year: artwork.year,
+      artworkGenre: artwork.artworkGenre,
+      artworkMaterial: artwork.artworkMaterial,
+      artworkTechnique: artwork.artworkTechnique,
+      artworkWorktype: artwork.artworkWorktype,
+      measurements: artwork.measurements,
+    });
 
-
-    try {
-      const IPFS_NODE_URL = this.configService.get("IPFS_URL");
-      const username = this.configService.get("IPFS_NAME");
-      const password = this.configService.get("IPFS_PASSWORD");
-
-      //Create metadata
-      const description = JSON.stringify({
-        description: artwork.description,
-        artist: artwork.artist,
-        year: artwork.year,
-        artworkGenre: artwork.artworkGenre,
-        artworkMaterial: artwork.artworkMaterial,
-        artworkTechnique: artwork.artworkTechnique,
-        artworkWorktype: artwork.artworkWorktype,
-        measurements: artwork.measurements,
-      });
-
-      const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
-      const client = create({
-        url: IPFS_NODE_URL,
-        headers: {
-          authorization: auth,
-        },
-      });
-      cid = await client.add(artwork.image.buffer);
-      const metadata = JSON.stringify({ "name": artwork.name, "image": cid.path, "description": description });
-
-      metadataCid = await client.add(metadata);
-    } catch (error) {
-      this.logger.error('Error adding file to IPFS:', error);
-      throw new Error('Failed to add file to IPFS');
-    }
 
     const url = this.configService.get("NFT_MODULE_URL");
 
@@ -66,8 +41,10 @@ export class NftCreator {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "author": address,
-        "metadata": metadataCid.path,
+        "owner": address,
+        "file": artwork.image,
+        "name": artwork.name,
+        "metadata": description
       })
     });
     return await response.json();
@@ -80,40 +57,17 @@ export class NftCreator {
       return null
     }
 
-    let cid = null
-    let metadataCid = null
-
-    try {
-      const IPFS_NODE_URL = this.configService.get("IPFS_URL");
-      const username = this.configService.get("IPFS_NAME");
-      const password = this.configService.get("IPFS_PASSWORD");
-
-      //Create metadata
-      const description = JSON.stringify({
-        description: artwork.description,
-        artist: artwork.artist,
-        year: artwork.year,
-        artworkGenre: artwork.artworkGenre,
-        artworkMaterial: artwork.artworkMaterial,
-        artworkTechnique: artwork.artworkTechnique,
-        artworkWorktype: artwork.artworkWorktype,
-        measurements: artwork.measurements,
-      });
-
-      const auth = 'Basic ' + Buffer.from(username + ':' + password).toString('base64');
-      const client = create({
-        url: IPFS_NODE_URL,
-        headers: {
-          authorization: auth,
-        },
-      });
-      cid = await client.add(artwork.image.buffer);
-      const metadata = JSON.stringify({ "name": artwork.name, "image": cid.path, "description": description });
-
-      metadataCid = await client.add(metadata);
-    } catch (error) {
-      this.logger.error('Error adding file to IPFS:', error);
-    }
+    //Create metadata
+    const description = JSON.stringify({
+      description: artwork.description,
+      artist: artwork.artist,
+      year: artwork.year,
+      artworkGenre: artwork.artworkGenre,
+      artworkMaterial: artwork.artworkMaterial,
+      artworkTechnique: artwork.artworkTechnique,
+      artworkWorktype: artwork.artworkWorktype,
+      measurements: artwork.measurements,
+    });
 
     const url = this.configService.get("NFT_MODULE_URL");
 
@@ -125,7 +79,9 @@ export class NftCreator {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        "metadata": metadataCid.path,
+        "file": artwork.image,
+        "name": artwork.name,
+        "metadata": description
       })
     });
     return await response.json();
