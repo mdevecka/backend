@@ -14,21 +14,20 @@ export class CollectionCreator {
     //If they have, skip this function and return nothing
     //If they haven't, we create a collection for them
 
-    const body = {
-      file: file,
-      name: name,
-      metadata: description,
-      owner: address
-    }
+    const formData = new FormData();
+    const fileBlob = new Blob([file.buffer], { type: file.mimetype });
+
+    // Append fields and files to the FormData object
+    formData.append('file', fileBlob);          // Ensure 'file' is a File or Blob object
+    formData.append('name', name);
+    formData.append('metadata', description);
+    formData.append('owner', address);
 
     const url = this.configService.get("NFT_MODULE_URL");
 
-    const response = await fetch(`${url}/collection`, {
+    const response = await fetch(`${url}/collection/create`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
+      body: formData
     });
 
     return await response.json();

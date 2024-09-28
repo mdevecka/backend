@@ -20,11 +20,9 @@ export class MetaFetcher {
     const url = this.configService.get("NFT_MODULE_URL");
 
     const response = await fetch(
-      `${url}/address/${address}`
+      `${url}/metadata/nft/address/${address}`
     );
-
     const data: NFT[] = await response.json();
-
     await this.nftRepo.assignNFTsMetadata(userID, address, data);
     return data;
   }
@@ -33,7 +31,7 @@ export class MetaFetcher {
     const url = this.configService.get("NFT_MODULE_URL");
 
     const response = await fetch(
-      `${url}/collection/address/${address}`
+      `${url}/metadata/collection/address/${address}`
     );
 
     const data: COLLECTION[] = await response.json();

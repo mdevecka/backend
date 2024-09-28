@@ -25,5 +25,5 @@ export class Nft extends BaseEntity {
 
   // Define the inverse one-to-one relationship with User
   @OneToOne(() => User, user => user.trialMint)
-  trialMintUser: User;
+  user: User;
 }

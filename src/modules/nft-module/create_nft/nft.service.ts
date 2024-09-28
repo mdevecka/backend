@@ -22,7 +22,7 @@ export class NftCreator {
     //Create metadata
     const description = JSON.stringify({
       description: artwork.description,
-      artist: artwork.artist,
+      artist: artwork.artist.name,
       year: artwork.year,
       artworkGenre: artwork.artworkGenre,
       artworkMaterial: artwork.artworkMaterial,
@@ -34,17 +34,18 @@ export class NftCreator {
 
     const url = this.configService.get("NFT_MODULE_URL");
 
+    const formData = new FormData();
+    const fileBlob = new Blob([artwork.image.buffer], { type: artwork.image.mimeType });
+
+    // Append fields and files to the FormData object
+    formData.append('file', fileBlob);
+    formData.append('name', artwork.name);
+    formData.append('metadata', description);
+    formData.append('owner', address);
+
     const response = await fetch(`${url}/collection/${collectionID}/asset`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "owner": address,
-        "file": artwork.image,
-        "name": artwork.name,
-        "metadata": description
-      })
+      body: formData
     });
     return await response.json();
   }
@@ -59,7 +60,7 @@ export class NftCreator {
     //Create metadata
     const description = JSON.stringify({
       description: artwork.description,
-      artist: artwork.artist,
+      artist: artwork.artist.name,
       year: artwork.year,
       artworkGenre: artwork.artworkGenre,
       artworkMaterial: artwork.artworkMaterial,
@@ -72,16 +73,18 @@ export class NftCreator {
 
     const colAndArtId = artwork.nft.nftData.id;
 
+
+    const formData = new FormData();
+    const fileBlob = new Blob([artwork.image.buffer], { type: artwork.image.mimeType });
+
+    // Append fields and files to the FormData object
+    formData.append('file', fileBlob);          // Ensure 'file' is a File or Blob object
+    formData.append('name', artwork.name);
+    formData.append('metadata', description);
+
     const response = await fetch(`${url}/update/asset/${colAndArtId}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "file": artwork.image,
-        "name": artwork.name,
-        "metadata": description
-      })
+      body: formData
     });
     return await response.json();
   }

@@ -23,36 +23,37 @@ export class MintCreator {
 
     const url = this.configService.get("NFT_MODULE_URL");
 
-      //Create metadata
-      const description = JSON.stringify({
-        description: artwork.description,
-        artist: artwork.artist,
-        year: artwork.year,
-        artworkGenre: artwork.artworkGenre,
-        artworkMaterial: artwork.artworkMaterial,
-        artworkTechnique: artwork.artworkTechnique,
-        artworkWorktype: artwork.artworkWorktype,
-        measurements: artwork.measurements,
-      });
+    //Create metadata
+    const description = JSON.stringify({
+      description: artwork.description,
+      artist: artwork.artist.name,
+      year: artwork.year,
+      artworkGenre: artwork.artworkGenre,
+      artworkMaterial: artwork.artworkMaterial,
+      artworkTechnique: artwork.artworkTechnique,
+      artworkWorktype: artwork.artworkWorktype,
+      measurements: artwork.measurements,
+    });
+
+    const formData = new FormData();
+    const fileBlob = new Blob([artwork.image.buffer], { type: artwork.image.mimeType });
+
+    // Append fields and files to the FormData object
+    formData.append('file', fileBlob);
+    formData.append('name', artwork.name);
+    formData.append('metadata', description);
 
     const response = await fetch(`${url}/trial/mint`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "file": artwork.image,
-        "name": artwork.name,
-        "metadata": description
-      })
+      body: formData
     });
 
     const collectionID = this.configService.get("EVA_GALLERY_COLLECTION");
     const EvaGalleryWalletAddress = this.configService.get("EVA_GALLERY_WALLET_ADDRESS");
 
-    const { nftId, metadataCid, cid  } = await response.json();
+    const { nftId, metadataCid, cid } = await response.json();
 
-    if( nftId != null || metadataCid != null || cid != null) {
+    if (nftId != null || metadataCid != null || cid != null) {
 
       const nft: NftData = {
         id: `${collectionID}-${nftId}`,
@@ -64,6 +65,6 @@ export class MintCreator {
 
       await this.nftRepository.trialMint(user.id, artworkId, nft, EvaGalleryWalletAddress)
       return;
-     } 
+    }
   }
 }

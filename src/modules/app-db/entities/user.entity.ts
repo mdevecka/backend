@@ -22,9 +22,9 @@ export class User extends LabeledEntity {
   @Column({ type: 'text', nullable: true })
   avatarUrlTemp: string;
 
-  @OneToOne(() => Nft, nft => nft.trialMintUser, { nullable: true }) // Add nullable to maintain current behavior
-  @JoinColumn({ name: 'trialMint' }) // Ensure trialMint references Nft ID
-  trialMint: Nft; // Modify type to Nft instead of string
+  @OneToOne(() => Nft, nft => nft.user)
+  @JoinColumn()
+  trialMint: Nft;
 
   @Column('boolean', { default: false })
   trialMintClaimed: boolean;
