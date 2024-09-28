@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import '@polkadot/api-augment';
 import { SwapDto } from './dto/SwapDto';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';

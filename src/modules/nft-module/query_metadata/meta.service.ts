@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';

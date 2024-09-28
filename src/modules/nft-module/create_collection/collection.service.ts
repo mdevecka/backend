@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { MemoryStoredFile } from 'nestjs-form-data';
