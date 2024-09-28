@@ -18,7 +18,7 @@ export class SwapCreator {
     const user = await this.nftRepo.getUserByWallet(swapData.address);
 
     //These checks might need to be changed in the future when we allow users to transfer ownership within APP.
-    if (!user || user.trialMintClaimed == true || user.trialMint == null || user.trialMint == 'null' || user.id != userId) {
+    if (!user || user.trialMintClaimed == true || user.trialMint == null || user.id != userId) {
       return null;
     }
 
@@ -46,7 +46,7 @@ export class SwapCreator {
     const user = await this.nftRepo.getUserByWallet(address);
 
     //These checks might need to be changed in the future when we allow users to transfer ownership within APP.
-    if (!user || user.trialMintClaimed == true || user.trialMint == null || user.trialMint == 'null' || user.id != userId) {
+    if (!user || user.trialMintClaimed == true || user.trialMint == null || user.id != userId) {
       return null;
     }
 
@@ -54,7 +54,7 @@ export class SwapCreator {
     const nft = await this.nftRepo.getWalletNFTs(EvaGalleryWalletAddress);
 
     for (let i = 0; i < nft.length; i++) {
-      if (nft[i].id == user.trialMint) {
+      if (nft[i] == user.trialMint) {
         await this.nftRepo.changeOwner(nft[i], address);
         await this.nftRepo.claimTrialMint(user.id);
         return;

@@ -2,7 +2,7 @@ import { Entity, Column, ManyToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Wallet } from './wallet.entity';
 
-export interface colData {
+export interface ColData {
   id: string;
   name: string;
   metadata: string;
@@ -16,5 +16,5 @@ export class Collection extends BaseEntity {
   wallet: Wallet;
 
   @Column({ type: 'jsonb', unique: true })
-  colData: colData;
+  colData: ColData;
 }

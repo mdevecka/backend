@@ -1,6 +1,7 @@
-import { Entity, Column, Index, OneToMany } from 'typeorm';
+import { Entity, Column, Index, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Wallet } from './wallet.entity';
+import { Nft } from './nft.entity';
 
 @Entity()
 export class User extends LabeledEntity {
@@ -21,8 +22,9 @@ export class User extends LabeledEntity {
   @Column({ type: 'text', nullable: true })
   avatarUrlTemp: string;
 
-  @Column('text', { nullable: true })
-  trialMint: string;
+  @OneToOne(() => Nft, nft => nft.trialMintUser, { nullable: true }) // Add nullable to maintain current behavior
+  @JoinColumn({ name: 'trialMint' }) // Ensure trialMint references Nft ID
+  trialMint: Nft; // Modify type to Nft instead of string
 
   @Column('boolean', { default: false })
   trialMintClaimed: boolean;

@@ -132,7 +132,7 @@ async function main() {
           "name": "Ľubo Ivančák",
           "description": "<p>grafik, programátor, tvorca počítačových hier</p>",
           "avatar": getImage("users/avatar-01.jpg"),
-          "trialMint": "null",
+          "trialMint": nfts[0],
           "trialMintClaimed": false,
           wallets: wallets.slice(0, 1),
         },
@@ -142,7 +142,7 @@ async function main() {
           "name": "John Snow",
           "description": "Lord Commander of the Night's Watch",
           "avatar": getImage("users/avatar-01.jpg"),
-          "trialMint": "null",
+          "trialMint": nfts[1],
           "trialMintClaimed": false,
           wallets: wallets.slice(1, 2),
         }

@@ -12,7 +12,7 @@ export class NftCreator {
 
   }
 
-  async createNFTCall(collectionID: string ,artworkId: string, address: string, userId: string): Promise<string> {
+  async createNFTCall(collectionID: string, artworkId: string, address: string, userId: string): Promise<string> {
     //We check in database if user have already created a collection (If there is collection ID in their user profile)
     //If they didnt return null and do nothing
 
