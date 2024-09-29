@@ -88,15 +88,8 @@ export class SwapCreator {
       return null;
     }
 
-    const EvaGalleryWalletAddress = this.configService.get("EVA_GALLERY_WALLET_ADDRESS");
-    const nft = await this.nftRepo.getWalletNFTs(EvaGalleryWalletAddress);
-
-    for (let i = 0; i < nft.length; i++) {
-      if (nft[i] == user.trialMint) {
-        await this.nftRepo.changeOwner(nft[i], address);
-        await this.nftRepo.claimTrialMint(user.id);
-        return;
-      }
-    }
+    await this.nftRepo.changeOwner(user.trialMint, address);
+    await this.nftRepo.claimTrialMint(user.id);
+    return;
   }
 }

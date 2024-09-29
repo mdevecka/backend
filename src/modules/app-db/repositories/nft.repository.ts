@@ -6,8 +6,8 @@ import {
   NftData,
   Collection
 } from '../entities';
-import { NFT } from '@modules/nft-module/query_metadata/interface/NftInterface';
-import { COLLECTION } from '@modules/nft-module/query_metadata/interface/ColInterface';
+import { NftInterface } from '@modules/nft-module/query_metadata/interface/NftInterface';
+import { CollectionInterface } from '@modules/nft-module/query_metadata/interface/ColInterface';
 
 @Injectable()
 export class NftRepository {
@@ -190,7 +190,7 @@ export class NftRepository {
 
 
   /// Assigns metadata that was queried from API
-  async assignNFTsMetadata(userId: string, walletAddress: string, nfts: NFT[]) {
+  async assignNFTsMetadata(userId: string, walletAddress: string, nfts: NftInterface[]) {
     // Create new Wallet in DB if it doesn't exist
     let wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
     if (!wallet) {
@@ -235,7 +235,7 @@ export class NftRepository {
   }
 
   /// Assigns metadata that was queried from API
-  async assignColsMetadata(userId: string, walletAddress: string, cols: COLLECTION[]) {
+  async assignColsMetadata(userId: string, walletAddress: string, cols: CollectionInterface[]) {
     // Create new Wallet in DB if it doesn't exist
     let wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
     if (!wallet) {
