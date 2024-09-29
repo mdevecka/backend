@@ -2,9 +2,9 @@ import { Controller, Body, Param, Put, BadRequestException, UseGuards, Get } fro
 import { SwapCreator } from './swap.service';
 import { SwapDto } from './dto/SwapDto';
 import { SwapResponseDto } from './dto/SwapResponseDto';
-import { AuthGuard, Public, UserId } from '@modules/auth/helpers';
+import { AuthGuard, UserId } from '@modules/auth/helpers';
 
-@Public()
+@UseGuards(AuthGuard)
 @Controller('ownership')
 export class SwapController {
   constructor(private readonly appService: SwapCreator) { }
@@ -15,8 +15,7 @@ export class SwapController {
     @Param("collectionID") collectionID: string,
     @UserId() userId: string,
     @Param("assetID") assetID: string): Promise<SwapResponseDto> {
-    const userid = "7295bd82-7b78-445a-882e-cd9b9a3fb35a"
-    const callData = await this.appService.createSwapCall(swapData, collectionID, assetID, userid);
+    const callData = await this.appService.createSwapCall(swapData, collectionID, assetID, userId);
     if (callData == null || callData == 'null') {
       throw new BadRequestException('An error occurred while creating swap call, please check your parameters');
 
