@@ -1,4 +1,4 @@
-import { Controller, Body, Param, Put, BadRequestException, UseGuards } from '@nestjs/common';
+import { Controller, Body, Param, Put, BadRequestException, UseGuards, Get } from '@nestjs/common';
 import { SwapCreator } from './swap.service';
 import { SwapDto } from './dto/SwapDto';
 import { SwapResponseDto } from './dto/SwapResponseDto';
@@ -23,6 +23,17 @@ export class SwapController {
     else {
       return { callData }
     }
+  }
+
+  @Get('payment/ownership/:accountAddress')
+  async getPayment(
+    @Param("accountAddress") accountAddress: string, @UserId() userId: string,
+  ): Promise<SwapResponseDto> {
+    const callData = await this.appService.getPayCall(accountAddress, userId);
+    if (callData === null) {
+      throw new BadRequestException('An error occurred while updating database, please check your parameters');
+    }
+    return { callData }
   }
 
   @Put('updateDB/account/:accountAddress')

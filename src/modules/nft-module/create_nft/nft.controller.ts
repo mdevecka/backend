@@ -1,7 +1,6 @@
-import { Controller, Body, Put, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Body, Put, UseGuards, BadRequestException, Param } from '@nestjs/common';
 import { NftCreator } from './nft.service';
 import { NftDto } from './dto/NFTDto';
-import { FormDataRequest } from 'nestjs-form-data';
 import { NFTResponseDto } from './dto/NFTResponseDto';
 import { AuthGuard, UserId } from '@modules/auth/helpers';
 
@@ -10,17 +9,28 @@ import { AuthGuard, UserId } from '@modules/auth/helpers';
 export class NftController {
   constructor(private readonly appService: NftCreator) { }
 
-  @Put('create')
-  @FormDataRequest()
-  async formUpload(@Body() form: NftDto, @UserId() userId: string): Promise<NFTResponseDto> {
-    const { file, name, metadata, address } = form;
-    const callData = await this.appService.createNFTCall(file, name, metadata, address, userId);
-    if (callData == null || callData == 'null') {
+  @Put('create/collection/:collectionId/artwork/:artworkId')
+  async nftCreate(@Param("collectionId") collectionId: string, @Param("artworkId") artworkId: string, @Body() form: NftDto, @UserId() userId: string): Promise<NFTResponseDto> {
+    const { address } = form;
+    const callData = await this.appService.createNFTCall(collectionId, artworkId, address, userId);
+    if (callData == null) {
       throw new BadRequestException('An error occurred while creating nft call, please check your parameters');
     }
     else {
       return { callData }
     }
   }
+
+  @Put('update/artwork/:artworkId')
+  async updateNft(@Param("artworkId") artworkId: string, @UserId() userId: string): Promise<NFTResponseDto> {
+    const callData = await this.appService.updateNFTCall(artworkId, userId);
+    if (callData == null) {
+      throw new BadRequestException('An error occurred while updating nft call, please check your parameters');
+    }
+    else {
+      return { callData }
+    }
+  }
+
 
 }

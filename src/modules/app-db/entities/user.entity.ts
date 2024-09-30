@@ -1,6 +1,7 @@
-import { Entity, Column, Index, OneToMany } from 'typeorm';
+import { Entity, Column, Index, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Wallet } from './wallet.entity';
+import { Nft } from './nft.entity';
 import { Image } from './image';
 
 @Entity()
@@ -19,16 +20,16 @@ export class User extends LabeledEntity {
   @Column(() => Image)
   avatar: Image;
 
-  @Column('text', { nullable: true })
-  trialMint: string;
+  @OneToOne(() => Nft, nft => nft.user)
+  @JoinColumn()
+  trialMint: Nft;
 
   @Column('boolean', { default: false })
   trialMintClaimed: boolean;
 
-  @Column('text', { nullable: true })
-  collectionID: string;
+  @Column('boolean', { default: false })
+  trialMintPaid: boolean;
 
   @OneToMany(() => Wallet, wallet => wallet.user)
   wallets: Wallet[];
-
 }

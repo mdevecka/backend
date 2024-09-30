@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import '@polkadot/api-augment';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
+import { NftInterface } from './interface/NftInterface';
+import { CollectionInterface } from './interface/ColInterface';
 
 @Injectable()
 export class MetaFetcher {
@@ -11,17 +12,31 @@ export class MetaFetcher {
 
   }
 
-  async fetchMetadata(userID: string, address: string): Promise<Response> {
+
+  async fetchNFTMetadata(userID: string, address: string): Promise<NftInterface[]> {
     //We will fetch metadata for user and save them to the database, 
     //this call is made each time user loads their profile to see NFTS
     //Returns 200 ok if successful so project can fetch from DB
     const url = this.configService.get("NFT_MODULE_URL");
 
     const response = await fetch(
-      `${url}/address/${address}`
+      `${url}/metadata/nft/address/${address}`
+    );
+    const data: NftInterface[] = await response.json();
+    await this.nftRepo.assignNFTsMetadata(userID, address, data);
+    return data;
+  }
+
+  async fetchColMetadata(userID: string, address: string): Promise<CollectionInterface[]> {
+    const url = this.configService.get("NFT_MODULE_URL");
+
+    const response = await fetch(
+      `${url}/metadata/collection/address/${address}`
     );
 
-    await this.nftRepo.assignNFTsMetadata(userID, address, response)
-    return response;
+    const data: CollectionInterface[] = await response.json();
+
+    await this.nftRepo.assignColsMetadata(userID, address, data);
+    return data;
   }
 }
