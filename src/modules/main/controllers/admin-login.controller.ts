@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Response, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, Response, UseGuards, Body } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { AuthService } from '@modules/auth/services';
 import { AuthGuard, SESSION_COOKIE, SessionId, Public } from '@modules/auth/helpers';

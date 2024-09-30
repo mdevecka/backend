@@ -17,7 +17,7 @@ export class MintCreator {
     const user = await this.nftRepository.getUser(userId);
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
 
-    if (!artwork && user.trialMintClaimed == true && user.trialMint != null) {
+    if (artwork == null && user.trialMintClaimed == true && user.trialMint != null) {
       return null;
     }
 

@@ -15,7 +15,7 @@ export class NftCreator {
     //If they didnt return null and do nothing
 
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
-    if (!artwork) {
+    if (artwork == null) {
       return null
     }
 
@@ -53,7 +53,7 @@ export class NftCreator {
   async updateNFTCall(artworkId: string, userId: string): Promise<string> {
 
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
-    if (!artwork) {
+    if (artwork == null) {
       return null
     }
 
@@ -92,11 +92,11 @@ export class NftCreator {
 
   async updateNftInDB(metadataLink: string, artworkId: string, userId: string): Promise<void> {
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
-    if (!artwork) {
+    if (artwork == null) {
       return null
     }
     const nft = await this.nftRepository.getNFT(artwork.nft.id);
-    if (!nft) {
+    if (nft == null) {
       return null
     }
     const name = artwork.name;

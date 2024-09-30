@@ -15,7 +15,7 @@ export class MetaController {
     @UserId() userId: string) {
     try {
       const data = await this.appService.fetchNFTMetadata(userId, address);
-      if (!data) {
+      if (data == null) {
         throw new BadRequestException('An error occurred while fetching metadata, please check your parameters');
       }
       else {
@@ -34,7 +34,7 @@ export class MetaController {
     @UserId() userId: string) {
     try {
       const data = await this.appService.fetchColMetadata(userId, address);
-      if (!data) {
+      if (data == null) {
         throw new BadRequestException('An error occurred while fetching metadata, please check your parameters');
       }
       else {

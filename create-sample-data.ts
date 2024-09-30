@@ -87,14 +87,36 @@ async function main() {
           }
         }
       ]);
+      const collections = await createEntities(entities.Collection, [
+        {
+          wallet: null,
+          colData: {
+            id: "425-8",
+            name: "Random Col",
+            metadata: "Great collection",
+            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7eey",
+          },
+        },
+        {
+          wallet: null,
+          colData: {
+            id: "425-9",
+            name: "Random Col 2",
+            metadata: "Col metadata",
+            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp722y",
+          }
+        }
+      ]);
       const wallets = await createEntities(entities.Wallet, [
         {
           walletAddress: "0x1234567890",
           nfts: [nfts[0]],
+          collections: [collections[0]],
         },
         {
           walletAddress: "0x0987654321",
           nfts: [nfts[1]],
+          collections: [collections[1]],
         },
       ]);
       const users = await createEntities(User, [

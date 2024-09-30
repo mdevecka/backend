@@ -234,7 +234,7 @@ export class NftRepository {
   async assignColsMetadata(userId: string, walletAddress: string, cols: CollectionInterface[]) {
     // Create new Wallet in DB if it doesn't exist
     let wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
-    if (!wallet) {
+    if (wallet == null) {
       const newWallet = new Wallet();
       newWallet.walletAddress = walletAddress;
       newWallet.user = await this.users.findOneBy({ id: userId });
@@ -243,7 +243,7 @@ export class NftRepository {
     }
 
     // Initialize nfts array if it's not already initialized
-    if (!wallet.collections) {
+    if (wallet.collections == null) {
       wallet.collections = [];
     }
 
@@ -262,7 +262,7 @@ export class NftRepository {
       col.wallet = wallet;
 
       //Check if NFT exists
-      if (await this.collections.findOneBy({ colData: col.colData })) {
+      if (await this.collections.findOneBy({ colData: col.colData }) != null) {
         this.logger.log(`Collection with id ${id} already exists in the database`);
       }
       else {
