@@ -1,19 +1,21 @@
+import { ArtworkId, ExhibitionId, UnityRoomId, UnityWallId, UnityImageId, UnityLampId, UnityItemId, UnityItemTypeId } from '@modules/app-db/entities';
+
 export interface DesignerRoomDto {
-  id: string;
+  id: UnityRoomId;
   name: string;
   x: number;
   y: number;
   width: number;
   height: number;
   length: number;
-  exhibitionId: string;
+  exhibitionId: ExhibitionId;
   walls: DesignerWallDto[];
   lamps: DesignerLampDto[];
   items: DesignerItemDto[];
 }
 
 export interface DesignerWallDto {
-  id: string;
+  id: UnityWallId;
   x: number;
   y: number;
   z: number;
@@ -23,20 +25,20 @@ export interface DesignerWallDto {
   thick: number;
   color: string;
   opacity: number;
-  artworkId: string;
+  artworkId: ArtworkId;
   images: DesignerImageDto[];
 }
 
 export interface DesignerImageDto {
-  id: string;
+  id: UnityImageId;
   x: number;
   y: number;
   scale: number;
-  artworkId: string;
+  artworkId: ArtworkId;
 }
 
 export interface DesignerLampDto {
-  id: string;
+  id: UnityLampId;
   x: number;
   y: number;
   z: number;
@@ -45,10 +47,10 @@ export interface DesignerLampDto {
 }
 
 export interface DesignerItemDto {
-  id: string;
+  id: UnityItemId;
   x: number;
   y: number;
   z: number;
   rotation: number;
-  itemTypeId: string;
+  itemTypeId: UnityItemTypeId;
 }

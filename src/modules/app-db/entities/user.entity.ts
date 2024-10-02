@@ -3,9 +3,14 @@ import { LabeledEntity } from './labeled.entity';
 import { Wallet } from './wallet.entity';
 import { Nft } from './nft.entity';
 import { Image } from './image';
+import { ID } from '@common/helpers';
+
+export type UserId = ID<"User">;
 
 @Entity()
 export class User extends LabeledEntity {
+
+  id: UserId;
 
   @Index()
   @Column('text', { unique: true })

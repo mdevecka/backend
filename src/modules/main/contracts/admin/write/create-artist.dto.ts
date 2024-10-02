@@ -1,5 +1,6 @@
 import { IsString, IsBoolean, IsOptional, IsUUID, IsDateString } from 'class-validator';
 import { CountryExists, ArtistCategoryExists } from '@modules/app-db/validators';
+import { CountryId, ArtistCategoryId } from '@modules/app-db/entities';
 
 export class CreateArtistDto {
 
@@ -19,10 +20,10 @@ export class CreateArtistDto {
 
   @IsUUID()
   @CountryExists()
-  countryId: string;
+  countryId: CountryId;
 
   @IsUUID()
   @ArtistCategoryExists()
-  artistCategoryId: string;
+  artistCategoryId: ArtistCategoryId;
 
 }

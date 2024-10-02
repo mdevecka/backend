@@ -1,5 +1,5 @@
 import { Controller, Get, Param, UseGuards, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
-import { AuthGuard, UserId } from '@modules/auth/helpers';
+import { AuthGuard, GetUserId } from '@modules/auth/helpers';
 import { MetaFetcher } from './meta.service';
 
 @UseGuards(AuthGuard)
@@ -12,7 +12,7 @@ export class MetaController {
   @Get('/nftmeta/address/:address')
   async getNFTMeta(
     @Param("address") address: string,
-    @UserId() userId: string) {
+    @GetUserId() userId: string) {
     try {
       const data = await this.appService.fetchNFTMetadata(userId, address);
       if (data == null) {
@@ -31,7 +31,7 @@ export class MetaController {
   @Get('/colmeta/address/:address')
   async getColMeta(
     @Param("address") address: string,
-    @UserId() userId: string) {
+    @GetUserId() userId: string) {
     try {
       const data = await this.appService.fetchColMetadata(userId, address);
       if (data == null) {

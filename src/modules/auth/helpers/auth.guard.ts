@@ -6,9 +6,12 @@ import { Request as ExpressRequest } from 'express';
 
 export const SESSION_COOKIE = 'SESSION_ID';
 
+export const SessionIdSymbol = Symbol("sessionId");
+export const UserIdSymbol = Symbol("userId");
+
 export interface RequestWithUserInfo extends ExpressRequest {
-  sessionId: string;
-  userId: string;
+  [SessionIdSymbol]: string;
+  [UserIdSymbol]: string;
 }
 
 @Injectable()
@@ -27,8 +30,8 @@ export class AuthGuard implements CanActivate {
     if (userId == null)
       throw new UnauthorizedException();
     await this.authService.refreshSession(sessionId, userId);
-    request.sessionId = sessionId;
-    request.userId = userId;
+    request[SessionIdSymbol] = sessionId;
+    request[UserIdSymbol] = userId;
     return true;
   }
 

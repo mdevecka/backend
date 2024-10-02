@@ -1,6 +1,8 @@
+import { NftId, WalletId, ArtworkId } from '@modules/app-db/entities';
+
 export interface NftDto {
-  id: string;
-  walletId: string;
+  id: NftId;
+  walletId: WalletId;
   nftData: {
     id: string;
     name: string;
@@ -8,7 +10,7 @@ export interface NftDto {
     image: string;
   }
   artwork: {
-    id: string;
+    id: ArtworkId;
     name: string;
     description: string;
     artistId: string;

@@ -1,4 +1,6 @@
+import { UnityItemTypeId } from '@modules/app-db/entities';
+
 export interface DesignerLibraryItemDto {
-  id: string;
+  id: UnityItemTypeId;
   name: string;
 }

@@ -1,5 +1,7 @@
+import { ArtworkId } from '@modules/app-db/entities';
+
 export interface DesignerArtworkDto {
-  id: string;
+  id: ArtworkId;
   src: string;
   width: number;
   height: number;

@@ -19,7 +19,7 @@ export function filterEntities(types: any[]) {
   return types.filter(t => isEntity(t)) as Function[];
 }
 
-export function createOptionDto(entity: { id: string, name: string }): OptionDto {
+export function createOptionDto<T>(entity: { id: T, name: string }): OptionDto<T> {
   return {
     id: entity.id,
     name: entity.name,
@@ -30,7 +30,7 @@ export function mapAsync<T, S>(list: Promise<T[]>, mapper: (item: T) => S): Prom
   return list.then(items => items.map(mapper));
 }
 
-export function mapOptionsAsync(list: Promise<{ id: string, name: string }[]>): Promise<OptionDto[]> {
+export function mapOptionsAsync<T>(list: Promise<{ id: T, name: string }[]>): Promise<OptionDto<T>[]> {
   return mapAsync(list, createOptionDto);
 }
 

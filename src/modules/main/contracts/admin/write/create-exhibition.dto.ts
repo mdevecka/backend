@@ -1,5 +1,6 @@
 import { IsString, IsBoolean, IsOptional, IsUUID, IsDateString, IsArray, ValidateIf } from 'class-validator';
 import { EMPTY } from '@common/helpers';
+import { GalleryId, ArtworkId } from '@modules/app-db/entities';
 
 export class CreateExhibitionDto {
 
@@ -16,13 +17,13 @@ export class CreateExhibitionDto {
   curator: string;
 
   @IsUUID()
-  galleryId: string;
+  galleryId: GalleryId;
 
   @IsOptional()
   @ValidateIf(ex => ex.artworks !== "")
   @IsArray()
   @IsUUID(null, { each: true })
-  artworks: string[] | EMPTY;
+  artworks: ArtworkId[] | EMPTY;
 
   @IsOptional()
   @IsBoolean()

@@ -1,11 +1,12 @@
 import { IsString, IsNumber, IsBoolean, IsArray, IsUUID, ValidateNested } from 'class-validator';
 import { ItemTypeExists } from '@modules/app-db/validators';
 import { Type } from 'class-transformer';
+import { UnityRoomId, ExhibitionId, ArtworkId, UnityItemTypeId } from '@modules/app-db/entities';
 
 export class SaveDesignerRoomDto {
 
   @IsUUID()
-  id: string;
+  id: UnityRoomId;
 
   @IsString()
   name: string;
@@ -26,7 +27,7 @@ export class SaveDesignerRoomDto {
   length: number;
 
   @IsUUID()
-  exhibitionId: string;
+  exhibitionId: ExhibitionId;
 
   @ValidateNested()
   @IsArray()
@@ -75,7 +76,7 @@ export class CreateDesignerWallDto {
   opacity: number;
 
   @IsString()
-  artworkId: string;
+  artworkId: ArtworkId;
 
   @ValidateNested()
   @IsArray()
@@ -96,7 +97,7 @@ export class CreateDesignerImageDto {
   scale: number;
 
   @IsUUID()
-  artworkId: string;
+  artworkId: ArtworkId;
 
 }
 
@@ -135,6 +136,6 @@ export class CreateDesignerItemDto {
 
   @IsUUID()
   @ItemTypeExists()
-  itemTypeId: string;
+  itemTypeId: UnityItemTypeId;
 
 }

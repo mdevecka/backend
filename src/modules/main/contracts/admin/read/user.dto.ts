@@ -1,5 +1,7 @@
+import { UserId } from '@modules/app-db/entities';
+
 export interface UserDto {
-  id: string;
+  id: UserId;
   name: string;
   email: string;
   description: string;

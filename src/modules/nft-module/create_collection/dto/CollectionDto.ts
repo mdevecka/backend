@@ -12,6 +12,4 @@ export class CollectionDto {
   metadata: string;
   @IsNotEmpty()
   address: string;
-  @IsNotEmpty()
-  userID: string;
 }

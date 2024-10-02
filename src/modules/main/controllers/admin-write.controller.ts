@@ -1,8 +1,8 @@
 import { Controller, Post, Put, Patch, Delete, Param, NotFoundException, BadRequestException, ParseUUIDPipe, UseGuards, Body } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
-import { Image } from '@modules/app-db/entities';
+import { Image, UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId } from '@modules/app-db/entities';
 import { AdminRepository } from '@modules/app-db/repositories';
-import { AuthGuard, UserId } from '@modules/auth/helpers';
+import { AuthGuard, GetUserId } from '@modules/auth/helpers';
 import {
   CreateArtistDto, UpdateArtistDto, CreateArtworkDto, UpdateArtworkDto,
   CreateGalleryDto, UpdateGalleryDto, CreateExhibitionDto, UpdateExhibitionDto,
@@ -19,7 +19,7 @@ export class AdminWriteController {
 
   @Post('artist/create')
   @FormDataRequest()
-  async createArtist(@Body() dto: CreateArtistDto, @UserId() userId: string) {
+  async createArtist(@Body() dto: CreateArtistDto, @GetUserId() userId: UserId) {
     if (await this.adminRepository.getArtistByName(userId, dto.name) != null)
       throw new BadRequestException("name must be unique");
     const artist = await this.adminRepository.saveArtist({
@@ -36,7 +36,7 @@ export class AdminWriteController {
 
   @Patch('artist/update/:id')
   @FormDataRequest()
-  async updateArtist(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateArtistDto, @UserId() userId: string) {
+  async updateArtist(@Param('id', ParseUUIDPipe) id: ArtistId, @Body() dto: UpdateArtistDto, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasArtist(userId, id))
       throw new NotFoundException();
     const otherArtist = (dto.name != null) ? await this.adminRepository.getArtistByName(userId, dto.name) : null;
@@ -54,7 +54,7 @@ export class AdminWriteController {
   }
 
   @Delete('artist/delete/:id')
-  async deleteArtist(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+  async deleteArtist(@Param('id', ParseUUIDPipe) id: ArtistId, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasArtist(userId, id))
       throw new NotFoundException();
     await this.adminRepository.removeArtist(id);
@@ -62,7 +62,7 @@ export class AdminWriteController {
 
   @Post('artwork/create')
   @FormDataRequest()
-  async createArtwork(@Body() dto: CreateArtworkDto, @UserId() userId: string) {
+  async createArtwork(@Body() dto: CreateArtworkDto, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasArtist(userId, dto.artistId))
       throw new BadRequestException("artist does not exist");
     if (dto.exhibitions != null && dto.exhibitions !== "" && !await this.adminRepository.hasExhibitions(userId, dto.exhibitions))
@@ -89,7 +89,7 @@ export class AdminWriteController {
 
   @Patch('artwork/update/:id')
   @FormDataRequest()
-  async updateArtwork(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateArtworkDto, @UserId() userId: string) {
+  async updateArtwork(@Param('id', ParseUUIDPipe) id: ArtworkId, @Body() dto: UpdateArtworkDto, @GetUserId() userId: UserId) {
     const artwork = await this.adminRepository.getArtwork(userId, id);
     if (artwork == null)
       throw new NotFoundException();
@@ -99,7 +99,7 @@ export class AdminWriteController {
       throw new BadRequestException("artist does not exist");
     if (dto.exhibitions != null && dto.exhibitions !== "" && !await this.adminRepository.hasExhibitions(userId, dto.exhibitions))
       throw new BadRequestException("exhibition does not exist");
-    const artistId = dto.artistId || artwork.artistId;
+    const artistId = dto.artistId ?? artwork.artistId;
     const otherArtwork = (dto.name != null) ? await this.adminRepository.getArtworkByName(artistId, dto.name) : null;
     if (otherArtwork != null && otherArtwork.id !== id)
       throw new BadRequestException("name must be unique");
@@ -122,7 +122,7 @@ export class AdminWriteController {
   }
 
   @Delete('artwork/delete/:id')
-  async deleteArtwork(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+  async deleteArtwork(@Param('id', ParseUUIDPipe) id: ArtworkId, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasArtwork(userId, id))
       throw new NotFoundException();
     await this.adminRepository.removeArtwork(id);
@@ -130,7 +130,7 @@ export class AdminWriteController {
 
   @Post('gallery/create')
   @FormDataRequest()
-  async createGallery(@Body() dto: CreateGalleryDto, @UserId() userId: string) {
+  async createGallery(@Body() dto: CreateGalleryDto, @GetUserId() userId: UserId) {
     if (await this.adminRepository.getGalleryByName(userId, dto.name) != null)
       throw new BadRequestException("name must be unique");
     const gallery = await this.adminRepository.saveGallery({
@@ -147,7 +147,7 @@ export class AdminWriteController {
 
   @Patch('gallery/update/:id')
   @FormDataRequest()
-  async updateGallery(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateGalleryDto, @UserId() userId: string) {
+  async updateGallery(@Param('id', ParseUUIDPipe) id: GalleryId, @Body() dto: UpdateGalleryDto, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasGallery(userId, id))
       throw new NotFoundException();
     const otherGallery = (dto.name != null) ? await this.adminRepository.getGalleryByName(userId, dto.name) : null;
@@ -165,7 +165,7 @@ export class AdminWriteController {
   }
 
   @Delete('gallery/delete/:id')
-  async deleteGallery(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+  async deleteGallery(@Param('id', ParseUUIDPipe) id: GalleryId, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasGallery(userId, id))
       throw new NotFoundException();
     await this.adminRepository.removeGallery(id);
@@ -173,7 +173,7 @@ export class AdminWriteController {
 
   @Post('exhibition/create')
   @FormDataRequest()
-  async createExhibition(@Body() dto: CreateExhibitionDto, @UserId() userId: string) {
+  async createExhibition(@Body() dto: CreateExhibitionDto, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasGallery(userId, dto.galleryId))
       throw new BadRequestException("gallery does not exist");
     if (await this.adminRepository.getExhibitionByName(dto.galleryId, dto.name) != null)
@@ -194,7 +194,7 @@ export class AdminWriteController {
 
   @Patch('exhibition/update/:id')
   @FormDataRequest()
-  async updateExhibition(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateExhibitionDto, @UserId() userId: string) {
+  async updateExhibition(@Param('id', ParseUUIDPipe) id: ExhibitionId, @Body() dto: UpdateExhibitionDto, @GetUserId() userId: UserId) {
     const exhibition = await this.adminRepository.getExhibition(userId, id);
     if (exhibition == null)
       throw new NotFoundException();
@@ -202,7 +202,7 @@ export class AdminWriteController {
       throw new BadRequestException("gallery does not exist");
     if (dto.artworks != null && dto.artworks !== "" && !await this.adminRepository.hasArtworks(userId, dto.artworks))
       throw new BadRequestException("artwork does not exist");
-    const galleryId = dto.galleryId || exhibition.galleryId;
+    const galleryId = dto.galleryId ?? exhibition.galleryId;
     const otherExhibition = (dto.name != null) ? await this.adminRepository.getExhibitionByName(galleryId, dto.name) : null;
     if (otherExhibition != null && otherExhibition.id !== id)
       throw new BadRequestException("name must be unique");
@@ -219,17 +219,16 @@ export class AdminWriteController {
   }
 
   @Delete('exhibition/delete/:id')
-  async deleteExhibition(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+  async deleteExhibition(@Param('id', ParseUUIDPipe) id: ExhibitionId, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasExhibition(userId, id))
       throw new NotFoundException();
     await this.adminRepository.removeExhibition(id);
   }
 
   @Put('designer/room/save')
-  @FormDataRequest()
-  async saveDesignerRoom(@Body() dto: SaveDesignerRoomDto, @UserId() userId: string) {
+  async saveDesignerRoom(@Body() dto: SaveDesignerRoomDto, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.canUseRoomId(userId, dto.id))
-      throw new BadRequestException("room does not exist");
+      throw new BadRequestException("invalid room id");
     if (!await this.adminRepository.hasExhibition(userId, dto.exhibitionId))
       throw new BadRequestException("exhibition does not exist");
     const artworkIds = dto.walls.flatMap(w => [w.artworkId, ...w.images.map(i => i.artworkId)]);
@@ -280,7 +279,7 @@ export class AdminWriteController {
   }
 
   @Delete('designer/room/delete/:id')
-  async deleteRoom(@Param('id', ParseUUIDPipe) id: string, @UserId() userId: string) {
+  async deleteRoom(@Param('id', ParseUUIDPipe) id: UnityRoomId, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.hasRoom(userId, id))
       throw new NotFoundException();
     await this.adminRepository.removeRoom(id);

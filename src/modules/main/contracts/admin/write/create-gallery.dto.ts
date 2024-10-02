@@ -1,5 +1,6 @@
 import { IsString, IsBoolean, IsOptional, IsUUID } from 'class-validator';
 import { CountryExists } from '@modules/app-db/validators';
+import { CountryId } from '@modules/app-db/entities';
 
 export class CreateGalleryDto {
 
@@ -14,7 +15,7 @@ export class CreateGalleryDto {
 
   @IsUUID()
   @CountryExists()
-  countryId: string;
+  countryId: CountryId;
 
   @IsString()
   gps: string;

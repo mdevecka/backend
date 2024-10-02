@@ -1,7 +1,8 @@
 import { ExhibitionDto } from './exhibition.dto';
+import { UnityRoomId } from '@modules/app-db/entities';
 
 export interface RoomDto {
-  id: string;
+  id: UnityRoomId;
   name: string;
   x: number;
   y: number;

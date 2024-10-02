@@ -3,7 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, IsNull, Not } from 'typeorm';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, ArtistCategory, ArtworkTechnique,
-  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft
+  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft,
+  UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, CountryId, ArtistCategoryId, ArtworkTechniqueId,
+  ArtworkMaterialId, ArtworkGenreId, ArtworkWorktypeId, UnityRoomId, UnityItemTypeId, NftId,
 } from '../entities';
 
 @Injectable()
@@ -30,7 +32,7 @@ export class AdminRepository {
     return this.users.find();
   }
 
-  async getUser(id: string) {
+  async getUser(id: UserId) {
     return this.users.findOne({
       where: {
         id: id,
@@ -46,7 +48,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtists(userId: string) {
+  async getArtists(userId: UserId) {
     return this.artists.find({
       relations: {
         country: true,
@@ -56,7 +58,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtworks(userId: string) {
+  async getArtworks(userId: UserId) {
     return this.artworks.find({
       relations: {
         artist: true,
@@ -69,7 +71,7 @@ export class AdminRepository {
     });
   }
 
-  async getGalleries(userId: string) {
+  async getGalleries(userId: UserId) {
     return this.galleries.find({
       relations: {
         user: true,
@@ -79,7 +81,7 @@ export class AdminRepository {
     });
   }
 
-  async getExhibitions(userId: string) {
+  async getExhibitions(userId: UserId) {
     return this.exhibitions.find({
       relations: {
         gallery: true,
@@ -88,7 +90,7 @@ export class AdminRepository {
     });
   }
 
-  async getRooms(userId: string) {
+  async getRooms(userId: UserId) {
     return this.unityRooms.find({
       relations: {
         exhibition: { gallery: true },
@@ -101,7 +103,7 @@ export class AdminRepository {
     });
   }
 
-  async getRoomExhibitionInfo(userId: string, id: string) {
+  async getRoomExhibitionInfo(userId: UserId, id: UnityRoomId) {
     return this.unityRooms.findOne({
       select: {
         id: true,
@@ -126,7 +128,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtistDetail(userId: string, id: string) {
+  async getArtistDetail(userId: UserId, id: ArtistId) {
     return this.artists.findOne({
       relations: {
         country: true,
@@ -139,7 +141,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtworkDetail(userId: string, id: string) {
+  async getArtworkDetail(userId: UserId, id: ArtworkId) {
     return this.artworks.findOne({
       relations: {
         artist: true,
@@ -155,7 +157,7 @@ export class AdminRepository {
     });
   }
 
-  async getGalleryDetail(userId: string, id: string) {
+  async getGalleryDetail(userId: UserId, id: GalleryId) {
     return this.galleries.findOne({
       relations: {
         country: true,
@@ -167,7 +169,7 @@ export class AdminRepository {
     });
   }
 
-  async getExhibitionDetail(userId: string, id: string) {
+  async getExhibitionDetail(userId: UserId, id: ExhibitionId) {
     return this.exhibitions.findOne({
       relations: {
         gallery: true,
@@ -179,7 +181,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtworkExhibitions(userId: string, id: string) {
+  async getArtworkExhibitions(userId: UserId, id: ArtworkId) {
     return this.exhibitions.find({
       relations: {
         gallery: true,
@@ -193,7 +195,7 @@ export class AdminRepository {
     });
   }
 
-  async getExhibitionArtworks(userId: string, id: string) {
+  async getExhibitionArtworks(userId: UserId, id: ExhibitionId) {
     return this.artworks.find({
       relations: {
         artist: true,
@@ -211,7 +213,7 @@ export class AdminRepository {
     });
   }
 
-  async getExhibitionRooms(userId: string, id: string) {
+  async getExhibitionRooms(userId: UserId, id: ExhibitionId) {
     return this.unityRooms.find({
       where: {
         exhibition: {
@@ -222,7 +224,7 @@ export class AdminRepository {
     });
   }
 
-  async getGalleryExhibitions(userId: string, id: string) {
+  async getGalleryExhibitions(userId: UserId, id: GalleryId) {
     return this.exhibitions.find({
       relations: {
         gallery: true,
@@ -236,7 +238,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtistArtworks(userId: string, id: string) {
+  async getArtistArtworks(userId: UserId, id: ArtistId) {
     return this.artworks.find({
       relations: {
         artist: true,
@@ -290,7 +292,7 @@ export class AdminRepository {
     });
   }
 
-  async getGalleryOptions(userId: string) {
+  async getGalleryOptions(userId: UserId) {
     return this.galleries.find({
       select: { id: true, name: true },
       where: {
@@ -299,7 +301,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtistOptions(userId: string) {
+  async getArtistOptions(userId: UserId) {
     return this.artists.find({
       select: { id: true, name: true },
       where: {
@@ -308,7 +310,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtworkOptions(userId: string) {
+  async getArtworkOptions(userId: UserId) {
     return this.artworks.find({
       select: { id: true, name: true },
       where: {
@@ -317,7 +319,7 @@ export class AdminRepository {
     });
   }
 
-  async getExhibitionOptions(userId: string) {
+  async getExhibitionOptions(userId: UserId) {
     return this.exhibitions.find({
       select: { id: true, name: true },
       where: {
@@ -326,7 +328,7 @@ export class AdminRepository {
     });
   }
 
-  async getArtworkImage(userId: string, id: string) {
+  async getArtworkImage(userId: UserId, id: ArtworkId) {
     return this.artworks.findOne({
       select: { id: true, image: { buffer: true, mimeType: true } },
       where: {
@@ -336,7 +338,7 @@ export class AdminRepository {
     }).then(a => (a != null && a.image?.buffer != null) ? { image: a.image?.buffer, mimeType: a.image?.mimeType } : null);
   }
 
-  async getArtworkThumbnail(userId: string, id: string) {
+  async getArtworkThumbnail(userId: UserId, id: ArtworkId) {
     return this.artworks.findOne({
       select: { id: true, thumbnail: { buffer: true, mimeType: true } },
       where: {
@@ -346,7 +348,7 @@ export class AdminRepository {
     }).then(a => (a != null && a.thumbnail?.buffer != null) ? { image: a.thumbnail?.buffer, mimeType: a.thumbnail?.mimeType } : null);
   }
 
-  async getArtworkUnityImage(userId: string, id: string) {
+  async getArtworkUnityImage(userId: UserId, id: ArtworkId) {
     return this.artworks.findOne({
       select: { id: true, unityImage: { buffer: true, mimeType: true } },
       where: {
@@ -356,7 +358,7 @@ export class AdminRepository {
     }).then(a => (a != null && a.unityImage?.buffer != null) ? { image: a.unityImage?.buffer, mimeType: a.unityImage?.mimeType } : null);
   }
 
-  async getUserAvatar(userId: string) {
+  async getUserAvatar(userId: UserId) {
     return this.users.findOne({
       select: { avatar: { buffer: true, mimeType: true } },
       where: {
@@ -365,7 +367,7 @@ export class AdminRepository {
     }).then(a => (a != null && a.avatar?.buffer != null) ? { image: a.avatar?.buffer, mimeType: a.avatar?.mimeType } : null);
   }
 
-  async getDesignerRoom(userId: string, id: string) {
+  async getDesignerRoom(userId: UserId, id: UnityRoomId) {
     return this.unityRooms.findOne({
       relations: {
         walls: { images: true },
@@ -385,7 +387,7 @@ export class AdminRepository {
     return this.unityItemTypes.find();
   }
 
-  async getNfts(userId: string) {
+  async getNfts(userId: UserId) {
     return this.nfts.find({
       relations: {
         artwork: true,
@@ -396,7 +398,7 @@ export class AdminRepository {
     });
   }
 
-  async getNftDetail(userId: string, id: string) {
+  async getNftDetail(userId: UserId, id: NftId) {
     return this.nfts.findOne({
       relations: {
         artwork: true,
@@ -408,108 +410,108 @@ export class AdminRepository {
     });
   }
 
-  async getArtistLabels(userId: string) {
+  async getArtistLabels(userId: UserId) {
     return this.artists.find({ select: { label: true }, where: { userId: userId } }).then(list => list.map(a => a.label));
   }
 
-  async getGalleryLabels(userId: string) {
+  async getGalleryLabels(userId: UserId) {
     return this.galleries.find({ select: { label: true }, where: { userId: userId } }).then(list => list.map(a => a.label));
   }
 
-  async getArtworkLabels(artistId: string) {
+  async getArtworkLabels(artistId: ArtistId) {
     return this.artworks.find({ select: { label: true }, where: { artistId: artistId } }).then(list => list.map(a => a.label));
   }
 
-  async getExhibitionLabels(galleryId: string) {
+  async getExhibitionLabels(galleryId: GalleryId) {
     return this.exhibitions.find({ select: { label: true }, where: { galleryId: galleryId } }).then(list => list.map(a => a.label));
   }
 
-  async userExists(id: string) {
+  async userExists(id: UserId) {
     return this.users.existsBy({ id: id });
   }
 
-  async countryExists(id: string) {
+  async countryExists(id: CountryId) {
     return this.countries.existsBy({ id: id });
   }
 
-  async artistCategoryExists(id: string) {
+  async artistCategoryExists(id: ArtistCategoryId) {
     return this.artistCategories.existsBy({ id: id });
   }
 
-  async artworkGenreExists(id: string) {
+  async artworkGenreExists(id: ArtworkGenreId) {
     return this.artworkGenres.existsBy({ id: id });
   }
 
-  async artworkWorktypeExists(id: string) {
+  async artworkWorktypeExists(id: ArtworkWorktypeId) {
     return this.artworkWorktypes.existsBy({ id: id });
   }
 
-  async artworkMaterialExists(id: string) {
+  async artworkMaterialExists(id: ArtworkMaterialId) {
     return this.artworkMaterials.existsBy({ id: id });
   }
 
-  async artworkTechniqueExists(id: string) {
+  async artworkTechniqueExists(id: ArtworkTechniqueId) {
     return this.artworkTechniques.existsBy({ id: id });
   }
 
-  async itemTypeExists(id: string) {
+  async itemTypeExists(id: UnityItemTypeId) {
     return this.unityItemTypes.existsBy({ id: id });
   }
 
-  async getArtwork(userId: string, id: string) {
+  async getArtwork(userId: UserId, id: ArtworkId) {
     return this.artworks.findOneBy({ id: id, artist: { userId: userId } });
   }
 
-  async getExhibition(userId: string, id: string) {
+  async getExhibition(userId: UserId, id: ExhibitionId) {
     return this.exhibitions.findOneBy({ id: id, gallery: { userId: userId } });
   }
 
-  async hasArtist(userId: string, id: string) {
+  async hasArtist(userId: UserId, id: ArtistId) {
     return this.artists.existsBy({ id: id, userId: userId });
   }
 
-  async hasArtwork(userId: string, id: string) {
+  async hasArtwork(userId: UserId, id: ArtworkId) {
     return this.artworks.existsBy({ id: id, artist: { userId: userId } });
   }
 
-  async artworkHasNft(id: string) {
+  async artworkHasNft(id: ArtworkId) {
     return this.artworks.existsBy({ id: id, nftId: Not(IsNull()) });
   }
 
-  async hasGallery(userId: string, id: string) {
+  async hasGallery(userId: UserId, id: GalleryId) {
     return this.galleries.existsBy({ id: id, userId: userId });
   }
 
-  async hasExhibition(userId: string, id: string) {
+  async hasExhibition(userId: UserId, id: ExhibitionId) {
     return this.exhibitions.existsBy({ id: id, gallery: { userId: userId } });
   }
 
-  async hasExhibitions(userId: string, ids: string[]) {
+  async hasExhibitions(userId: UserId, ids: ExhibitionId[]) {
     const exhibitions = await this.exhibitions.find({ select: { id: true }, where: { gallery: { userId: userId } } });
     return ids.every(id => exhibitions.some(ex => ex.id === id));
   }
 
-  async hasArtworks(userId: string, ids: string[]) {
+  async hasArtworks(userId: UserId, ids: ArtworkId[]) {
     const artworks = await this.artworks.find({ select: { id: true }, where: { artist: { userId: userId } } });
     return ids.every(id => artworks.some(ex => ex.id === id));
   }
 
-  async hasRoom(userId: string, id: string) {
+  async hasRoom(userId: UserId, id: UnityRoomId) {
     return this.unityRooms.existsBy({ id: id, exhibition: { gallery: { userId: userId } } });
   }
 
-  async canUseRoomId(userId: string, id: string) {
+  async canUseRoomId(userId: UserId, id: UnityRoomId) {
     const room = await this.unityRooms.findOneBy({ id: id });
     if (room == null)
       return true;
     return this.hasRoom(userId, id);
   }
 
-  async getArtistByName(userId: string, name: string) {
+  async getArtistByName(userId: UserId, name: string) {
     return this.artists.findOneBy({ name: name, userId: userId });
   }
 
-  async getGalleryByName(userId: string, name: string) {
+  async getGalleryByName(userId: UserId, name: string) {
     return this.galleries.findOneBy({ name: name, userId: userId });
   }
 
@@ -526,7 +528,7 @@ export class AdminRepository {
     return this.artists.save(entity);
   }
 
-  async removeArtist(id: string) {
+  async removeArtist(id: ArtistId) {
     const entity = this.artists.create({ id: id });
     return this.artists.remove(entity);
   }
@@ -536,7 +538,7 @@ export class AdminRepository {
     return this.artworks.save(entity);
   }
 
-  async removeArtwork(id: string) {
+  async removeArtwork(id: ArtworkId) {
     const entity = this.artworks.create({ id: id });
     return this.artworks.remove(entity);
   }
@@ -546,7 +548,7 @@ export class AdminRepository {
     return this.galleries.save(entity);
   }
 
-  async removeGallery(id: string) {
+  async removeGallery(id: GalleryId) {
     const entity = this.galleries.create({ id: id });
     return this.galleries.remove(entity);
   }
@@ -556,7 +558,7 @@ export class AdminRepository {
     return this.exhibitions.save(entity);
   }
 
-  async removeExhibition(id: string) {
+  async removeExhibition(id: ExhibitionId) {
     const entity = this.exhibitions.create({ id: id });
     return this.exhibitions.remove(entity);
   }
@@ -566,7 +568,7 @@ export class AdminRepository {
     return this.unityRooms.save(entity);
   }
 
-  async removeRoom(id: string) {
+  async removeRoom(id: UnityRoomId) {
     const entity = this.unityRooms.create({ id: id });
     return this.unityRooms.remove(entity);
   }

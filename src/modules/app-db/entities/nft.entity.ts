@@ -1,8 +1,11 @@
 import { Entity, Column, ManyToOne, OneToOne } from 'typeorm';
 import { BaseEntity } from './base.entity';
-import { Wallet } from './wallet.entity';
+import { Wallet, WalletId } from './wallet.entity';
 import { Artwork } from './artwork.entity';
 import { User } from './user.entity';
+import { ID } from '@common/helpers';
+
+export type NftId = ID<"Nft">;
 
 export interface NftData {
   id: string;
@@ -14,6 +17,8 @@ export interface NftData {
 @Entity()
 export class Nft extends BaseEntity {
 
+  id: NftId;
+
   @OneToOne(() => Artwork, artwork => artwork.nft)
   artwork: Artwork;
 
@@ -21,7 +26,7 @@ export class Nft extends BaseEntity {
   wallet: Wallet;
 
   @Column({ nullable: true })
-  walletId: string;
+  walletId: WalletId;
 
   @Column({ type: 'jsonb', unique: true })
   nftData: NftData;

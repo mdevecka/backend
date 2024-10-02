@@ -2,7 +2,7 @@ import { Controller, Body, Put, UseGuards, BadRequestException, Param } from '@n
 import { NftCreator } from './nft.service';
 import { NftDto } from './dto/NFTDto';
 import { NFTResponseDto } from './dto/NFTResponseDto';
-import { AuthGuard, UserId } from '@modules/auth/helpers';
+import { AuthGuard, GetUserId } from '@modules/auth/helpers';
 
 @UseGuards(AuthGuard)
 @Controller('nft')
@@ -10,7 +10,7 @@ export class NftController {
   constructor(private readonly appService: NftCreator) { }
 
   @Put('create/collection/:collectionId/artwork/:artworkId')
-  async nftCreate(@Param("collectionId") collectionId: string, @Param("artworkId") artworkId: string, @Body() form: NftDto, @UserId() userId: string): Promise<NFTResponseDto> {
+  async nftCreate(@Param("collectionId") collectionId: string, @Param("artworkId") artworkId: string, @Body() form: NftDto, @GetUserId() userId: string): Promise<NFTResponseDto> {
     const { address } = form;
     const callData = await this.appService.createNFTCall(collectionId, artworkId, address, userId);
     if (callData == null) {
@@ -22,7 +22,7 @@ export class NftController {
   }
 
   @Put('update/artwork/:artworkId')
-  async updateNft(@Param("artworkId") artworkId: string, @UserId() userId: string): Promise<NFTResponseDto> {
+  async updateNft(@Param("artworkId") artworkId: string, @GetUserId() userId: string): Promise<NFTResponseDto> {
     const callData = await this.appService.updateNFTCall(artworkId, userId);
     if (callData == null) {
       throw new BadRequestException('An error occurred while updating nft call, please check your parameters');

@@ -1,11 +1,13 @@
+import { ExhibitionId, GalleryId } from '@modules/app-db/entities';
+
 export interface ExhibitionDetailDto {
-  id: string;
+  id: ExhibitionId;
   name: string;
   fromDate: string;
   toDate: string;
   curator: string;
   gallery: {
-    id: string;
+    id: GalleryId;
     name: string;
     description: string;
     address: string;

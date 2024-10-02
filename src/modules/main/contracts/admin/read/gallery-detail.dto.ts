@@ -1,7 +1,8 @@
 import { CountryDto } from './country.dto';
+import { GalleryId } from '@modules/app-db/entities';
 
 export interface GalleryDetailDto {
-  id: string;
+  id: GalleryId;
   name: string;
   description: string;
   address: string;

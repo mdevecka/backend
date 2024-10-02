@@ -61,7 +61,7 @@ export class SwapCreator {
     return response.json();
   }
 
-  async trialMintPaidinDB(address): Promise<void> {
+  async trialMintPaidinDB(address: string): Promise<void> {
     //We change ownership of NFT in database
     //We check if user has the right to change ownership of the NFT, if they haven't already claimed their NFT and if they 
     //havent then create call to change ownership of NFT to their desired address

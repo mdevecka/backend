@@ -1,14 +1,17 @@
 import { Entity, Column, ManyToOne, ManyToMany, OneToOne, JoinColumn, AfterLoad, BeforeInsert, BeforeUpdate, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
-import { Artist } from './artist.entity';
+import { Artist, ArtistId } from './artist.entity';
 import { Exhibition } from './exhibition.entity';
-import { ArtworkGenre } from './artwork-genre.entity';
-import { ArtworkMaterial } from './artwork-material.entity';
-import { ArtworkWorktype } from './artwork-worktype.entity';
-import { ArtworkTechnique } from './artwork-technique.entity';
-import { Nft } from './nft.entity';
+import { ArtworkGenre, ArtworkGenreId } from './artwork-genre.entity';
+import { ArtworkMaterial, ArtworkMaterialId } from './artwork-material.entity';
+import { ArtworkWorktype, ArtworkWorktypeId } from './artwork-worktype.entity';
+import { ArtworkTechnique, ArtworkTechniqueId } from './artwork-technique.entity';
+import { Nft, NftId } from './nft.entity';
 import { Image } from './image';
+import { ID } from '@common/helpers';
 import * as sharp from 'sharp';
+
+export type ArtworkId = ID<"Artwork">;
 
 async function createUnityImage(image: Buffer, maxSize: number) {
   const sharpImage = sharp(image);
@@ -33,6 +36,8 @@ export class Artwork extends LabeledEntity {
 
   private _lastImage: Buffer;
 
+  id: ArtworkId;
+
   @Column({ type: 'text', nullable: true })
   description: string;
 
@@ -40,7 +45,7 @@ export class Artwork extends LabeledEntity {
   artist: Artist;
 
   @Column({ nullable: true })
-  artistId: string;
+  artistId: ArtistId;
 
   @Column(() => Image)
   image: Image;
@@ -64,25 +69,25 @@ export class Artwork extends LabeledEntity {
   artworkGenre: ArtworkGenre;
 
   @Column({ nullable: true })
-  artworkGenreId: string;
+  artworkGenreId: ArtworkGenreId;
 
   @ManyToOne(() => ArtworkMaterial)
   artworkMaterial: ArtworkMaterial;
 
   @Column({ nullable: true })
-  artworkMaterialId: string;
+  artworkMaterialId: ArtworkMaterialId;
 
   @ManyToOne(() => ArtworkTechnique)
   artworkTechnique: ArtworkTechnique;
 
   @Column({ nullable: true })
-  artworkTechniqueId: string;
+  artworkTechniqueId: ArtworkTechniqueId;
 
   @ManyToOne(() => ArtworkWorktype)
   artworkWorktype: ArtworkWorktype;
 
   @Column({ nullable: true })
-  artworkWorktypeId: string;
+  artworkWorktypeId: ArtworkWorktypeId;
 
   @ManyToMany(() => Exhibition, ex => ex.artworks, { onDelete: 'CASCADE' })
   exhibitions: Exhibition[];
@@ -104,7 +109,7 @@ export class Artwork extends LabeledEntity {
   nft: Nft;
 
   @Column({ nullable: true })
-  nftId: string;
+  nftId: NftId;
 
   @AfterLoad()
   afterLoad() {

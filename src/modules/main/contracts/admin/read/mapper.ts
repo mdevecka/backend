@@ -19,18 +19,10 @@ import { DesignerLibraryItemDto } from './designer-library-item.dto';
 import { NftDto } from './nft.dto';
 import { NftDetailDto } from './nft-detail.dto';
 import { CountryDto } from './country.dto';
-import { OptionDto } from '@common/helpers';
+import { createOptionDto } from '@common/helpers';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, UnityRoom, UnityItemType, Nft,
 } from '@modules/app-db/entities';
-
-
-export function createOptionDto(entity: { id: string, name: string }): OptionDto {
-  return {
-    id: entity.id,
-    name: entity.name,
-  };
-}
 
 export function createCountryDto(country: Country): CountryDto {
   return {

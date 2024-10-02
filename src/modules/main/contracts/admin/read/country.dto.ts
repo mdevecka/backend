@@ -1,5 +1,7 @@
+import { CountryId } from '@modules/app-db/entities';
+
 export interface CountryDto {
-  id: string;
+  id: CountryId;
   name: string;
   code: string;
 }

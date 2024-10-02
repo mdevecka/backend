@@ -1,10 +1,15 @@
 import { Entity, Column, ManyToOne } from 'typeorm';
 import { BaseEntity } from '../base.entity';
-import { Artwork } from '../artwork.entity';
+import { Artwork, ArtworkId } from '../artwork.entity';
 import { UnityWall } from './unity-wall.entity';
+import { ID } from '@common/helpers';
+
+export type UnityImageId = ID<"UnityImage">;
 
 @Entity()
 export class UnityImage extends BaseEntity {
+
+  id: UnityImageId;
 
   @Column('float')
   x: number;
@@ -19,7 +24,7 @@ export class UnityImage extends BaseEntity {
   artwork: Artwork;
 
   @Column({ nullable: true })
-  artworkId: string;
+  artworkId: ArtworkId;
 
   @ManyToOne(() => UnityWall, wall => wall.images, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   wall: UnityWall;

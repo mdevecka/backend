@@ -1,7 +1,7 @@
-import { Controller, Post, Response, UseGuards, Body } from '@nestjs/common';
+import { Controller, Get, Post, Response, UseGuards, Body } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { AuthService } from '@modules/auth/services';
-import { AuthGuard, SESSION_COOKIE, SessionId, Public } from '@modules/auth/helpers';
+import { AuthGuard, SESSION_COOKIE, GetSessionId, Public } from '@modules/auth/helpers';
 import { LoginDto } from '../contracts/admin/login';
 
 @UseGuards(AuthGuard)
@@ -20,7 +20,7 @@ export class AdminLoginController {
   }
 
   @Post('logout')
-  async logout(@SessionId() sessionId: string, @Response({ passthrough: true }) res: ExpressResponse) {
+  async logout(@GetSessionId() sessionId: string, @Response({ passthrough: true }) res: ExpressResponse) {
     res.clearCookie(SESSION_COOKIE);
     await this.authService.logout(sessionId);
   }

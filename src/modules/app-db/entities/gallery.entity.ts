@@ -1,12 +1,17 @@
 import { Entity, Column, ManyToOne, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
-import { Country } from './country.entity';
-import { User } from './user.entity';
+import { Country, CountryId } from './country.entity';
+import { User, UserId } from './user.entity';
+import { ID } from '@common/helpers';
+
+export type GalleryId = ID<"Gallery">;
 
 @Entity()
 @Index(['name', 'userId'], { unique: true })
 @Index(['label', 'userId'], { unique: true })
 export class Gallery extends LabeledEntity {
+
+  id: GalleryId;
 
   @Column('text')
   description: string;
@@ -18,7 +23,7 @@ export class Gallery extends LabeledEntity {
   country: Country;
 
   @Column({ nullable: true })
-  countryId: string;
+  countryId: CountryId;
 
   @Column('text')
   gps: string;
@@ -30,6 +35,6 @@ export class Gallery extends LabeledEntity {
   user: User;
 
   @Column({ nullable: true })
-  userId: string;
+  userId: UserId;
 
 }

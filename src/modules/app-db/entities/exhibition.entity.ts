@@ -1,12 +1,17 @@
 import { Entity, Column, ManyToOne, ManyToMany, JoinTable, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
-import { Gallery } from './gallery.entity';
+import { Gallery, GalleryId } from './gallery.entity';
 import { Artwork } from './artwork.entity';
+import { ID } from '@common/helpers';
+
+export type ExhibitionId = ID<"Exhibition">;
 
 @Entity()
 @Index(['name', 'galleryId'], { unique: true })
 @Index(['label', 'galleryId'], { unique: true })
 export class Exhibition extends LabeledEntity {
+
+  id: ExhibitionId;
 
   @Column('timestamptz')
   fromDate: Date;
@@ -21,7 +26,7 @@ export class Exhibition extends LabeledEntity {
   gallery: Gallery;
 
   @Column({ nullable: true })
-  galleryId: string;
+  galleryId: GalleryId;
 
   @JoinTable()
   @ManyToMany(() => Artwork, art => art.exhibitions, { onDelete: 'CASCADE' })

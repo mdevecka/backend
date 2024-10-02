@@ -2,6 +2,7 @@ import { ValidateIf, IsString, IsNumberString, IsArray, IsBoolean, IsOptional, I
 import { ArtworkGenreExists, ArtworkWorktypeExists, ArtworkMaterialExists, ArtworkTechniqueExists } from '@modules/app-db/validators';
 import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
 import { EMPTY } from '@common/helpers';
+import { ArtistId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId, ExhibitionId } from '@modules/app-db/entities';
 
 export class CreateArtworkDto {
 
@@ -27,29 +28,29 @@ export class CreateArtworkDto {
   measurements: string;
 
   @IsUUID()
-  artistId: string;
+  artistId: ArtistId;
 
   @IsUUID()
   @ArtworkGenreExists()
-  artworkGenreId: string;
+  artworkGenreId: ArtworkGenreId;
 
   @IsUUID()
   @ArtworkWorktypeExists()
-  artworkWorktypeId: string;
+  artworkWorktypeId: ArtworkWorktypeId;
 
   @IsUUID()
   @ArtworkMaterialExists()
-  artworkMaterialId: string;
+  artworkMaterialId: ArtworkMaterialId;
 
   @IsUUID()
   @ArtworkTechniqueExists()
-  artworkTechniqueId: string;
+  artworkTechniqueId: ArtworkTechniqueId;
 
   @IsOptional()
   @ValidateIf(art => art.exhibitions !== "")
   @IsArray()
   @IsUUID(null, { each: true })
-  exhibitions: string[] | EMPTY;
+  exhibitions: ExhibitionId[] | EMPTY;
 
   @IsOptional()
   @ValidateIf(art => art.image !== "")

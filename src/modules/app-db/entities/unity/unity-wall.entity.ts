@@ -1,11 +1,16 @@
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../base.entity';
-import { Artwork } from '../artwork.entity';
+import { Artwork, ArtworkId } from '../artwork.entity';
 import { UnityRoom } from './unity-room.entity';
 import { UnityImage } from './unity-image.entity';
+import { ID } from '@common/helpers';
+
+export type UnityWallId = ID<"UnityWall">;
 
 @Entity()
 export class UnityWall extends BaseEntity {
+
+  id: UnityWallId;
 
   @Column('float')
   x: number;
@@ -38,7 +43,7 @@ export class UnityWall extends BaseEntity {
   artwork: Artwork;
 
   @Column({ nullable: true })
-  artworkId: string;
+  artworkId: ArtworkId;
 
   @ManyToOne(() => UnityRoom, room => room.walls, { onDelete: 'CASCADE', orphanedRowAction: "delete" })
   room: UnityRoom;
