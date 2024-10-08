@@ -4,6 +4,7 @@ import { Wallet, WalletId } from './wallet.entity';
 import { Artwork } from './artwork.entity';
 import { User } from './user.entity';
 import { ID } from '@common/helpers';
+import { Collection } from './collection.entity';
 
 export type NftId = ID<"Nft">;
 
@@ -34,4 +35,8 @@ export class Nft extends BaseEntity {
   // Define the inverse one-to-one relationship with User
   @OneToOne(() => User, user => user.trialMint)
   user: User;
+
+  //Connect nfts to collections entity
+  @ManyToOne(() => Collection, collection => collection.nfts)
+  collection: Collection;
 }
