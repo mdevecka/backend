@@ -183,18 +183,32 @@ export class NftRepository {
     return user.trialMint;
   }
 
+  /// Retrieves all collections associated with a wallet
+  async getWalletCols(walletAddress: string) {
+    return this.collections.find({
+      relations: {
+        wallet: true,
+      },
+      where: { wallet: { walletAddress: walletAddress } }
+    });
+  }
 
 
   /// Assigns metadata that was queried from API
   async assignNFTsMetadata(userId: string, walletAddress: string, nfts: NftInterface[]) {
     // Create new Wallet in DB if it doesn't exist
     let wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
+    let cols;
     if (wallet == null) {
       const newWallet = new Wallet();
       newWallet.walletAddress = walletAddress;
       newWallet.user = await this.users.findOneBy({ id: userId });
       await this.wallets.save(newWallet);
       wallet = newWallet;
+    }
+    else{
+      //If wallet already exists query collections also
+      cols = await this.getWalletCols(walletAddress);
     }
 
     // Initialize nfts array if it's not already initialized
@@ -216,6 +230,30 @@ export class NftRepository {
       };
 
       nft.wallet = wallet;
+
+      //check if any collections are associated with this NFT
+      if(cols != null){
+        for (const col of cols) {
+          if(col.colData != null){
+            const colId = col.colData.id;
+            //Parse nft id to check if it's associated with this collection
+            //Example of nft id - "u421-10" or "421-10" where u specifies nfts created by unique pallet, entries without u are created by nfts pallet
+            //Example of col id - "u421" or "421"
+            const nftId = nft.nftData.id;
+            //Split ids
+            const nftIdArr = nftId.split("-");
+            console.log("NFT ID: ", nftId);
+            console.log("Collection ID: ", colId);
+            //Compare to check if nft is associated with this collection
+            if(nftIdArr[0] == colId){
+              console.log("NFT is associated with collection");
+
+              nft.collection = col;
+              break;
+            }
+          }
+        }
+      }
 
       //Check if NFT exists
       if (await this.nfts.findOneBy({ nftData: nft.nftData }) != null) {
