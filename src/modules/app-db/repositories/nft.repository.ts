@@ -246,8 +246,6 @@ export class NftRepository {
             console.log("Collection ID: ", colId);
             //Compare to check if nft is associated with this collection
             if(nftIdArr[0] == colId){
-              console.log("NFT is associated with collection");
-
               nft.collection = col;
               break;
             }
