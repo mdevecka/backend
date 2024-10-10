@@ -231,19 +231,19 @@ export class NftRepository {
 
       nft.wallet = wallet;
 
+      //Parse nft id to check if it's associated with this collection
+      //Example of nft id - "u421-10" or "421-10" where u specifies nfts created by unique pallet, entries without u are created by nfts pallet
+      //Example of col id - "u421" or "421"
+      const nftId = nft.nftData.id;
+      //Split ids
+      const nftIdArr = nftId.split("-");
+
       //check if any collections are associated with this NFT
       if(cols != null){
         for (const col of cols) {
           if(col.colData != null){
             const colId = col.colData.id;
-            //Parse nft id to check if it's associated with this collection
-            //Example of nft id - "u421-10" or "421-10" where u specifies nfts created by unique pallet, entries without u are created by nfts pallet
-            //Example of col id - "u421" or "421"
-            const nftId = nft.nftData.id;
-            //Split ids
-            const nftIdArr = nftId.split("-");
-            console.log("NFT ID: ", nftId);
-            console.log("Collection ID: ", colId);
+
             //Compare to check if nft is associated with this collection
             if(nftIdArr[0] == colId){
               nft.collection = col;
@@ -251,6 +251,10 @@ export class NftRepository {
             }
           }
         }
+      }
+
+      if (nft.collection == null){
+        this.logger.log(`NFT with id ${id} doesnt belong to any collection in the database`)
       }
 
       //Check if NFT exists
