@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN npm run build:prod
 
 # Stage 2: Run the application with a minimal image
 FROM node:20-alpine AS runner
