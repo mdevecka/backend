@@ -1,14 +1,16 @@
-import { NftId, WalletId, ArtworkId } from '@modules/app-db/entities';
+import { NftId, WalletId, CollectionId, ArtworkId } from '@modules/app-db/entities';
 
 export interface NftDetailDto {
   id: NftId;
   walletId: WalletId;
+  collectionId: CollectionId,
   nftData: {
     id: string;
     name: string;
     metadata: string;
     image: string;
   }
+  canBeMinted: boolean;
   artwork: {
     id: ArtworkId;
     name: string;

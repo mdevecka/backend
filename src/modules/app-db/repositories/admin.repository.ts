@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, IsNull, Not } from 'typeorm';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, ArtistCategory, ArtworkTechnique,
-  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft,
+  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft, Collection, Wallet,
   UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, CountryId, ArtistCategoryId, ArtworkTechniqueId,
-  ArtworkMaterialId, ArtworkGenreId, ArtworkWorktypeId, UnityRoomId, UnityItemTypeId, NftId,
+  ArtworkMaterialId, ArtworkGenreId, ArtworkWorktypeId, UnityRoomId, UnityItemTypeId, NftId, CollectionId, WalletId,
 } from '../entities';
 
 @Injectable()
@@ -26,6 +26,8 @@ export class AdminRepository {
     @InjectRepository(UnityRoom) private unityRooms: Repository<UnityRoom>,
     @InjectRepository(UnityItemType) private unityItemTypes: Repository<UnityItemType>,
     @InjectRepository(Nft) private nfts: Repository<Nft>,
+    @InjectRepository(Collection) private collections: Repository<Collection>,
+    @InjectRepository(Wallet) private wallets: Repository<Wallet>,
   ) { }
 
   async getUsers() {
@@ -66,6 +68,7 @@ export class AdminRepository {
         artworkWorktype: true,
         artworkMaterial: true,
         artworkTechnique: true,
+        nft: { collection: true },
       },
       where: { artist: { userId: userId } }
     });
@@ -149,6 +152,7 @@ export class AdminRepository {
         artworkWorktype: true,
         artworkMaterial: true,
         artworkTechnique: true,
+        nft: { collection: true },
       },
       where: {
         id: id,
@@ -367,6 +371,16 @@ export class AdminRepository {
     }).then(a => (a != null && a.avatar?.buffer != null) ? { image: a.avatar?.buffer, mimeType: a.avatar?.mimeType } : null);
   }
 
+  async getArtistAvatar(userId: UserId, id: ArtistId) {
+    return this.artists.findOne({
+      select: { avatar: { buffer: true, mimeType: true } },
+      where: {
+        id: id,
+        user: { id: userId }
+      }
+    }).then(a => (a != null && a.avatar?.buffer != null) ? { image: a.avatar?.buffer, mimeType: a.avatar?.mimeType } : null);
+  }
+
   async getDesignerRoom(userId: UserId, id: UnityRoomId) {
     return this.unityRooms.findOne({
       relations: {
@@ -406,6 +420,54 @@ export class AdminRepository {
       where: {
         id: id,
         wallet: { userId: userId }
+      }
+    });
+  }
+
+  async getCollections(userId: UserId) {
+    return this.collections.find({
+      relations: {
+        nfts: { artwork: true },
+      },
+      where: {
+        wallet: { userId: userId }
+      }
+    });
+  }
+
+  async getCollectionDetail(userId: UserId, id: CollectionId) {
+    return this.collections.findOne({
+      relations: {
+        nfts: { artwork: true },
+      },
+      where: {
+        id: id,
+        wallet: { userId: userId }
+      }
+    });
+  }
+
+  async getWallets(userId: UserId) {
+    return this.wallets.find({
+      relations: {
+        collections: { nfts: { artwork: true } },
+        nfts: { artwork: true },
+      },
+      where: {
+        userId: userId
+      }
+    });
+  }
+
+  async getWalletDetail(userId: UserId, id: WalletId) {
+    return this.wallets.findOne({
+      relations: {
+        collections: { nfts: { artwork: true } },
+        nfts: { artwork: true }
+      },
+      where: {
+        id: id,
+        userId: userId
       }
     });
   }

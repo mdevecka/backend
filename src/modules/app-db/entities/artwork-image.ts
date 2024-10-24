@@ -1,8 +1,11 @@
 import { Column } from "typeorm";
 
-export class Image {
+export class ArtworkImage {
 
   static get empty() { return new Image(); }
+
+  @Column("uuid", { nullable: true })
+  id: string;
 
   @Column({ type: "bytea", nullable: true, select: false })
   buffer: Buffer = null;

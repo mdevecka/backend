@@ -1,4 +1,4 @@
-import { ExhibitionId, GalleryId } from '@modules/app-db/entities';
+import { ExhibitionId, GalleryId, UnityRoomId } from '@modules/app-db/entities';
 
 export interface ExhibitionDetailDto {
   id: ExhibitionId;
@@ -13,5 +13,6 @@ export interface ExhibitionDetailDto {
     address: string;
     gps: string;
   }
+  activeRoomId: UnityRoomId;
   public: boolean;
 }

@@ -2,9 +2,9 @@ import { Controller, Body, Param, Put, BadRequestException, UseGuards, Get } fro
 import { SwapCreator } from './swap.service';
 import { SwapDto } from './dto/SwapDto';
 import { SwapResponseDto } from './dto/SwapResponseDto';
-import { AuthGuard, GetUserId } from '@modules/auth/helpers';
+import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 
-@UseGuards(AuthGuard)
+@UseGuards(SessionAuthGuard)
 @Controller('ownership')
 export class SwapController {
   constructor(private readonly appService: SwapCreator) { }

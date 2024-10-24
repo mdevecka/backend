@@ -1,8 +1,8 @@
 import { Controller, Put, UseGuards, BadRequestException, Param } from '@nestjs/common';
 import { MintCreator } from './mint.service';
-import { AuthGuard, GetUserId } from '@modules/auth/helpers';
+import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 
-@UseGuards(AuthGuard)
+@UseGuards(SessionAuthGuard)
 @Controller('mint')
 export class MintController {
   constructor(private readonly appService: MintCreator) { }

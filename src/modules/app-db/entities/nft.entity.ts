@@ -3,8 +3,8 @@ import { BaseEntity } from './base.entity';
 import { Wallet, WalletId } from './wallet.entity';
 import { Artwork } from './artwork.entity';
 import { User } from './user.entity';
+import { Collection, CollectionId } from './collection.entity';
 import { ID } from '@common/helpers';
-import { Collection } from './collection.entity';
 
 export type NftId = ID<"Nft">;
 
@@ -32,11 +32,15 @@ export class Nft extends BaseEntity {
   @Column({ type: 'jsonb', unique: true })
   nftData: NftData;
 
-  // Define the inverse one-to-one relationship with User
   @OneToOne(() => User, user => user.trialMint)
   user: User;
 
-  //Connect nfts to collections entity
   @ManyToOne(() => Collection, collection => collection.nfts)
   collection: Collection;
+
+  @Column({ nullable: true })
+  collectionId: CollectionId;
+
+  get canBeMinted() { return this.nftData.id[0] !== 'u' }
+
 }

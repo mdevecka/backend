@@ -26,4 +26,5 @@ export class Wallet extends BaseEntity {
 
   @OneToMany(() => Nft, nft => nft.wallet)
   nfts: Nft[];
+
 }

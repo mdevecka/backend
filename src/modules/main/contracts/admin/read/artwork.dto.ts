@@ -1,5 +1,5 @@
 import { OptionDto } from '@common/helpers';
-import { ArtistId, ArtworkId, NftId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId } from '@modules/app-db/entities';
+import { AiMode, ArtistId, ArtworkId, NftId, CollectionId, WalletId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId } from '@modules/app-db/entities';
 
 export interface ArtworkDto {
   id: ArtworkId;
@@ -12,8 +12,28 @@ export interface ArtworkDto {
     biography: string;
   };
   year: string;
-  nftId: NftId;
+  nft: {
+    id: NftId;
+    walletId: WalletId;
+    nftData: {
+      id: string;
+      name: string;
+      metadata: string;
+      image: string;
+    }
+    collection: {
+      id: CollectionId;
+      walletId: WalletId;
+      colData: {
+        id: string;
+        name: string;
+        metadata: string;
+        image: string;
+      }
+    }
+  }
   ai: boolean;
+  aiMode: AiMode;
   tags: string;
   artworkGenre: OptionDto<ArtworkGenreId>;
   artworkWorktype: OptionDto<ArtworkWorktypeId>;

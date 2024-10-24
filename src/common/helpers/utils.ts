@@ -5,6 +5,8 @@ export type EMPTY = "";
 
 export type Environment = "local" | "development" | "production" | "test";
 
+export const imageMimeTypes = ['image/jpeg', 'image/png', 'image/tiff'];
+
 export function getEnv(): Environment {
   return (process.env.NODE_ENV as Environment) || "local";
 }
@@ -20,6 +22,8 @@ export function filterEntities(types: any[]) {
 }
 
 export function createOptionDto<T>(entity: { id: T, name: string }): OptionDto<T> {
+  if (entity == null)
+    return null;
   return {
     id: entity.id,
     name: entity.name,

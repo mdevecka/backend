@@ -15,7 +15,7 @@ export interface RequestWithUserInfo extends ExpressRequest {
 }
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class SessionAuthGuard implements CanActivate {
 
   constructor(private authService: AuthService, private reflector: Reflector) { }
 

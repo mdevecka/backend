@@ -13,7 +13,7 @@ export class Gallery extends LabeledEntity {
 
   id: GalleryId;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   description: string;
 
   @Column('text')
@@ -25,10 +25,10 @@ export class Gallery extends LabeledEntity {
   @Column({ nullable: true })
   countryId: CountryId;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   gps: string;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: false })
   public: boolean;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
