@@ -1,7 +1,8 @@
-import { Entity, Column, ManyToOne, ManyToMany, JoinTable, Index } from 'typeorm';
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable, JoinColumn, OneToOne, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Gallery, GalleryId } from './gallery.entity';
 import { Artwork } from './artwork.entity';
+import { UnityRoom, UnityRoomId } from './unity';
 import { ID } from '@common/helpers';
 
 export type ExhibitionId = ID<"Exhibition">;
@@ -19,7 +20,7 @@ export class Exhibition extends LabeledEntity {
   @Column('timestamptz')
   toDate: Date;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   curator: string;
 
   @ManyToOne(() => Gallery, { onDelete: 'CASCADE' })
@@ -32,7 +33,14 @@ export class Exhibition extends LabeledEntity {
   @ManyToMany(() => Artwork, art => art.exhibitions, { onDelete: 'CASCADE' })
   artworks: Artwork[];
 
-  @Column({ type: 'boolean', default: true })
+  @JoinColumn()
+  @OneToOne(() => UnityRoom)
+  activeRoom: UnityRoom;
+
+  @Column({ nullable: true })
+  activeRoomId: UnityRoomId;
+
+  @Column({ type: 'boolean', default: false })
   public: boolean;
 
 }

@@ -2,9 +2,9 @@ import { Controller, Body, Put, UseGuards, BadRequestException, Param } from '@n
 import { NftCreator } from './nft.service';
 import { NftDto } from './dto/NFTDto';
 import { NFTResponseDto } from './dto/NFTResponseDto';
-import { AuthGuard, GetUserId } from '@modules/auth/helpers';
+import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 
-@UseGuards(AuthGuard)
+@UseGuards(SessionAuthGuard)
 @Controller('nft')
 export class NftController {
   constructor(private readonly appService: NftCreator) { }

@@ -1,16 +1,17 @@
 import { Controller, Post, Put, Patch, Delete, Param, NotFoundException, BadRequestException, ParseUUIDPipe, UseGuards, Body } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
-import { Image, UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId } from '@modules/app-db/entities';
+import { Image, ArtworkImage, UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId } from '@modules/app-db/entities';
 import { AdminRepository } from '@modules/app-db/repositories';
-import { AuthGuard, GetUserId } from '@modules/auth/helpers';
+import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 import {
   CreateArtistDto, UpdateArtistDto, CreateArtworkDto, UpdateArtworkDto,
   CreateGalleryDto, UpdateGalleryDto, CreateExhibitionDto, UpdateExhibitionDto,
   SaveDesignerRoomDto
 } from '../contracts/admin/write';
 import { mapEmpty } from '@common/helpers';
+import { randomUUID } from 'crypto';
 
-@UseGuards(AuthGuard)
+@UseGuards(SessionAuthGuard)
 @Controller('admin')
 export class AdminWriteController {
 
@@ -28,8 +29,9 @@ export class AdminWriteController {
       biography: dto.biography,
       public: dto.public,
       countryId: dto.countryId,
-      artistCategoryId: dto.artistCategoryId,
+      artistCategoryId: mapEmpty(dto.artistCategoryId, id => id),
       userId: userId,
+      avatar: mapEmpty(dto.avatar, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
     });
     return { id: artist.id };
   }
@@ -49,7 +51,8 @@ export class AdminWriteController {
       biography: dto.biography,
       public: dto.public,
       countryId: dto.countryId,
-      artistCategoryId: dto.artistCategoryId,
+      artistCategoryId: mapEmpty(dto.artistCategoryId, id => id),
+      avatar: mapEmpty(dto.avatar, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
     });
   }
 
@@ -76,13 +79,15 @@ export class AdminWriteController {
       tags: dto.tags,
       public: dto.public,
       measurements: dto.measurements,
+      aiMode: dto.aiMode,
       artistId: dto.artistId,
-      artworkGenreId: dto.artworkGenreId,
-      artworkWorktypeId: dto.artworkWorktypeId,
-      artworkMaterialId: dto.artworkMaterialId,
-      artworkTechniqueId: dto.artworkTechniqueId,
+      artworkGenreId: mapEmpty(dto.artworkGenreId, id => id),
+      artworkWorktypeId: mapEmpty(dto.artworkWorktypeId, id => id),
+      artworkMaterialId: mapEmpty(dto.artworkMaterialId, id => id),
+      artworkTechniqueId: mapEmpty(dto.artworkTechniqueId, id => id),
       exhibitions: mapEmpty(dto.exhibitions, (list) => list.map(id => ({ id })), []),
-      image: mapEmpty(dto.image, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
+      image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), ArtworkImage.empty),
+      protectedImage: (dto.image !== undefined) ? ArtworkImage.empty : undefined,
     });
     return { id: artwork.id };
   }
@@ -111,13 +116,15 @@ export class AdminWriteController {
       tags: dto.tags,
       public: dto.public,
       measurements: dto.measurements,
+      aiMode: dto.aiMode,
       artistId: dto.artistId,
-      artworkGenreId: dto.artworkGenreId,
-      artworkWorktypeId: dto.artworkWorktypeId,
-      artworkMaterialId: dto.artworkMaterialId,
-      artworkTechniqueId: dto.artworkTechniqueId,
+      artworkGenreId: mapEmpty(dto.artworkGenreId, id => id),
+      artworkWorktypeId: mapEmpty(dto.artworkWorktypeId, id => id),
+      artworkMaterialId: mapEmpty(dto.artworkMaterialId, id => id),
+      artworkTechniqueId: mapEmpty(dto.artworkTechniqueId, id => id),
       exhibitions: mapEmpty(dto.exhibitions, (list) => list.map(id => ({ id })), []),
-      image: mapEmpty(dto.image, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
+      image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), ArtworkImage.empty),
+      protectedImage: (dto.image !== undefined) ? ArtworkImage.empty : undefined,
     });
   }
 
@@ -178,6 +185,8 @@ export class AdminWriteController {
       throw new BadRequestException("gallery does not exist");
     if (await this.adminRepository.getExhibitionByName(dto.galleryId, dto.name) != null)
       throw new BadRequestException("name must be unique");
+    if (dto.activeRoomId != null && !await this.adminRepository.hasRoom(userId, dto.activeRoomId))
+      throw new BadRequestException("room does not exist");
     if (dto.artworks != null && dto.artworks !== "" && !await this.adminRepository.hasArtworks(userId, dto.artworks))
       throw new BadRequestException("artwork does not exist");
     const exhibition = await this.adminRepository.saveExhibition({
@@ -187,6 +196,7 @@ export class AdminWriteController {
       curator: dto.curator,
       public: dto.public,
       galleryId: dto.galleryId,
+      activeRoomId: mapEmpty(dto.activeRoomId, id => id),
       artworks: mapEmpty(dto.artworks, (list) => list.map(id => ({ id })), []),
     });
     return { id: exhibition.id };
@@ -202,6 +212,8 @@ export class AdminWriteController {
       throw new BadRequestException("gallery does not exist");
     if (dto.artworks != null && dto.artworks !== "" && !await this.adminRepository.hasArtworks(userId, dto.artworks))
       throw new BadRequestException("artwork does not exist");
+    if (dto.activeRoomId != null && !await this.adminRepository.hasRoom(userId, dto.activeRoomId))
+      throw new BadRequestException("room does not exist");
     const galleryId = dto.galleryId ?? exhibition.galleryId;
     const otherExhibition = (dto.name != null) ? await this.adminRepository.getExhibitionByName(galleryId, dto.name) : null;
     if (otherExhibition != null && otherExhibition.id !== id)
@@ -214,6 +226,7 @@ export class AdminWriteController {
       curator: dto.curator,
       public: dto.public,
       galleryId: dto.galleryId,
+      activeRoomId: mapEmpty(dto.activeRoomId, id => id),
       artworks: mapEmpty(dto.artworks, (list) => list.map(id => ({ id })), []),
     });
   }

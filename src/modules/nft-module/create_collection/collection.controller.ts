@@ -3,9 +3,9 @@ import { CollectionCreator } from './collection.service';
 import { CollectionDto } from './dto/CollectionDto';
 import { FormDataRequest } from 'nestjs-form-data';
 import { CollectionResponseDto } from './dto/CollectionResponseDto';
-import { AuthGuard } from '@modules/auth/helpers';
+import { SessionAuthGuard } from '@modules/auth/helpers';
 
-@UseGuards(AuthGuard)
+@UseGuards(SessionAuthGuard)
 @Controller('collection')
 export class CollectionController {
   constructor(private readonly appService: CollectionCreator) { }

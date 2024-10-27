@@ -8,10 +8,16 @@ import { ArtworkWorktype, ArtworkWorktypeId } from './artwork-worktype.entity';
 import { ArtworkTechnique, ArtworkTechniqueId } from './artwork-technique.entity';
 import { Nft, NftId } from './nft.entity';
 import { Image } from './image';
+import { ArtworkImage } from './artwork-image';
 import { ID } from '@common/helpers';
 import * as sharp from 'sharp';
 
 export type ArtworkId = ID<"Artwork">;
+
+export enum AiMode {
+  Automatic = 'automatic',
+  Manual = 'manual',
+}
 
 async function createUnityImage(image: Buffer, maxSize: number) {
   const sharpImage = sharp(image);
@@ -47,8 +53,11 @@ export class Artwork extends LabeledEntity {
   @Column({ nullable: true })
   artistId: ArtistId;
 
-  @Column(() => Image)
-  image: Image;
+  @Column(() => ArtworkImage)
+  image: ArtworkImage;
+
+  @Column(() => ArtworkImage)
+  protectedImage: ArtworkImage;
 
   @Column(() => Image)
   unityImage: Image;
@@ -56,34 +65,34 @@ export class Artwork extends LabeledEntity {
   @Column(() => Image)
   thumbnail: Image;
 
-  @Column('text')
+  @Column('text', { nullable: true })
   year: string;
 
-  @Column({ type: 'boolean', default: false })
-  ai: boolean;
+  @Column({ type: "enum", enum: AiMode, default: AiMode.Automatic })
+  aiMode: AiMode;
 
   @Column({ type: 'text', nullable: true })
   tags: string;
 
-  @ManyToOne(() => ArtworkGenre)
+  @ManyToOne(() => ArtworkGenre, { nullable: true })
   artworkGenre: ArtworkGenre;
 
   @Column({ nullable: true })
   artworkGenreId: ArtworkGenreId;
 
-  @ManyToOne(() => ArtworkMaterial)
+  @ManyToOne(() => ArtworkMaterial, { nullable: true })
   artworkMaterial: ArtworkMaterial;
 
   @Column({ nullable: true })
   artworkMaterialId: ArtworkMaterialId;
 
-  @ManyToOne(() => ArtworkTechnique)
+  @ManyToOne(() => ArtworkTechnique, { nullable: true })
   artworkTechnique: ArtworkTechnique;
 
   @Column({ nullable: true })
   artworkTechniqueId: ArtworkTechniqueId;
 
-  @ManyToOne(() => ArtworkWorktype)
+  @ManyToOne(() => ArtworkWorktype, { nullable: true })
   artworkWorktype: ArtworkWorktype;
 
   @Column({ nullable: true })
@@ -92,7 +101,7 @@ export class Artwork extends LabeledEntity {
   @ManyToMany(() => Exhibition, ex => ex.artworks, { onDelete: 'CASCADE' })
   exhibitions: Exhibition[];
 
-  @Column('text')
+  @Column('text', { nullable: true })
   measurements: string;
 
   @Column('integer', { nullable: true })
@@ -101,7 +110,7 @@ export class Artwork extends LabeledEntity {
   @Column('integer', { nullable: true })
   height: number;
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: false })
   public: boolean
 
   @OneToOne(() => Nft, nft => nft.artwork, { nullable: true })
@@ -111,6 +120,11 @@ export class Artwork extends LabeledEntity {
   @Column({ nullable: true })
   nftId: NftId;
 
+  @Column('int', { nullable: true })
+  importId: number;
+
+  get ai() { return this.protectedImage?.buffer != null; }
+
   @AfterLoad()
   afterLoad() {
     this._lastImage = this.image?.buffer;
@@ -119,7 +133,7 @@ export class Artwork extends LabeledEntity {
   @BeforeInsert()
   @BeforeUpdate()
   async updateImageData() {
-    const buffer = this.image?.buffer;
+    const buffer = this.protectedImage?.buffer ?? this.image?.buffer;
     if (buffer != this._lastImage) {
       if (buffer != null) {
         const imageInfo = await sharp(buffer).metadata();

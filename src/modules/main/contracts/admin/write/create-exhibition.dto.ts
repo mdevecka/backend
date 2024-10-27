@@ -1,6 +1,6 @@
-import { IsString, IsBoolean, IsOptional, IsUUID, IsDateString, IsArray, ValidateIf } from 'class-validator';
-import { EMPTY } from '@common/helpers';
-import { GalleryId, ArtworkId } from '@modules/app-db/entities';
+import { IsString, IsBooleanString, IsOptional, IsUUID, IsDateString, IsArray } from 'class-validator';
+import { EMPTY, AllowEmpty } from '@common/helpers';
+import { GalleryId, ArtworkId, UnityRoomId } from '@modules/app-db/entities';
 
 export class CreateExhibitionDto {
 
@@ -13,6 +13,7 @@ export class CreateExhibitionDto {
   @IsDateString()
   toDate: string;
 
+  @IsOptional()
   @IsString()
   curator: string;
 
@@ -20,13 +21,18 @@ export class CreateExhibitionDto {
   galleryId: GalleryId;
 
   @IsOptional()
-  @ValidateIf(ex => ex.artworks !== "")
+  @AllowEmpty()
+  @IsUUID()
+  activeRoomId: UnityRoomId | EMPTY;
+
+  @IsOptional()
+  @AllowEmpty()
   @IsArray()
   @IsUUID(null, { each: true })
   artworks: ArtworkId[] | EMPTY;
 
   @IsOptional()
-  @IsBoolean()
+  @IsBooleanString()
   public: boolean;
 
 }

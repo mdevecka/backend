@@ -1,12 +1,15 @@
-import { IsString, IsBoolean, IsOptional, IsUUID, IsDateString } from 'class-validator';
+import { IsString, IsDateString, IsBooleanString, IsOptional, IsUUID } from 'class-validator';
+import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
 import { CountryExists, ArtistCategoryExists } from '@modules/app-db/validators';
 import { CountryId, ArtistCategoryId } from '@modules/app-db/entities';
+import { EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
 
 export class CreateArtistDto {
 
   @IsString()
   name: string;
 
+  @IsOptional()
   @IsDateString()
   born: string;
 
@@ -15,15 +18,23 @@ export class CreateArtistDto {
   biography: string;
 
   @IsOptional()
-  @IsBoolean()
+  @IsBooleanString()
   public: boolean;
 
   @IsUUID()
   @CountryExists()
   countryId: CountryId;
 
+  @IsOptional()
+  @AllowEmpty()
   @IsUUID()
   @ArtistCategoryExists()
-  artistCategoryId: ArtistCategoryId;
+  artistCategoryId: ArtistCategoryId | EMPTY;
+
+  @IsOptional()
+  @AllowEmpty()
+  @IsFile()
+  @HasMimeType(imageMimeTypes)
+  avatar: MemoryStoredFile | EMPTY;
 
 }

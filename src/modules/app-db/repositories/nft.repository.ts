@@ -206,7 +206,7 @@ export class NftRepository {
       await this.wallets.save(newWallet);
       wallet = newWallet;
     }
-    else{
+    else {
       //If wallet already exists query collections also
       cols = await this.getWalletCols(walletAddress);
     }
@@ -239,13 +239,13 @@ export class NftRepository {
       const nftIdArr = nftId.split("-");
 
       //check if any collections are associated with this NFT
-      if(cols != null){
+      if (cols != null) {
         for (const col of cols) {
-          if(col.colData != null){
+          if (col.colData != null) {
             const colId = col.colData.id;
 
             //Compare to check if nft is associated with this collection
-            if(nftIdArr[0] == colId){
+            if (nftIdArr[0] == colId) {
               nft.collection = col;
               break;
             }
@@ -253,7 +253,7 @@ export class NftRepository {
         }
       }
 
-      if (nft.collection == null){
+      if (nft.collection == null) {
         this.logger.log(`NFT with id ${id} doesnt belong to any collection in the database`)
       }
 
