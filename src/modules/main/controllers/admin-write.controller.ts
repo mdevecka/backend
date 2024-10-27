@@ -1,6 +1,6 @@
 import { Controller, Post, Put, Patch, Delete, Param, NotFoundException, BadRequestException, ParseUUIDPipe, UseGuards, Body } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
-import { Image, UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId } from '@modules/app-db/entities';
+import { Image, ArtworkImage, UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId } from '@modules/app-db/entities';
 import { AdminRepository } from '@modules/app-db/repositories';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 import {
@@ -86,7 +86,8 @@ export class AdminWriteController {
       artworkMaterialId: mapEmpty(dto.artworkMaterialId, id => id),
       artworkTechniqueId: mapEmpty(dto.artworkTechniqueId, id => id),
       exhibitions: mapEmpty(dto.exhibitions, (list) => list.map(id => ({ id })), []),
-      image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
+      image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), ArtworkImage.empty),
+      protectedImage: (dto.image !== undefined) ? ArtworkImage.empty : undefined,
     });
     return { id: artwork.id };
   }
@@ -122,7 +123,8 @@ export class AdminWriteController {
       artworkMaterialId: mapEmpty(dto.artworkMaterialId, id => id),
       artworkTechniqueId: mapEmpty(dto.artworkTechniqueId, id => id),
       exhibitions: mapEmpty(dto.exhibitions, (list) => list.map(id => ({ id })), []),
-      image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
+      image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), ArtworkImage.empty),
+      protectedImage: (dto.image !== undefined) ? ArtworkImage.empty : undefined,
     });
   }
 

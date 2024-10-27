@@ -1,5 +1,5 @@
 import { readFileSync, existsSync } from 'fs';
-import { parse, resolve } from 'path';
+import { parse, resolve, join } from 'path';
 import { hash } from 'bcrypt';
 import * as sharp from 'sharp';
 import { NestFactory } from '@nestjs/core';
@@ -9,7 +9,7 @@ import { TypeOrmModule, InjectRepository, getDataSourceToken, getRepositoryToken
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { Repository, DataSource, DeepPartial, MoreThanOrEqual, Not, IsNull } from 'typeorm';
 import { Config } from './config';
-import { filterEntities, urlCombine } from '@common/helpers';
+import { filterEntities } from '@common/helpers';
 import * as se from './entities';
 import * as de from '@modules/app-db/entities';
 import slugify from 'slugify';
@@ -160,7 +160,7 @@ async function main() {
       if (importedArtworks.has(image.id))
         continue;
       let name = (image.name != '') ? image.name : parse(image.image.fileName).name;
-      const filePath = resolve(urlCombine(imageDir, image.image.filePath.replace('?', '%3F')));
+      const filePath = resolve(join(imageDir, image.image.filePath.replace('?', '%3F')));
       let slug = slugify(name, { lower: true });
       if (usedLabels.has(slug)) {
         const orig = name;

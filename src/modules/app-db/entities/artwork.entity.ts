@@ -54,10 +54,10 @@ export class Artwork extends LabeledEntity {
   artistId: ArtistId;
 
   @Column(() => ArtworkImage)
-  image: Image;
+  image: ArtworkImage;
 
   @Column(() => ArtworkImage)
-  protectedImage: Image;
+  protectedImage: ArtworkImage;
 
   @Column(() => Image)
   unityImage: Image;
@@ -67,9 +67,6 @@ export class Artwork extends LabeledEntity {
 
   @Column('text', { nullable: true })
   year: string;
-
-  @Column({ type: 'boolean', default: false })
-  ai: boolean;
 
   @Column({ type: "enum", enum: AiMode, default: AiMode.Automatic })
   aiMode: AiMode;
@@ -125,6 +122,8 @@ export class Artwork extends LabeledEntity {
 
   @Column('int', { nullable: true })
   importId: number;
+
+  get ai() { return this.protectedImage?.buffer != null; }
 
   @AfterLoad()
   afterLoad() {

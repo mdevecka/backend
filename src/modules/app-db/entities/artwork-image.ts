@@ -1,11 +1,15 @@
-import { Column } from "typeorm";
+import { Column, Index } from "typeorm";
+import { ID } from '@common/helpers';
+
+export type ArtworkImageId = ID<"ArtworkImage">;
 
 export class ArtworkImage {
 
-  static get empty() { return new Image(); }
+  static get empty() { return new ArtworkImage(); }
 
+  @Index()
   @Column("uuid", { nullable: true })
-  id: string;
+  id: ArtworkImageId;
 
   @Column({ type: "bytea", nullable: true, select: false })
   buffer: Buffer = null;
