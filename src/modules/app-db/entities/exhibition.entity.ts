@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, ManyToMany, JoinTable, OneToOne, Index } from 'typeorm';
+import { Entity, Column, ManyToOne, ManyToMany, JoinTable, JoinColumn, OneToOne, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Gallery, GalleryId } from './gallery.entity';
 import { Artwork } from './artwork.entity';
@@ -33,7 +33,7 @@ export class Exhibition extends LabeledEntity {
   @ManyToMany(() => Artwork, art => art.exhibitions, { onDelete: 'CASCADE' })
   artworks: Artwork[];
 
-  @JoinTable()
+  @JoinColumn()
   @OneToOne(() => UnityRoom)
   activeRoom: UnityRoom;
 
