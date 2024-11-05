@@ -21,6 +21,18 @@ export class CreateArtistDto {
   @IsBooleanString()
   public: boolean;
 
+  @IsOptional()
+  @IsString()
+  facebookProfileLink: string;
+
+  @IsOptional()
+  @IsString()
+  instagramProfileLink: string;
+
+  @IsOptional()
+  @IsString()
+  xProfileLink: string;
+
   @IsUUID()
   @CountryExists()
   countryId: CountryId;

@@ -11,7 +11,7 @@ import { AppConfig } from '@common/config';
 import { filterEntities } from '@common/helpers';
 import {
   BaseEntity, User, Country, Artist, ArtistCategory, Artwork, ArtworkGenre, ArtworkMaterial,
-  ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition, Nft,
+  ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition, Nft, Resource,
   UnityRoom, UnityWall, UnityImage, UnityLamp, UnityItem, UnityItemType,
 } from '@modules/app-db/entities';
 import * as entities from '@modules/app-db/entities';
@@ -1023,6 +1023,20 @@ async function main() {
           "wallets": [wallets[1]],
         }
       ]);
+      const resources = await createEntities(Resource, [
+        {
+          name: "great song",
+          data: readFileSync("./samples/sound 22.mp3"),
+          mimeType: "audio/mpeg",
+          user: users[0],
+        },
+        {
+          name: "desert environment",
+          data: getImage("artworks/01.jpg"),
+          mimeType: "image/jpeg",
+          user: users[0],
+        },
+      ]);
       const artists = await createEntities(Artist, [
         {
           "name": "Martin Benka",
@@ -1313,7 +1327,7 @@ async function main() {
           "scale": 2
         },
         {
-          "artwork": artworks[1],
+          "artwork": artworks[0],
           "x": 4,
           "y": 1.4,
           "scale": 2
@@ -1337,7 +1351,7 @@ async function main() {
           "scale": 2
         },
         {
-          "artwork": artworks[1],
+          "artwork": artworks[5],
           "x": 6,
           "y": 1.6,
           "scale": 2
@@ -1420,6 +1434,8 @@ async function main() {
           "lamps": lamps,
           "items": items,
           "exhibition": exhibitions[0],
+          "environmentImage": resources[1],
+          "backgroundMusic": resources[0],
         }
       ]);
     });

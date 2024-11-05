@@ -1,14 +1,14 @@
 import { Controller, Post, Put, Patch, Delete, Param, NotFoundException, BadRequestException, ParseUUIDPipe, UseGuards, Body } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
-import { Image, ArtworkImage, UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId } from '@modules/app-db/entities';
+import { Image, ArtworkImage, UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId, ResourceId } from '@modules/app-db/entities';
 import { AdminRepository } from '@modules/app-db/repositories';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 import {
   CreateArtistDto, UpdateArtistDto, CreateArtworkDto, UpdateArtworkDto,
   CreateGalleryDto, UpdateGalleryDto, CreateExhibitionDto, UpdateExhibitionDto,
-  SaveDesignerRoomDto
+  CreateResourceDto, UpdateResourceDto, SaveDesignerRoomDto
 } from '../contracts/admin/write';
-import { mapEmpty } from '@common/helpers';
+import { mapEmpty, imageMimeTypes, audioMimeTypes } from '@common/helpers';
 import { randomUUID } from 'crypto';
 
 @UseGuards(SessionAuthGuard)
@@ -28,6 +28,9 @@ export class AdminWriteController {
       born: dto.born,
       biography: dto.biography,
       public: dto.public,
+      facebookProfileLink: dto.facebookProfileLink,
+      instagramProfileLink: dto.instagramProfileLink,
+      xProfileLink: dto.xProfileLink,
       countryId: dto.countryId,
       artistCategoryId: mapEmpty(dto.artistCategoryId, id => id),
       userId: userId,
@@ -50,6 +53,9 @@ export class AdminWriteController {
       born: dto.born,
       biography: dto.biography,
       public: dto.public,
+      facebookProfileLink: dto.facebookProfileLink,
+      instagramProfileLink: dto.instagramProfileLink,
+      xProfileLink: dto.xProfileLink,
       countryId: dto.countryId,
       artistCategoryId: mapEmpty(dto.artistCategoryId, id => id),
       avatar: mapEmpty(dto.avatar, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
@@ -238,15 +244,56 @@ export class AdminWriteController {
     await this.adminRepository.removeExhibition(id);
   }
 
+  @Post('resource/create')
+  @FormDataRequest()
+  async createResource(@Body() dto: CreateResourceDto, @GetUserId() userId: UserId) {
+    if (await this.adminRepository.getResourceByName(userId, dto.name) != null)
+      throw new BadRequestException("name must be unique");
+    const resource = await this.adminRepository.saveResource({
+      name: dto.name,
+      data: dto.data.buffer,
+      mimeType: dto.data.mimeType,
+      userId: userId,
+    });
+    return { id: resource.id };
+  }
+
+  @Patch('resource/update/:id')
+  @FormDataRequest()
+  async updateResource(@Param('id', ParseUUIDPipe) id: ResourceId, @Body() dto: UpdateResourceDto, @GetUserId() userId: UserId) {
+    if (!await this.adminRepository.hasResource(userId, id))
+      throw new NotFoundException();
+    const otherResource = (dto.name != null) ? await this.adminRepository.getResourceByName(userId, dto.name) : null;
+    if (otherResource != null && otherResource.id !== id)
+      throw new BadRequestException("name must be unique");
+    await this.adminRepository.saveResource({
+      id: id,
+      name: dto.name,
+      data: dto.data?.buffer,
+      mimeType: dto.data?.mimeType,
+    });
+  }
+
+  @Delete('resource/delete/:id')
+  async deleteResource(@Param('id', ParseUUIDPipe) id: ResourceId, @GetUserId() userId: UserId) {
+    if (!await this.adminRepository.hasResource(userId, id))
+      throw new NotFoundException();
+    await this.adminRepository.removeResource(id);
+  }
+
   @Put('designer/room/save')
   async saveDesignerRoom(@Body() dto: SaveDesignerRoomDto, @GetUserId() userId: UserId) {
     if (!await this.adminRepository.canUseRoomId(userId, dto.id))
       throw new BadRequestException("invalid room id");
     if (!await this.adminRepository.hasExhibition(userId, dto.exhibitionId))
       throw new BadRequestException("exhibition does not exist");
-    const artworkIds = dto.walls.flatMap(w => [w.artworkId, ...w.images.map(i => i.artworkId)]);
+    const artworkIds = dto.walls.flatMap(w => [w.artworkId, ...w.images.map(i => i.artworkId)]).filter(id => id != null);
     if (!await this.adminRepository.hasArtworks(userId, artworkIds))
       throw new BadRequestException("artwork does not exist");
+    if (dto.environmentImageId != null && !await this.adminRepository.hasResource(userId, dto.environmentImageId, imageMimeTypes))
+      throw new BadRequestException("resource does not exist or is not valid image");
+    if (dto.backgroundMusicId != null && !await this.adminRepository.hasResource(userId, dto.backgroundMusicId, audioMimeTypes))
+      throw new BadRequestException("resource does not exist or is not valid audio");
     await this.adminRepository.saveRoom({
       id: dto.id,
       name: dto.name,
@@ -255,6 +302,8 @@ export class AdminWriteController {
       width: dto.width,
       height: dto.height,
       length: dto.length,
+      environmentImageId: dto.environmentImageId ?? null,
+      backgroundMusicId: dto.backgroundMusicId ?? null,
       exhibitionId: dto.exhibitionId,
       walls: dto.walls.map(wall => ({
         x: wall.x,

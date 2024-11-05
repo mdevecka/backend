@@ -125,6 +125,8 @@ export class Artwork extends LabeledEntity {
 
   get ai() { return this.protectedImage?.buffer != null; }
 
+  get slug() { return `${this.artist.slug}/${this.label}`; }
+
   @AfterLoad()
   afterLoad() {
     this._lastImage = this.image?.buffer;

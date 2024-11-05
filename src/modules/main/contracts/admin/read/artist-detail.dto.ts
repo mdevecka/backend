@@ -10,4 +10,7 @@ export interface ArtistDetailDto {
   country: CountryDto;
   artistCategory: OptionDto<ArtistCategoryId>;
   public: boolean;
+  facebookProfileLink: string;
+  instagramProfileLink: string;
+  xProfileLink: string;
 }

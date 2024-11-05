@@ -20,6 +20,8 @@ export * from './gallery-exhibition.dto';
 export * from './mapper';
 export * from './nft.dto';
 export * from './nft-detail.dto';
+export * from './resource.dto';
+export * from './resource-detail.dto';
 export * from './room.dto';
 export * from './user.dto';
 export * from './wallet.dto';
