@@ -4,4 +4,5 @@ export interface ResourceDetailDto {
   id: ResourceId;
   name: string;
   mimeType: string;
+  public: boolean;
 }

@@ -253,6 +253,7 @@ export class AdminWriteController {
       name: dto.name,
       data: dto.data.buffer,
       mimeType: dto.data.mimeType,
+      public: dto.public,
       userId: userId,
     });
     return { id: resource.id };
@@ -271,6 +272,7 @@ export class AdminWriteController {
       name: dto.name,
       data: dto.data?.buffer,
       mimeType: dto.data?.mimeType,
+      public: dto.public,
     });
   }
 

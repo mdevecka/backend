@@ -616,6 +616,7 @@ export function createResourceDto(resource: Resource): ResourceDto {
     id: resource.id,
     name: resource.name,
     mimeType: resource.mimeType,
+    public: resource.public,
   };
 }
 
@@ -624,5 +625,6 @@ export function createResourceDetailDto(resource: Resource): ResourceDetailDto {
     id: resource.id,
     name: resource.name,
     mimeType: resource.mimeType,
+    public: resource.public,
   };
 }
