@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, IsNull, Not } from 'typeorm';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, ArtistCategory, ArtworkTechnique,
-  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft, Collection, Wallet,
+  ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft, Collection, Wallet, Resource,
   UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, CountryId, ArtistCategoryId, ArtworkTechniqueId,
-  ArtworkMaterialId, ArtworkGenreId, ArtworkWorktypeId, UnityRoomId, UnityItemTypeId, NftId, CollectionId, WalletId,
+  ArtworkMaterialId, ArtworkGenreId, ArtworkWorktypeId, UnityRoomId, UnityItemTypeId, NftId, CollectionId, WalletId, ResourceId,
 } from '../entities';
 
 @Injectable()
@@ -28,6 +28,7 @@ export class AdminRepository {
     @InjectRepository(Nft) private nfts: Repository<Nft>,
     @InjectRepository(Collection) private collections: Repository<Collection>,
     @InjectRepository(Wallet) private wallets: Repository<Wallet>,
+    @InjectRepository(Resource) private resources: Repository<Resource>,
   ) { }
 
   async getUsers() {
@@ -106,6 +107,12 @@ export class AdminRepository {
     });
   }
 
+  async getResources(userId: UserId) {
+    return this.resources.find({
+      where: { userId: userId }
+    });
+  }
+
   async getRoomExhibitionInfo(userId: UserId, id: UnityRoomId) {
     return this.unityRooms.findOne({
       select: {
@@ -181,6 +188,15 @@ export class AdminRepository {
       where: {
         id: id,
         gallery: { userId: userId }
+      }
+    });
+  }
+
+  async getResourceDetail(userId: UserId, id: ResourceId) {
+    return this.resources.findOne({
+      where: {
+        id: id,
+        userId: userId,
       }
     });
   }
@@ -342,6 +358,16 @@ export class AdminRepository {
     }).then(a => (a != null && a.image?.buffer != null) ? { image: a.image?.buffer, mimeType: a.image?.mimeType } : null);
   }
 
+  async getArtworkProtectedImage(userId: UserId, id: ArtworkId) {
+    return this.artworks.findOne({
+      select: { id: true, protectedImage: { buffer: true, mimeType: true } },
+      where: {
+        id: id,
+        artist: { userId: userId },
+      }
+    }).then(a => (a != null && a.protectedImage?.buffer != null) ? { image: a.protectedImage?.buffer, mimeType: a.protectedImage?.mimeType } : null);
+  }
+
   async getArtworkThumbnail(userId: UserId, id: ArtworkId) {
     return this.artworks.findOne({
       select: { id: true, thumbnail: { buffer: true, mimeType: true } },
@@ -379,6 +405,16 @@ export class AdminRepository {
         user: { id: userId }
       }
     }).then(a => (a != null && a.avatar?.buffer != null) ? { image: a.avatar?.buffer, mimeType: a.avatar?.mimeType } : null);
+  }
+
+  async getResourceContent(userId: UserId, id: ResourceId) {
+    return this.resources.findOne({
+      select: { data: true, mimeType: true },
+      where: {
+        id: id,
+        userId: userId,
+      }
+    });
   }
 
   async getDesignerRoom(userId: UserId, id: UnityRoomId) {
@@ -558,6 +594,13 @@ export class AdminRepository {
     return ids.every(id => artworks.some(ex => ex.id === id));
   }
 
+  async hasResource(userId: UserId, id: ResourceId, mimeTypes: string[] = null) {
+    const resource = await this.resources.findOneBy({ id: id, userId: userId });
+    if (resource == null)
+      return false;
+    return (mimeTypes == null || mimeTypes.includes(resource.mimeType));
+  }
+
   async hasRoom(userId: UserId, id: UnityRoomId) {
     return this.unityRooms.existsBy({ id: id, exhibition: { gallery: { userId: userId } } });
   }
@@ -577,12 +620,16 @@ export class AdminRepository {
     return this.galleries.findOneBy({ name: name, userId: userId });
   }
 
-  async getArtworkByName(artistId: string, name: string) {
+  async getArtworkByName(artistId: ArtistId, name: string) {
     return this.artworks.findOneBy({ name: name, artistId: artistId });
   }
 
-  async getExhibitionByName(galleryId: string, name: string) {
+  async getExhibitionByName(galleryId: GalleryId, name: string) {
     return this.exhibitions.findOneBy({ name: name, galleryId: galleryId });
+  }
+
+  async getResourceByName(userId: UserId, name: string) {
+    return this.resources.findOneBy({ name: name, userId: userId });
   }
 
   async saveArtist(artist: DeepPartial<Artist>) {
@@ -633,6 +680,16 @@ export class AdminRepository {
   async removeRoom(id: UnityRoomId) {
     const entity = this.unityRooms.create({ id: id });
     return this.unityRooms.remove(entity);
+  }
+
+  async saveResource(res: DeepPartial<Resource>) {
+    const entity = this.resources.create(res);
+    return this.resources.save(entity);
+  }
+
+  async removeResource(id: ResourceId) {
+    const entity = this.resources.create({ id: id });
+    return this.resources.remove(entity);
   }
 
 }

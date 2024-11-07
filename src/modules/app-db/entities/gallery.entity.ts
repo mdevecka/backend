@@ -37,4 +37,6 @@ export class Gallery extends LabeledEntity {
   @Column({ nullable: true })
   userId: UserId;
 
+  get slug() { return `${this.user.label}/${this.label}`; }
+
 }

@@ -61,6 +61,15 @@ function findDuplicates<T extends { id: number }, S>(items: T[], keySelector: (i
   return { items: filteredItems, map: remap };
 }
 
+function printProgress(p: number) {
+  const totalBarLength = 20;
+  process.stdout.cursorTo(0);
+  const filledLen = (p / 100) * totalBarLength;
+  const progressBar = '█'.repeat(filledLen) + '▒'.repeat(totalBarLength - filledLen);
+  process.stdout.write(`image load: [${progressBar}] ${p}%`);
+  process.stdout.clearLine(1);
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: ['./utility/.env.utility'] }),
@@ -153,7 +162,7 @@ async function main() {
       await mgr.save(newArtists.map(i => i.artist));
     });
     let newCount = 0;
-    const tasks: Promise<any>[] = [];
+    let tasks: Promise<any>[] = [];
     const total = Math.min(imageImportLimit, filteredImages.items.length);
     for (let i = 0; i < total; i++) {
       const image = filteredImages.items[i];
@@ -187,15 +196,20 @@ async function main() {
       const lp = Math.floor(((i - 1) / (total - 1)) * 20);
       const p = Math.floor((i / (total - 1)) * 20);
       if (p > lp) {
-        console.log(`image load ${p * 5}% done`);
+        printProgress(p * 5);
         await Promise.all(tasks);
+        tasks = [];
       }
     }
+    process.stdout.write('\n');
     console.log("new artworks", newCount, `(${total}/${filteredImages.items.length} processed)`);
     console.log("saving...");
     await Promise.all(tasks);
     console.log("done");
     console.timeEnd("total time");
+  }
+  catch (e) {
+    console.error(e);
   }
   finally {
     await app.close();

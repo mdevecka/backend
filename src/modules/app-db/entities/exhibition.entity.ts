@@ -43,4 +43,6 @@ export class Exhibition extends LabeledEntity {
   @Column({ type: 'boolean', default: false })
   public: boolean;
 
+  get slug() { return `${this.gallery.slug}/${this.label}`; }
+
 }

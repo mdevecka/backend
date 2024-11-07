@@ -1,7 +1,7 @@
-import { IsString, IsNumber, IsBoolean, IsArray, IsUUID, ValidateNested } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsArray, IsUUID, IsOptional, ValidateNested } from 'class-validator';
 import { ItemTypeExists } from '@modules/app-db/validators';
 import { Type } from 'class-transformer';
-import { UnityRoomId, ExhibitionId, ArtworkId, UnityItemTypeId } from '@modules/app-db/entities';
+import { UnityRoomId, ExhibitionId, ArtworkId, UnityItemTypeId, ResourceId } from '@modules/app-db/entities';
 
 export class SaveDesignerRoomDto {
 
@@ -25,6 +25,14 @@ export class SaveDesignerRoomDto {
 
   @IsNumber()
   length: number;
+
+  @IsOptional()
+  @IsUUID()
+  environmentImageId: ResourceId;
+
+  @IsOptional()
+  @IsUUID()
+  backgroundMusicId: ResourceId;
 
   @IsUUID()
   exhibitionId: ExhibitionId;
@@ -75,6 +83,7 @@ export class CreateDesignerWallDto {
   @IsNumber()
   opacity: number;
 
+  @IsOptional()
   @IsString()
   artworkId: ArtworkId;
 

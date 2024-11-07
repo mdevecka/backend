@@ -7,6 +7,8 @@ export type Environment = "local" | "development" | "production" | "test";
 
 export const imageMimeTypes = ['image/jpeg', 'image/png', 'image/tiff'];
 
+export const audioMimeTypes = ['audio/mpeg'];
+
 export function getEnv(): Environment {
   return (process.env.NODE_ENV as Environment) || "local";
 }

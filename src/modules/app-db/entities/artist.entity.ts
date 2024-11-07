@@ -21,6 +21,15 @@ export class Artist extends LabeledEntity {
   @Column({ type: 'text', nullable: true })
   biography: string;
 
+  @Column({ type: 'text', nullable: true })
+  facebookProfileLink: string;
+
+  @Column({ type: 'text', nullable: true })
+  instagramProfileLink: string;
+
+  @Column({ type: 'text', nullable: true })
+  xProfileLink: string;
+
   @ManyToOne(() => Country)
   country: Country;
 
@@ -47,5 +56,7 @@ export class Artist extends LabeledEntity {
 
   @Column('int', { nullable: true })
   importId: number;
+
+  get slug() { return `${this.user.label}/${this.label}`; }
 
 }

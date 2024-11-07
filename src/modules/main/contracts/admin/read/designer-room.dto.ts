@@ -1,4 +1,4 @@
-import { ArtworkId, ExhibitionId, UnityRoomId, UnityWallId, UnityImageId, UnityLampId, UnityItemId, UnityItemTypeId } from '@modules/app-db/entities';
+import { ArtworkId, ExhibitionId, UnityRoomId, UnityWallId, UnityImageId, UnityLampId, UnityItemId, UnityItemTypeId, ResourceId } from '@modules/app-db/entities';
 
 export interface DesignerRoomDto {
   id: UnityRoomId;
@@ -8,6 +8,8 @@ export interface DesignerRoomDto {
   width: number;
   height: number;
   length: number;
+  environmentImageId: ResourceId;
+  backgroundMusicId: ResourceId;
   exhibitionId: ExhibitionId;
   walls: DesignerWallDto[];
   lamps: DesignerLampDto[];

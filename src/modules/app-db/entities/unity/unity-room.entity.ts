@@ -1,6 +1,7 @@
 import { Entity, Column, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../base.entity';
 import { Exhibition, ExhibitionId } from '../exhibition.entity';
+import { Resource, ResourceId } from '../resource.entity';
 import { UnityWall } from './unity-wall.entity';
 import { UnityLamp } from './unity-lamp.entity';
 import { UnityItem } from './unity-item.entity';
@@ -45,5 +46,17 @@ export class UnityRoom extends BaseEntity {
 
   @OneToMany(() => UnityItem, item => item.room, { cascade: ['insert', 'update'] })
   items: UnityItem[];
+
+  @ManyToOne(() => Resource, { onDelete: 'SET NULL' })
+  environmentImage: Resource;
+
+  @Column({ nullable: true })
+  environmentImageId: ResourceId;
+
+  @ManyToOne(() => Resource, { onDelete: 'SET NULL' })
+  backgroundMusic: Resource;
+
+  @Column({ nullable: true })
+  backgroundMusicId: ResourceId;
 
 }

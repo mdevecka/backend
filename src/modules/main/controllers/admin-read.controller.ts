@@ -1,9 +1,9 @@
 import { Controller, Get, Param, NotFoundException, Response, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { AdminRepository } from '@modules/app-db/repositories';
-import { UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId, NftId, CollectionId, WalletId } from '@modules/app-db/entities';
+import { UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId, NftId, CollectionId, WalletId, ResourceId } from '@modules/app-db/entities';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
-import { mapAsync, mapOptionsAsync } from '@common/helpers';
+import { mapAsync, mapOptionsAsync, imageMimeTypes, audioMimeTypes } from '@common/helpers';
 import * as mapper from '../contracts/admin/read/mapper';
 
 @UseGuards(SessionAuthGuard)
@@ -51,6 +51,21 @@ export class AdminReadController {
     return mapAsync(this.adminRepository.getRooms(userId), mapper.createRoomDto);
   }
 
+  @Get('resource')
+  async getResources(@GetUserId() userId: UserId) {
+    return mapAsync(this.adminRepository.getResources(userId), mapper.createResourceDto);
+  }
+
+  @Get('resource/image')
+  async getImageResources(@GetUserId() userId: UserId) {
+    return mapAsync(this.adminRepository.getResources(userId).then(list => list.filter(res => imageMimeTypes.includes(res.mimeType))), mapper.createResourceDto);
+  }
+
+  @Get('resource/audio')
+  async getAudioResources(@GetUserId() userId: UserId) {
+    return mapAsync(this.adminRepository.getResources(userId).then(list => list.filter(res => audioMimeTypes.includes(res.mimeType))), mapper.createResourceDto);
+  }
+
   @Get('artist/:id')
   async getArtistDetail(@Param('id', ParseUUIDPipe) id: ArtistId, @GetUserId() userId: UserId) {
     const artist = await this.adminRepository.getArtistDetail(userId, id);
@@ -81,6 +96,22 @@ export class AdminReadController {
     if (exhibition == null)
       throw new NotFoundException();
     return mapper.createExhibitionDetailDto(exhibition);
+  }
+
+  @Get('resource/:id')
+  async getResourceDetail(@Param('id', ParseUUIDPipe) id: ResourceId, @GetUserId() userId: UserId) {
+    const res = await this.adminRepository.getResourceDetail(userId, id);
+    if (res == null)
+      throw new NotFoundException();
+    return mapper.createResourceDetailDto(res);
+  }
+
+  @Get('resource/:id/content')
+  async getResourceContent(@Param('id', ParseUUIDPipe) id: ResourceId, @GetUserId() userId: UserId, @Response() res: ExpressResponse) {
+    const item = await this.adminRepository.getResourceContent(userId, id);
+    if (item == null)
+      throw new NotFoundException();
+    res.set({ "Content-Type": item.mimeType }).send(item.data);
   }
 
   @Get('artwork/:id/exhibition')
@@ -178,9 +209,12 @@ export class AdminReadController {
 
   @Get('artwork/:id/image')
   async getArtworkImage(@Param('id', ParseUUIDPipe) id: ArtworkId, @GetUserId() userId: UserId, @Response() res: ExpressResponse) {
-    const item = await this.adminRepository.getArtworkImage(userId, id);
-    if (item == null)
-      throw new NotFoundException();
+    let item = await this.adminRepository.getArtworkProtectedImage(userId, id);
+    if (item == null) {
+      item = await this.adminRepository.getArtworkImage(userId, id);
+      if (item == null)
+        throw new NotFoundException();
+    }
     res.set({ "Content-Type": item.mimeType }).send(item.image);
   }
 

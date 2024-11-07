@@ -22,10 +22,12 @@ import { CollectionDto, CollectionNftDto } from './collection.dto';
 import { CollectionDetailDto, CollectionDetailNftDto } from './collection-detail.dto';
 import { WalletDto, WalletCollectionDto, WalletCollectionNftDto } from './wallet.dto';
 import { WalletDetailDto, WalletDetailCollectionDto, WalletDetailCollectionNftDto } from './wallet-detail.dto';
+import { ResourceDto } from './resource.dto';
+import { ResourceDetailDto } from './resource-detail.dto';
 import { CountryDto } from './country.dto';
 import { createOptionDto, mapEmpty } from '@common/helpers';
 import {
-  User, Artist, Artwork, Gallery, Exhibition, Country, UnityRoom, UnityItemType, Nft, Collection, Wallet,
+  User, Artist, Artwork, Gallery, Exhibition, Country, UnityRoom, UnityItemType, Nft, Collection, Wallet, Resource,
 } from '@modules/app-db/entities';
 
 export function createCountryDto(country: Country): CountryDto {
@@ -146,6 +148,9 @@ export function createArtistDetailDto(artist: Artist): ArtistDetailDto {
     country: createCountryDto(artist.country),
     artistCategory: createOptionDto(artist.artistCategory),
     public: artist.public,
+    facebookProfileLink: artist.facebookProfileLink,
+    instagramProfileLink: artist.instagramProfileLink,
+    xProfileLink: artist.xProfileLink,
   };
 }
 
@@ -536,6 +541,8 @@ export function createDesignerRoomDto(room: UnityRoom): DesignerRoomDto {
     width: room.width,
     height: room.height,
     length: room.length,
+    environmentImageId: room.environmentImageId,
+    backgroundMusicId: room.backgroundMusicId,
     exhibitionId: room.exhibitionId,
     walls: room.walls.map(wall => ({
       id: wall.id,
@@ -601,5 +608,23 @@ export function createDesignerLibraryItemDto(itemType: UnityItemType): DesignerL
   return {
     id: itemType.id,
     name: itemType.name,
+  };
+}
+
+export function createResourceDto(resource: Resource): ResourceDto {
+  return {
+    id: resource.id,
+    name: resource.name,
+    mimeType: resource.mimeType,
+    public: resource.public,
+  };
+}
+
+export function createResourceDetailDto(resource: Resource): ResourceDetailDto {
+  return {
+    id: resource.id,
+    name: resource.name,
+    mimeType: resource.mimeType,
+    public: resource.public,
   };
 }
