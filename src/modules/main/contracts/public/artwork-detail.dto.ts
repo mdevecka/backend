@@ -1,7 +1,6 @@
 export interface ArtworkDetailDto {
   name: string;
   description: string;
-  slug: string;
   artist: {
     name: string;
     born: string;
