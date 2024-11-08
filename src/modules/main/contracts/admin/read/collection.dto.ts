@@ -7,9 +7,10 @@ export interface CollectionNftDto {
   nftData: {
     id: string;
     name: string;
-    metadata: string;
+    description: string;
     image: string;
   }
+  onlineCheck: string;
   canBeMinted: boolean;
 }
 
@@ -19,9 +20,10 @@ export interface CollectionDto {
   colData: {
     id: string;
     name: string;
-    metadata: string;
+    description: string;
     image: string;
   }
+  onlineCheck: string;
   canBeMinted: boolean;
   nfts: CollectionNftDto[];
 }

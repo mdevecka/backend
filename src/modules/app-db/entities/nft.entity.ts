@@ -11,7 +11,7 @@ export type NftId = ID<"Nft">;
 export interface NftData {
   id: string;
   name: string;
-  metadata: string;
+  description: string;
   image: string;
 }
 
@@ -31,6 +31,9 @@ export class Nft extends BaseEntity {
 
   @Column({ type: 'jsonb', unique: true })
   nftData: NftData;
+
+  @Column('text', { nullable: true })
+  onlineCheck: string;
 
   @OneToOne(() => User, user => user.trialMint)
   user: User;

@@ -80,19 +80,21 @@ export function createArtworkDto(artwork: Artwork): ArtworkDto {
       nftData: mapEmpty(nft.nftData, nftData => ({
         id: nftData.id,
         name: nftData.name,
-        metadata: nftData.metadata,
+        description: nftData.description,
         image: nftData.image,
       })),
+      onlineCheck: nft.onlineCheck,
       collection: mapEmpty(nft.collection, col => ({
         id: col.id,
         walletId: col.walletId,
         colData: mapEmpty(col.colData, colData => ({
           id: colData.id,
           name: colData.name,
-          metadata: colData.metadata,
+          description: colData.description,
           image: colData.image,
-        }))
-      }))
+        })),
+        onlineCheck: col.onlineCheck,
+      })),
     })),
     ai: artwork.ai,
     aiMode: artwork.aiMode,
@@ -172,18 +174,20 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
       nftData: mapEmpty(nft.nftData, nftData => ({
         id: nftData.id,
         name: nftData.name,
-        metadata: nftData.metadata,
+        description: nftData.description,
         image: nftData.image,
       })),
+      onlineCheck: nft.onlineCheck,
       collection: mapEmpty(nft.collection, col => ({
         id: col.id,
         walletId: col.walletId,
         colData: mapEmpty(col.colData, colData => ({
           id: colData.id,
           name: colData.name,
-          metadata: colData.metadata,
+          description: colData.description,
           image: colData.image,
-        }))
+        })),
+        onlineCheck: col.onlineCheck,
       }))
     })),
     ai: artwork.ai,
@@ -346,9 +350,10 @@ export function createNftDto(nft: Nft): NftDto {
     nftData: {
       id: nft.nftData.id,
       name: nft.nftData.name,
-      metadata: nft.nftData.metadata,
+      description: nft.nftData.description,
       image: nft.nftData.image,
     },
+    onlineCheck: nft.onlineCheck,
     canBeMinted: nft.canBeMinted,
     artwork: mapEmpty(nft.artwork, art => ({
       id: art.id,
@@ -378,9 +383,10 @@ export function createNftDetailDto(nft: Nft): NftDetailDto {
     nftData: {
       id: nft.nftData.id,
       name: nft.nftData.name,
-      metadata: nft.nftData.metadata,
+      description: nft.nftData.description,
       image: nft.nftData.image,
     },
+    onlineCheck: nft.onlineCheck,
     canBeMinted: nft.canBeMinted,
     artwork: mapEmpty(nft.artwork, art => ({
       id: art.id,
@@ -409,9 +415,10 @@ export function createCollectionDto(col: Collection): CollectionDto {
     colData: {
       id: col.colData.id,
       name: col.colData.name,
-      metadata: col.colData.metadata,
+      description: col.colData.description,
       image: col.colData.image,
     },
+    onlineCheck: col.onlineCheck,
     canBeMinted: col.canBeMinted,
     nfts: col.nfts.map((nft): CollectionNftDto => ({
       id: nft.id,
@@ -420,9 +427,10 @@ export function createCollectionDto(col: Collection): CollectionDto {
       nftData: {
         id: nft.nftData.id,
         name: nft.nftData.name,
-        metadata: nft.nftData.metadata,
+        description: nft.nftData.description,
         image: nft.nftData.image,
       },
+      onlineCheck: nft.onlineCheck,
       canBeMinted: nft.canBeMinted,
     })),
   };
@@ -435,9 +443,10 @@ export function createCollectionDetailDto(col: Collection): CollectionDetailDto 
     colData: {
       id: col.colData.id,
       name: col.colData.name,
-      metadata: col.colData.metadata,
+      description: col.colData.description,
       image: col.colData.image,
     },
+    onlineCheck: col.onlineCheck,
     canBeMinted: col.canBeMinted,
     nfts: col.nfts.map((nft): CollectionDetailNftDto => ({
       id: nft.id,
@@ -446,9 +455,10 @@ export function createCollectionDetailDto(col: Collection): CollectionDetailDto 
       nftData: {
         id: nft.nftData.id,
         name: nft.nftData.name,
-        metadata: nft.nftData.metadata,
+        description: nft.nftData.description,
         image: nft.nftData.image,
       },
+      onlineCheck: nft.onlineCheck,
       canBeMinted: nft.canBeMinted,
     })),
   };
@@ -463,9 +473,10 @@ export function createWalletDto(wallet: Wallet): WalletDto {
       colData: {
         id: col.colData.id,
         name: col.colData.name,
-        metadata: col.colData.metadata,
+        description: col.colData.description,
         image: col.colData.image,
       },
+      onlineCheck: col.onlineCheck,
       canBeMinted: col.canBeMinted,
       nfts: col.nfts.map((nft): WalletCollectionNftDto => ({
         id: nft.id,
@@ -473,9 +484,10 @@ export function createWalletDto(wallet: Wallet): WalletDto {
         nftData: {
           id: nft.nftData.id,
           name: nft.nftData.name,
-          metadata: nft.nftData.metadata,
+          description: nft.nftData.description,
           image: nft.nftData.image,
         },
+        onlineCheck: nft.onlineCheck,
         canBeMinted: nft.canBeMinted,
       }))
     })),
@@ -485,9 +497,10 @@ export function createWalletDto(wallet: Wallet): WalletDto {
       nftData: {
         id: nft.nftData.id,
         name: nft.nftData.name,
-        metadata: nft.nftData.metadata,
+        description: nft.nftData.description,
         image: nft.nftData.image,
       },
+      onlineCheck: nft.onlineCheck,
       canBeMinted: nft.canBeMinted,
     }))
   };
@@ -502,9 +515,10 @@ export function createWalletDetailDto(wallet: Wallet): WalletDetailDto {
       colData: {
         id: col.colData.id,
         name: col.colData.name,
-        metadata: col.colData.metadata,
+        description: col.colData.description,
         image: col.colData.image,
       },
+      onlineCheck: col.onlineCheck,
       canBeMinted: col.canBeMinted,
       nfts: col.nfts.map((nft): WalletDetailCollectionNftDto => ({
         id: nft.id,
@@ -512,9 +526,10 @@ export function createWalletDetailDto(wallet: Wallet): WalletDetailDto {
         nftData: {
           id: nft.nftData.id,
           name: nft.nftData.name,
-          metadata: nft.nftData.metadata,
+          description: nft.nftData.description,
           image: nft.nftData.image,
         },
+        onlineCheck: nft.onlineCheck,
         canBeMinted: nft.canBeMinted,
       }))
     })),
@@ -524,9 +539,10 @@ export function createWalletDetailDto(wallet: Wallet): WalletDetailDto {
       nftData: {
         id: nft.nftData.id,
         name: nft.nftData.name,
-        metadata: nft.nftData.metadata,
+        description: nft.nftData.description,
         image: nft.nftData.image,
       },
+      onlineCheck: nft.onlineCheck,
       canBeMinted: nft.canBeMinted,
     }))
   };

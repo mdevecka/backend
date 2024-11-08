@@ -108,7 +108,7 @@ export class NftCreator {
     //Get nft metadata and update name, metadata, image columns
     nft.nftData.image = image;
     nft.nftData.name = name;
-    nft.nftData.metadata = metadataLink;
+    nft.nftData.description = metadataLink;
     await this.nftRepository.updateNFT(nft.id, nft.nftData);
 
   }

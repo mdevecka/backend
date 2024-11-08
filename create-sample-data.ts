@@ -936,7 +936,7 @@ async function main() {
           nftData: {
             id: "425-8",
             name: "Random NFT",
-            metadata: "NFT meta",
+            description: "NFT meta",
             image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7aay",
           },
         },
@@ -946,7 +946,7 @@ async function main() {
           nftData: {
             id: "425-9",
             name: "Random NFT 2",
-            metadata: "Great artwork",
+            description: "Great artwork",
             image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7bby",
           }
         },
@@ -956,7 +956,7 @@ async function main() {
           nftData: {
             id: "425-10",
             name: "Random NFT 3",
-            metadata: "Great artwork",
+            description: "Great artwork",
             image: "https://ipfs.io/ipfs/bafybhdmeoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7bby",
           }
         },
@@ -966,7 +966,7 @@ async function main() {
           nftData: {
             id: "u-425-11",
             name: "Random NFT 4",
-            metadata: "Great artwork",
+            description: "Great artwork",
             image: "https://ipfs.io/ipfs/bafybhdeeqqiema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7bby",
           }
         }
@@ -977,7 +977,7 @@ async function main() {
           colData: {
             id: "425-8",
             name: "Random Col",
-            metadata: "Great collection",
+            description: "Great collection",
             image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7eey",
           },
           nfts: [nfts[0]],
@@ -987,7 +987,7 @@ async function main() {
           colData: {
             id: "425-9",
             name: "Random Col 2",
-            metadata: "Col metadata",
+            description: "Col metadata",
             image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp722y",
           },
           nfts: [nfts[1]],
