@@ -6,9 +6,10 @@ export interface WalletCollectionNftDto {
   nftData: {
     id: string;
     name: string;
-    metadata: string;
+    description: string;
     image: string;
   }
+  onlineCheck: string;
   canBeMinted: boolean;
 }
 
@@ -17,9 +18,10 @@ export interface WalletCollectionDto {
   colData: {
     id: string;
     name: string;
-    metadata: string;
+    description: string;
     image: string;
   }
+  onlineCheck: string;
   nfts: WalletCollectionNftDto[];
   canBeMinted: boolean;
 }

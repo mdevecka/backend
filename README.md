@@ -28,6 +28,8 @@ EVA_GALLERY_COLLECTION=1;
 WSS_PROVIDER=wss://kusama-asset-hub-rpc.polkadot.io
 # Eva gallery wallet address
 EVA_GALLERY_WALLET_ADDRESS=DdiySauWxbBeQxUaHzFETA7qhzY53aFiENACtYZQ3Cno127
+#Subscan URL
+SUBSCAN_URL=https://assethub-kusama.subscan.io
 ```
 
 ## migrations

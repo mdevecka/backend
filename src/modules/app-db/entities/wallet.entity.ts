@@ -21,6 +21,9 @@ export class Wallet extends BaseEntity {
   @Column('text', { unique: true })
   walletAddress: string;
 
+  @Column('text', { nullable: true })
+  onlineCheck: string;
+
   @OneToMany(() => Collection, collection => collection.wallet)
   collections: Collection[];
 

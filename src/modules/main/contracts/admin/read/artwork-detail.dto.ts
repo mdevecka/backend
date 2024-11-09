@@ -18,18 +18,20 @@ export interface ArtworkDetailDto {
     nftData: {
       id: string;
       name: string;
-      metadata: string;
+      description: string;
       image: string;
     }
+    onlineCheck: string;
     collection: {
       id: CollectionId;
       walletId: WalletId;
       colData: {
         id: string;
         name: string;
-        metadata: string;
+        description: string;
         image: string;
       }
+      onlineCheck: string;
     }
   }
   ai: boolean;

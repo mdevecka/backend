@@ -7,9 +7,10 @@ export interface NftDto {
   nftData: {
     id: string;
     name: string;
-    metadata: string;
+    description: string;
     image: string;
   }
+  onlineCheck: string;
   canBeMinted: boolean;
   artwork: {
     id: ArtworkId;

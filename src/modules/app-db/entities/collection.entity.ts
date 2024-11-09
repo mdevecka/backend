@@ -9,7 +9,7 @@ export type CollectionId = ID<"Collection">;
 export interface ColData {
   id: string;
   name: string;
-  metadata: string;
+  description: string;
   image: string;
 }
 
@@ -26,6 +26,9 @@ export class Collection extends BaseEntity {
 
   @Column({ type: 'jsonb', unique: true })
   colData: ColData;
+
+  @Column('text', { nullable: true })
+  onlineCheck: string;
 
   //Connect with NFT entity one collection can have multiple NFTs
   @OneToMany(() => Nft, nft => nft.collection)
