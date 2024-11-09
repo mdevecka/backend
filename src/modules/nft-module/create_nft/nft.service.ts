@@ -101,7 +101,7 @@ export class NftCreator {
     }
     const name = artwork.name;
     //First load metadata from IPFS
-    const metadata = await fetch(`https://ipfs.io/ipfs/${metadataLink}`);
+    const metadata = await fetch(`https://flk-ipfs.xyz/ipfs/${metadataLink}`);
     const metadataJson = await metadata.json();
     const image = metadataJson.image;
 

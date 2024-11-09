@@ -25,31 +25,6 @@ export class NftRepository {
 
   ) { }
 
-  async fetchMetadataFromIPFS(metadatalink: string) {
-    // Fetch metadata from IPFS
-    // Return the metadata 
-    try {
-      const response = await fetch(metadatalink);
-      if (!response.ok) {
-          return null; 
-      }
-      if (response != null) {
-        const parsed_data = await response.json();
-        //If data doesnt contain description field or Description field return null
-        if (parsed_data.description != null) {
-          return parsed_data.description;
-        }
-        else if (parsed_data.Description != null) {
-          return parsed_data.Description;
-        }
-        return null;
-      }
-
-  } catch (error) {
-      this.logger.error(error);
-      return null;
-  }
-}
 
   //Returns user from database
   async getUser(userId: string) {
@@ -248,52 +223,14 @@ export class NftRepository {
 
 
     for (const nftData of nfts) {
-      const { id, name } = nftData;
-      let { image } = nftData;
-      let { metadata = null } = nftData;
-
-      //If metadata contains prefix ipfs://ipfs/ or prefix no prefix, just hash add prefix https://flk-ipfs.xyz/ipfs/
-      if (metadata != null) {
-        if (metadata.startsWith("ipfs://ipfs/")) {
-          metadata = "https://flk-ipfs.xyz/ipfs" + metadata.slice(11);
-        }
-        else if (metadata.startsWith("https://ipfs.io/ipfs/")) {
-          metadata = "https://flk-ipfs.xyz/ipfs/" + metadata.slice(16);
-        }
-        else if (metadata.startsWith("ipfs:/")){
-          metadata = "https://flk-ipfs.xyz/ipfs/" + metadata.slice(7);
-        }
-        else if (!metadata.startsWith("https://flk-ipfs.xyz/")) {
-          metadata = "https://flk-ipfs.xyz/ipfs/" + metadata;
-        }
-
-        metadata = await this.fetchMetadataFromIPFS(metadata);
-      } 
-
-      const description = metadata; 
-
-      //If image contains prefix ipfs://ipfs/ or prefix no prefix, just hash add prefix https://flk-ipfs.xyz/ipfs/
-      if (image != null) {
-        if (image.startsWith("ipfs://ipfs/")) {
-          image = "https://flk-ipfs.xyz/ipfs" + image.slice(11);
-        }
-        else if (image.startsWith("https://ipfs.io/ipfs/")) {
-          image = "https://flk-ipfs.xyz/ipfs/" + image.slice(16);
-        }
-        else if (image.startsWith("ipfs:/")){
-          image = "https://flk-ipfs.xyz/ipfs/" + image.slice(7);
-        }
-        else if (!image.startsWith("https://flk-ipfs.xyz/")) {
-          image = "https://flk-ipfs.xyz/ipfs/" + image;
-        }
-      }
+      const { id, name, image, metadata = null } = nftData;
 
       // Create a new NFT instance
       const nft = new Nft();
       nft.nftData = {
         id,
         name,
-        description,
+        description: metadata,
         image,
       };
       nft.onlineCheck = this.configService.get("SUBSCAN_URL") + "/nft_item/" + id;
@@ -328,11 +265,11 @@ export class NftRepository {
       if (await this.nfts.findOneBy({ nftData: nft.nftData }) != null) {
         this.logger.log(`Collection with id ${id} already exists in the database`);
       }
-      else {  
+      else {
         // Save the NFT to the database and associate it with the wallet
         wallet.nfts.push(nft); // Push the NFT to the wallet's nfts array
         await this.nfts.save(nft); // Save the NFT to the database  
-        }
+      }
 
     }
   }
@@ -358,50 +295,16 @@ export class NftRepository {
     }
 
     for (const colData of cols) {
-      const { id, name} = colData;
-      let { image, metadata = null } = colData;
-      //If metadata contains prefix ipfs://ipfs/ or prefix no prefix, just hash add prefix https://flk-ipfs.xyz/ipfs/
-      if (metadata != null) {
-        if (metadata.startsWith("ipfs://ipfs/")) {
-          metadata = "https://flk-ipfs.xyz/ipfs" + metadata.slice(11);
-        }
-        else if (metadata.startsWith("https://ipfs.io/ipfs/")) {
-          metadata = "https://flk-ipfs.xyz/ipfs/" + metadata.slice(16);
-        }
-        else if (metadata.startsWith("ipfs:/")){
-          metadata = "https://flk-ipfs.xyz/ipfs/" + metadata.slice(7);
-        }
-        else if (!metadata.startsWith("https://flk-ipfs.xyz/")) {
-          metadata = "https://flk-ipfs.xyz/ipfs/" + metadata;
-        }
+      const { id, name, image, metadata = null } = colData;
 
-        metadata = await this.fetchMetadataFromIPFS(metadata);
-      } 
-
-      //If image contains prefix ipfs://ipfs/ or prefix no prefix, just hash add prefix https://flk-ipfs.xyz/ipfs/
-      if (image != null) {
-        if (image.startsWith("ipfs://ipfs/")) {
-          image = "https://flk-ipfs.xyz/ipfs" + image.slice(11);
-        }
-        else if (image.startsWith("https://ipfs.io/ipfs/")) {
-          image = "https://flk-ipfs.xyz/ipfs/" + image.slice(16);
-        }
-        else if (image.startsWith("ipfs:/")){
-          image = "https://flk-ipfs.xyz/ipfs/" + image.slice(7);
-        }
-        else if (!image.startsWith("https://flk-ipfs.xyz/")) {
-          image = "https://flk-ipfs.xyz/ipfs/" + image;
-        }
-      }
-
-      // Create a new NFT instance
+      // Create a new Col instance
       const col = new Collection();
       col.colData = {
         id,
         name,
         description: metadata,
         image,
-      }; 
+      };
 
       col.onlineCheck = this.configService.get("SUBSCAN_URL") + "/nft_collection/" + id;
       col.wallet = wallet;
@@ -409,11 +312,11 @@ export class NftRepository {
       if (await this.collections.findOneBy({ colData: col.colData }) != null) {
         this.logger.log(`Collection with id ${id} already exists in the database`);
       }
-      else {  
+      else {
         // Save the NFT to the database and associate it with the wallet
         wallet.collections.push(col); // Push the NFT to the wallet's nfts array
         await this.collections.save(col); // Save the NFT to the database  
-        }   
+      }
     }
   }
 }

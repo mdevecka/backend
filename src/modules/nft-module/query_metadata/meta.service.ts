@@ -4,6 +4,7 @@ import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
 import { NftInterface } from './interface/NftInterface';
 import { CollectionInterface } from './interface/ColInterface';
+import { convertLink, fetchMetadataFromIPFS } from '@common/helpers';
 
 @Injectable()
 export class MetaFetcher {
@@ -11,7 +12,6 @@ export class MetaFetcher {
   constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>) {
 
   }
-
 
   async fetchNFTMetadata(userID: string, address: string): Promise<NftInterface[]> {
     //We will fetch metadata for user and save them to the database, 
@@ -22,7 +22,19 @@ export class MetaFetcher {
     const response = await fetch(
       `${url}/metadata/nft/address/${address}`
     );
+
     const data: NftInterface[] = await response.json();
+
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].metadata != null) {
+        data[i].metadata = convertLink(data[i].metadata);
+        data[i].metadata = await fetchMetadataFromIPFS(data[i].metadata);
+        if (data[i].image != null) {
+          data[i].image = convertLink(data[i].image);
+        }
+      }
+    }
+
     await this.nftRepo.assignNFTsMetadata(userID, address, data);
     return data;
   }
@@ -35,6 +47,16 @@ export class MetaFetcher {
     );
 
     const data: CollectionInterface[] = await response.json();
+
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].metadata != null) {
+        data[i].metadata = convertLink(data[i].metadata);
+        data[i].metadata = await fetchMetadataFromIPFS(data[i].metadata);
+        if (data[i].image != null) {
+          data[i].image = convertLink(data[i].image);
+        }
+      }
+    }
 
     await this.nftRepo.assignColsMetadata(userID, address, data);
     return data;
