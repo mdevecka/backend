@@ -21,6 +21,9 @@ jobs:
     - name: Install deps
       run: npm ci
 
+    - name: Install additional deps
+      run: npm install --os=linux --cpu=x64 sharp
+
     - name: Lint
       run: npm run lint
 
