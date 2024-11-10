@@ -1,7 +1,7 @@
 import { Controller, Post, Response, UseGuards, Body } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { AuthService } from '@modules/auth/services';
-import { SessionAuthGuard, SESSION_COOKIE, GetSessionId, Public } from '@modules/auth/helpers';
+import { SessionAuthGuard, SESSION_COOKIE, GetSessionId } from '@modules/auth/helpers';
 import { LoginDto } from '../contracts/admin/login';
 
 @UseGuards(SessionAuthGuard)
