@@ -3,6 +3,7 @@ import { LabeledEntity } from './labeled.entity';
 import { Country, CountryId } from './country.entity';
 import { ArtistCategory, ArtistCategoryId } from './artist-category.entity';
 import { User, UserId } from './user.entity';
+import { Image } from './image';
 import { ID } from '@common/helpers';
 
 export type ArtistId = ID<"Artist">;
@@ -14,11 +15,20 @@ export class Artist extends LabeledEntity {
 
   id: ArtistId;
 
-  @Column('date')
+  @Column('date', { nullable: true })
   born: string;
 
   @Column({ type: 'text', nullable: true })
   biography: string;
+
+  @Column({ type: 'text', nullable: true })
+  facebookProfileLink: string;
+
+  @Column({ type: 'text', nullable: true })
+  instagramProfileLink: string;
+
+  @Column({ type: 'text', nullable: true })
+  xProfileLink: string;
 
   @ManyToOne(() => Country)
   country: Country;
@@ -26,13 +36,16 @@ export class Artist extends LabeledEntity {
   @Column({ nullable: true })
   countryId: CountryId;
 
-  @ManyToOne(() => ArtistCategory)
+  @ManyToOne(() => ArtistCategory, { nullable: true })
   artistCategory: ArtistCategory;
 
   @Column({ nullable: true })
   artistCategoryId: ArtistCategoryId;
 
-  @Column({ type: 'boolean', default: true })
+  @Column(() => Image)
+  avatar: Image;
+
+  @Column({ type: 'boolean', default: false })
   public: boolean
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
@@ -40,5 +53,10 @@ export class Artist extends LabeledEntity {
 
   @Column({ nullable: true })
   userId: UserId;
+
+  @Column('int', { nullable: true })
+  importId: number;
+
+  get slug() { return `${this.user.label}/${this.label}`; }
 
 }

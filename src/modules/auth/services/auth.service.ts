@@ -13,7 +13,7 @@ export class AuthService {
   constructor(private config: ConfigService<AppConfig>, private adminRepository: AdminRepository, @Inject(CACHE_MANAGER) private cacheManager: Cache) {
   }
 
-  async login(email: string, password: string) {
+  async loginWithCredentials(email: string, password: string) {
     const user = await this.adminRepository.getUserByEmail(email);
     if (user == null)
       throw new UnauthorizedException();

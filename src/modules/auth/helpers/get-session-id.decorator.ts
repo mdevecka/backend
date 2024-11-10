@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { RequestWithUserInfo, SessionIdSymbol } from './auth.guard';
+import { RequestWithUserInfo, SessionIdSymbol } from './session-auth.guard';
 
 export const GetSessionId = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {

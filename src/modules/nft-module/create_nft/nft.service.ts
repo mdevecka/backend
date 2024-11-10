@@ -101,14 +101,14 @@ export class NftCreator {
     }
     const name = artwork.name;
     //First load metadata from IPFS
-    const metadata = await fetch(`https://ipfs.io/ipfs/${metadataLink}`);
+    const metadata = await fetch(`https://flk-ipfs.xyz/ipfs/${metadataLink}`);
     const metadataJson = await metadata.json();
     const image = metadataJson.image;
 
     //Get nft metadata and update name, metadata, image columns
     nft.nftData.image = image;
     nft.nftData.name = name;
-    nft.nftData.metadata = metadataLink;
+    nft.nftData.description = metadataLink;
     await this.nftRepository.updateNFT(nft.id, nft.nftData);
 
   }

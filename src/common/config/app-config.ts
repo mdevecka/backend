@@ -12,4 +12,5 @@ export interface AppConfig {
   EVA_GALLERY_WALLET_ADDRESS: string;
   NFT_MODULE_URL: string;
   WSS_PROVIDER: string;
+  SUBSCAN_URL: string;
 }

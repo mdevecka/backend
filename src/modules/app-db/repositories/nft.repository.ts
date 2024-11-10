@@ -8,12 +8,15 @@ import {
 } from '../entities';
 import { NftInterface } from '@modules/nft-module/query_metadata/interface/NftInterface';
 import { CollectionInterface } from '@modules/nft-module/query_metadata/interface/ColInterface';
+import { ConfigService } from '@nestjs/config';
+import { AppConfig } from '@common/config';
 
 @Injectable()
 export class NftRepository {
   private readonly logger = new Logger(NftRepository.name)
 
   constructor(
+    private configService: ConfigService<AppConfig>,
     @InjectRepository(User) private users: Repository<User>,
     @InjectRepository(Nft) private nfts: Repository<Nft>,
     @InjectRepository(Wallet) private wallets: Repository<Wallet>,
@@ -21,6 +24,7 @@ export class NftRepository {
     @InjectRepository(Collection) private collections: Repository<Collection>,
 
   ) { }
+
 
   //Returns user from database
   async getUser(userId: string) {
@@ -203,10 +207,11 @@ export class NftRepository {
       const newWallet = new Wallet();
       newWallet.walletAddress = walletAddress;
       newWallet.user = await this.users.findOneBy({ id: userId });
+      newWallet.onlineCheck = this.configService.get("SUBSCAN_URL") + "/account/" + walletAddress;
       await this.wallets.save(newWallet);
       wallet = newWallet;
     }
-    else{
+    else {
       //If wallet already exists query collections also
       cols = await this.getWalletCols(walletAddress);
     }
@@ -218,17 +223,17 @@ export class NftRepository {
 
 
     for (const nftData of nfts) {
-      const { id, name, metadata = null, image } = nftData;
+      const { id, name, image, metadata = null } = nftData;
 
       // Create a new NFT instance
       const nft = new Nft();
       nft.nftData = {
         id,
         name,
-        metadata,
+        description: metadata,
         image,
       };
-
+      nft.onlineCheck = this.configService.get("SUBSCAN_URL") + "/nft_item/" + id;
       nft.wallet = wallet;
 
       //Parse nft id to check if it's associated with this collection
@@ -239,13 +244,13 @@ export class NftRepository {
       const nftIdArr = nftId.split("-");
 
       //check if any collections are associated with this NFT
-      if(cols != null){
+      if (cols != null) {
         for (const col of cols) {
-          if(col.colData != null){
+          if (col.colData != null) {
             const colId = col.colData.id;
 
             //Compare to check if nft is associated with this collection
-            if(nftIdArr[0] == colId){
+            if (nftIdArr[0] == colId) {
               nft.collection = col;
               break;
             }
@@ -253,18 +258,17 @@ export class NftRepository {
         }
       }
 
-      if (nft.collection == null){
+      if (nft.collection == null) {
         this.logger.log(`NFT with id ${id} doesnt belong to any collection in the database`)
       }
 
-      //Check if NFT exists
       if (await this.nfts.findOneBy({ nftData: nft.nftData }) != null) {
-        this.logger.log(`NFT with id ${id} already exists in the database`);
+        this.logger.log(`Collection with id ${id} already exists in the database`);
       }
       else {
         // Save the NFT to the database and associate it with the wallet
         wallet.nfts.push(nft); // Push the NFT to the wallet's nfts array
-        await this.nfts.save(nft); // Save the NFT to the database      
+        await this.nfts.save(nft); // Save the NFT to the database  
       }
 
     }
@@ -272,12 +276,15 @@ export class NftRepository {
 
   /// Assigns metadata that was queried from API
   async assignColsMetadata(userId: string, walletAddress: string, cols: CollectionInterface[]) {
-    // Create new Wallet in DB if it doesn't exist
+
+    //https://assethub-kusama.subscan.io/nft_collection/465
+    // Create new Wallet in DB if it doesn't exist 
     let wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
     if (wallet == null) {
       const newWallet = new Wallet();
       newWallet.walletAddress = walletAddress;
       newWallet.user = await this.users.findOneBy({ id: userId });
+      newWallet.onlineCheck = this.configService.get("SUBSCAN_URL") + "/account/" + walletAddress;
       await this.wallets.save(newWallet);
       wallet = newWallet;
     }
@@ -288,29 +295,28 @@ export class NftRepository {
     }
 
     for (const colData of cols) {
-      const { id, name, metadata = null, image = null } = colData;
+      const { id, name, image, metadata = null } = colData;
 
-      // Create a new NFT instance
+      // Create a new Col instance
       const col = new Collection();
       col.colData = {
         id,
         name,
-        metadata,
+        description: metadata,
         image,
       };
 
+      col.onlineCheck = this.configService.get("SUBSCAN_URL") + "/nft_collection/" + id;
       col.wallet = wallet;
 
-      //Check if NFT exists
       if (await this.collections.findOneBy({ colData: col.colData }) != null) {
         this.logger.log(`Collection with id ${id} already exists in the database`);
       }
       else {
         // Save the NFT to the database and associate it with the wallet
         wallet.collections.push(col); // Push the NFT to the wallet's nfts array
-        await this.collections.save(col); // Save the NFT to the database      
+        await this.collections.save(col); // Save the NFT to the database  
       }
-
     }
   }
 }

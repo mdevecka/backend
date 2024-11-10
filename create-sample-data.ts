@@ -11,7 +11,7 @@ import { AppConfig } from '@common/config';
 import { filterEntities } from '@common/helpers';
 import {
   BaseEntity, User, Country, Artist, ArtistCategory, Artwork, ArtworkGenre, ArtworkMaterial,
-  ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition, Nft,
+  ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition, Nft, Resource,
   UnityRoom, UnityWall, UnityImage, UnityLamp, UnityItem, UnityItemType,
 } from '@modules/app-db/entities';
 import * as entities from '@modules/app-db/entities';
@@ -58,6 +58,7 @@ export class CreateDataModule { }
 async function main() {
   const app = await NestFactory.create(CreateDataModule);
   const dataSource = app.get(DataSource);
+  const onlyOptions = process.argv.some(opt => opt === "-oo");
   try {
     await dataSource.transaction(async manager => {
       const createEntities = async <T>(type: { new(): T }, items: DeepPartial<T>[]) => {
@@ -65,78 +66,6 @@ async function main() {
         const entities = items.map(item => repo.create(item));
         return repo.save(entities);
       };
-      const nfts = await createEntities(entities.Nft, [
-        {
-          artwork: null,
-          wallet: null,
-          nftData: {
-            id: "425-8",
-            name: "Random NFT",
-            metadata: "NFT meta",
-            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7aay",
-          },
-        },
-        {
-          artwork: null,
-          wallet: null,
-          nftData: {
-            id: "425-9",
-            name: "Random NFT 2",
-            metadata: "Great artwork",
-            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7bby",
-          }
-        }
-      ]);
-      const collections = await createEntities(entities.Collection, [
-        {
-          wallet: null,
-          colData: {
-            id: "425-8",
-            name: "Random Col",
-            metadata: "Great collection",
-            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7eey",
-          },
-        },
-        {
-          wallet: null,
-          colData: {
-            id: "425-9",
-            name: "Random Col 2",
-            metadata: "Col metadata",
-            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp722y",
-          }
-        }
-      ]);
-      const wallets = await createEntities(entities.Wallet, [
-        {
-          walletAddress: "0x1234567890",
-          nfts: [nfts[0]],
-          collections: [collections[0]],
-        },
-        {
-          walletAddress: "0x0987654321",
-          nfts: [nfts[1]],
-          collections: [collections[1]],
-        },
-      ]);
-      const users = await createEntities(User, [
-        {
-          "email": "lubo@ivancak.sk",
-          "password": await hash("test", 10),
-          "name": "Ľubo Ivančák",
-          "description": "<p>grafik, programátor, tvorca počítačových hier</p>",
-          "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
-          "wallets": [wallets[0]],
-        },
-        {
-          "email": "john.snow@winterfell.castle",
-          "password": await hash("niteking", 10),
-          "name": "John Snow",
-          "description": "Lord Commander of the Night's Watch",
-          "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
-          "wallets": [wallets[1]],
-        }
-      ]);
       const countries = await createEntities(Country, [
         {
           "name": "Afghanistan",
@@ -957,6 +886,157 @@ async function main() {
           "name": "Photographer"
         }
       ]);
+      const itemTypes = await createEntities(UnityItemType, [
+        {
+          "name": "Plant-01"
+        },
+        {
+          "name": "Plant-02"
+        },
+        {
+          "name": "Plant-03"
+        },
+        {
+          "name": "Plant-04"
+        },
+        {
+          "name": "Plant-05"
+        },
+        {
+          "name": "Bench-01"
+        },
+        {
+          "name": "Bench-02"
+        },
+        {
+          "name": "Bench-03"
+        },
+        {
+          "name": "Bench-04"
+        },
+        {
+          "name": "Bench-05"
+        },
+        {
+          "name": "Figure-01"
+        },
+        {
+          "name": "Figure-02"
+        },
+        {
+          "name": "Figure-03"
+        }
+      ]);
+      if (onlyOptions)
+        return;
+      const nfts = await createEntities(entities.Nft, [
+        {
+          artwork: null,
+          wallet: null,
+          nftData: {
+            id: "425-8",
+            name: "Random NFT",
+            description: "NFT meta",
+            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7aay",
+          },
+        },
+        {
+          artwork: null,
+          wallet: null,
+          nftData: {
+            id: "425-9",
+            name: "Random NFT 2",
+            description: "Great artwork",
+            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7bby",
+          }
+        },
+        {
+          artwork: null,
+          wallet: null,
+          nftData: {
+            id: "425-10",
+            name: "Random NFT 3",
+            description: "Great artwork",
+            image: "https://ipfs.io/ipfs/bafybhdmeoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7bby",
+          }
+        },
+        {
+          artwork: null,
+          wallet: null,
+          nftData: {
+            id: "u-425-11",
+            name: "Random NFT 4",
+            description: "Great artwork",
+            image: "https://ipfs.io/ipfs/bafybhdeeqqiema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7bby",
+          }
+        }
+      ]);
+      const collections = await createEntities(entities.Collection, [
+        {
+          wallet: null,
+          colData: {
+            id: "425-8",
+            name: "Random Col",
+            description: "Great collection",
+            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp7eey",
+          },
+          nfts: [nfts[0]],
+        },
+        {
+          wallet: null,
+          colData: {
+            id: "425-9",
+            name: "Random Col 2",
+            description: "Col metadata",
+            image: "https://ipfs.io/ipfs/bafybeihkoviema7g3gxyt6la7vd5ho32ictqbilu3wnlo3rs7ewhnp722y",
+          },
+          nfts: [nfts[1]],
+        }
+      ]);
+      const wallets = await createEntities(entities.Wallet, [
+        {
+          walletAddress: "0x1234567890",
+          nfts: [nfts[0], nfts[2], nfts[3]],
+          collections: [collections[0]],
+        },
+        {
+          walletAddress: "0x0987654321",
+          nfts: [nfts[1]],
+          collections: [collections[1]],
+        },
+      ]);
+      const users = await createEntities(User, [
+        {
+          "email": "lubo@ivancak.sk",
+          "password": await hash("test", 10),
+          "name": "Ľubo Ivančák",
+          "description": "<p>grafik, programátor, tvorca počítačových hier</p>",
+          "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
+          "wallets": [wallets[0]],
+        },
+        {
+          "email": "john.snow@winterfell.castle",
+          "password": await hash("niteking", 10),
+          "name": "John Snow",
+          "description": "Lord Commander of the Night's Watch",
+          "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
+          "wallets": [wallets[1]],
+        }
+      ]);
+      const resources = await createEntities(Resource, [
+        {
+          name: "great song",
+          data: readFileSync("./samples/sound 22.mp3"),
+          mimeType: "audio/mpeg",
+          user: users[0],
+        },
+        {
+          name: "desert environment",
+          data: getImage("artworks/01.jpg"),
+          mimeType: "image/jpeg",
+          user: users[0],
+        },
+      ]);
       const artists = await createEntities(Artist, [
         {
           "name": "Martin Benka",
@@ -1158,47 +1238,6 @@ async function main() {
           "artworks": [artworks[7], artworks[9]],
         }
       ]);
-      const itemTypes = await createEntities(UnityItemType, [
-        {
-          "name": "Plant-01"
-        },
-        {
-          "name": "Plant-02"
-        },
-        {
-          "name": "Plant-03"
-        },
-        {
-          "name": "Plant-04"
-        },
-        {
-          "name": "Plant-05"
-        },
-        {
-          "name": "Bench-01"
-        },
-        {
-          "name": "Bench-02"
-        },
-        {
-          "name": "Bench-03"
-        },
-        {
-          "name": "Bench-04"
-        },
-        {
-          "name": "Bench-05"
-        },
-        {
-          "name": "Figure-01"
-        },
-        {
-          "name": "Figure-02"
-        },
-        {
-          "name": "Figure-03"
-        }
-      ]);
       const items = await createEntities(UnityItem, [
         {
           "itemType": itemTypes[0],
@@ -1288,7 +1327,7 @@ async function main() {
           "scale": 2
         },
         {
-          "artwork": artworks[1],
+          "artwork": artworks[0],
           "x": 4,
           "y": 1.4,
           "scale": 2
@@ -1312,7 +1351,7 @@ async function main() {
           "scale": 2
         },
         {
-          "artwork": artworks[1],
+          "artwork": artworks[5],
           "x": 6,
           "y": 1.6,
           "scale": 2
@@ -1395,6 +1434,8 @@ async function main() {
           "lamps": lamps,
           "items": items,
           "exhibition": exhibitions[0],
+          "environmentImage": resources[1],
+          "backgroundMusic": resources[0],
         }
       ]);
     });

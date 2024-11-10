@@ -1,8 +1,8 @@
-import { ValidateIf, IsString, IsNumberString, IsArray, IsBoolean, IsOptional, IsUUID } from 'class-validator';
+import { IsString, IsNumberString, IsArray, IsBooleanString, IsOptional, IsEnum, IsUUID } from 'class-validator';
 import { ArtworkGenreExists, ArtworkWorktypeExists, ArtworkMaterialExists, ArtworkTechniqueExists } from '@modules/app-db/validators';
 import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
-import { EMPTY } from '@common/helpers';
-import { ArtistId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId, ExhibitionId } from '@modules/app-db/entities';
+import { EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
+import { AiMode, ArtistId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId, ExhibitionId } from '@modules/app-db/entities';
 
 export class CreateArtworkDto {
 
@@ -13,6 +13,7 @@ export class CreateArtworkDto {
   @IsString()
   description: string;
 
+  @IsOptional()
   @IsNumberString()
   year: string;
 
@@ -21,41 +22,54 @@ export class CreateArtworkDto {
   tags: string;
 
   @IsOptional()
-  @IsBoolean()
+  @IsBooleanString()
   public: boolean
 
+  @IsOptional()
   @IsString()
   measurements: string;
+
+  @IsOptional()
+  @IsEnum(AiMode)
+  aiMode: AiMode;
 
   @IsUUID()
   artistId: ArtistId;
 
+  @IsOptional()
+  @AllowEmpty()
   @IsUUID()
   @ArtworkGenreExists()
-  artworkGenreId: ArtworkGenreId;
-
-  @IsUUID()
-  @ArtworkWorktypeExists()
-  artworkWorktypeId: ArtworkWorktypeId;
-
-  @IsUUID()
-  @ArtworkMaterialExists()
-  artworkMaterialId: ArtworkMaterialId;
-
-  @IsUUID()
-  @ArtworkTechniqueExists()
-  artworkTechniqueId: ArtworkTechniqueId;
+  artworkGenreId: ArtworkGenreId | EMPTY;
 
   @IsOptional()
-  @ValidateIf(art => art.exhibitions !== "")
+  @AllowEmpty()
+  @IsUUID()
+  @ArtworkWorktypeExists()
+  artworkWorktypeId: ArtworkWorktypeId | EMPTY;
+
+  @IsOptional()
+  @AllowEmpty()
+  @IsUUID()
+  @ArtworkMaterialExists()
+  artworkMaterialId: ArtworkMaterialId | EMPTY;
+
+  @IsOptional()
+  @AllowEmpty()
+  @IsUUID()
+  @ArtworkTechniqueExists()
+  artworkTechniqueId: ArtworkTechniqueId | EMPTY;
+
+  @IsOptional()
+  @AllowEmpty()
   @IsArray()
   @IsUUID(null, { each: true })
   exhibitions: ExhibitionId[] | EMPTY;
 
   @IsOptional()
-  @ValidateIf(art => art.image !== "")
+  @AllowEmpty()
   @IsFile()
-  @HasMimeType(['image/jpeg', 'image/png'])
+  @HasMimeType(imageMimeTypes)
   image: MemoryStoredFile | EMPTY;
 
 }

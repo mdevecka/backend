@@ -58,7 +58,7 @@ export class MintCreator {
       const nft: NftData = {
         id: `${collectionID}-${nftId}`,
         name: artwork.name,
-        metadata: metadataCid,
+        description: metadataCid,
         image: cid
       }
 
