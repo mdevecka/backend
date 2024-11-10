@@ -169,7 +169,10 @@ async function main() {
       if (importedArtworks.has(image.id))
         continue;
       let name = (image.name != '') ? image.name : parse(image.image.fileName).name;
-      const filePath = resolve(join(imageDir, image.image.filePath.replace('?', '%3F')));
+      let filePath = resolve(join(imageDir, image.image.filePath));
+      if (filePath.includes('?') && !existsSync(filePath)) {
+        filePath = filePath.replace('?', '%3F');
+      }
       let slug = slugify(name, { lower: true });
       if (usedLabels.has(slug)) {
         const orig = name;
