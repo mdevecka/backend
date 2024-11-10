@@ -1,0 +1,34 @@
+---
+
+name: Test
+
+on:
+  pull_request:
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '23.x'
+
+    - name: Install deps
+      run: npm ci
+
+    - name: Install additional deps
+      run: npm install --os=linux --cpu=x64 sharp
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Build
+      run: npm run build:dev 
+      
+    - name: Test
+      run: npm run test
