@@ -4,7 +4,6 @@ import { AuthService } from '@modules/auth/services';
 import { SessionAuthGuard, SESSION_COOKIE, GetSessionId } from '@modules/auth/helpers';
 import { LoginDto } from '../contracts/admin/login';
 
-@UseGuards(SessionAuthGuard)
 @Controller('admin')
 export class AdminLoginController {
 
@@ -17,6 +16,7 @@ export class AdminLoginController {
     res.cookie(SESSION_COOKIE, sessionId, { httpOnly: true, secure: true, sameSite: "strict" });
   }
 
+  @UseGuards(SessionAuthGuard)
   @Post('logout')
   async logout(@GetSessionId() sessionId: string, @Response({ passthrough: true }) res: ExpressResponse) {
     res.clearCookie(SESSION_COOKIE);
