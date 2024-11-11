@@ -22,10 +22,6 @@ SESSION_LIFETIME=600
 LOG_REQUESTS=true
 # URL for NFT MODULE
 NFT_MODULE_URL=http://localhost:3000
-# Hardcoded collection ID that will be used for trial mint
-EVA_GALLERY_COLLECTION=1;
-# Eva gallery wallet address
-EVA_GALLERY_WALLET_ADDRESS=DdiySauWxbBeQxUaHzFETA7qhzY53aFiENACtYZQ3Cno127
 #Subscan URL
 SUBSCAN_URL=https://assethub-kusama.subscan.io
 ```
