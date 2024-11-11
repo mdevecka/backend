@@ -24,8 +24,6 @@ LOG_REQUESTS=true
 NFT_MODULE_URL=http://localhost:3000
 # Hardcoded collection ID that will be used for trial mint
 EVA_GALLERY_COLLECTION=1;
-# Provider for blockchain interaction
-WSS_PROVIDER=wss://kusama-asset-hub-rpc.polkadot.io
 # Eva gallery wallet address
 EVA_GALLERY_WALLET_ADDRESS=DdiySauWxbBeQxUaHzFETA7qhzY53aFiENACtYZQ3Cno127
 #Subscan URL
