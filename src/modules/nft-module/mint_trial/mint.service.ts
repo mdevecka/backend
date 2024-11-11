@@ -48,8 +48,11 @@ export class MintCreator {
       body: formData
     });
 
-    const collectionID = this.configService.get("EVA_GALLERY_COLLECTION");
-    const EvaGalleryWalletAddress = this.configService.get("EVA_GALLERY_WALLET_ADDRESS");
+    const collectionIDResponse = await fetch(`${url}/eva/wallet/collection`);
+    const collectionID = await collectionIDResponse.text();
+
+    const EvaGalleryWalletAddressResponse = await fetch(`${url}/eva/wallet/address`);
+    const EvaGalleryWalletAddress = await EvaGalleryWalletAddressResponse.text();
 
     const { nftId, metadataCid, cid } = await response.json();
 
