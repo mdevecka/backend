@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DeepPartial } from 'typeorm';
+import { deserializeEntity } from '@common/helpers';
 import {
   Artist, Artwork, Gallery, Exhibition, Nft, Resource, UnityRoom, UnityItemType,
   ArtworkId, ResourceId, UnityRoomId,
@@ -26,30 +27,65 @@ export class PublicRepository {
     const nseed = seed / MAX_SEED;
     return this.artists.manager.transaction(async mgr => {
       await mgr.query(`SELECT setseed(${nseed})`);
-      return await mgr.getRepository(Artist).createQueryBuilder("artist")
-        .innerJoinAndSelect("artist.user", "user")
-        .innerJoinAndSelect("artist.country", "country")
+      const subQuery = mgr.getRepository(Artwork).createQueryBuilder("artwork")
+        .select(["artwork.id", "artwork.name", "artwork.label", "artwork.artist_id"])
+        .where("artwork.public = true")
+        .andWhere("artwork.artist_id = artist.id")
+        .orderBy("random()")
+        .limit(1);
+      const query = mgr.getRepository(Artist).createQueryBuilder("artist")
+        .select(["artist.name", "artist.label"])
+        .innerJoin("artist.user", "user")
+        .addSelect(["user.label"])
+        .innerJoin("artist.country", "country")
+        .addSelect(["country.code"])
+        .innerJoinAndSelect((qb) => {
+          qb.getQuery = () => `LATERAL (${subQuery.getQuery()})`;
+          return qb;
+        }, "artwork", "true")
         .orderBy("random()")
         .where("artist.public = true")
         .offset(from)
-        .limit(count)
-        .getMany();
+        .limit(count);
+      const items = await query.getRawAndEntities();
+      const res = items.entities.map((artist, i) => {
+        const artwork = deserializeEntity(mgr, Artwork, items.raw[i]);
+        artwork.artist = artist;
+        artist.artworks = [artwork];
+        return artist;
+      });
+      return res;
     });
   }
 
-  async getRandomArtworks(seed: number, from: number = 0, count: number = 1) {
+  async getRandomArtworks(seed: number, from: number = 0, count: number = 1, artistLabels?: string[], exhibitionLabels?: string[]) {
     const nseed = seed / MAX_SEED;
     return this.artworks.manager.transaction(async mgr => {
       await mgr.query(`SELECT setseed(${nseed})`);
-      return await mgr.getRepository(Artwork).createQueryBuilder("artwork")
+      const query = mgr.getRepository(Artwork).createQueryBuilder("artwork")
         .innerJoinAndSelect("artwork.artist", "artist")
         .innerJoinAndSelect("artist.user", "user")
-        .orderBy("random()")
-        .where("artwork.public = true")
-        .where("artist.public = true")
-        .offset(from)
-        .limit(count)
-        .getMany();
+        .innerJoinAndSelect("artist.country", "country");
+      if (exhibitionLabels != null) {
+        query.innerJoin("artwork.exhibitions", "exhibition");
+        query.innerJoin("exhibition.gallery", "gallery");
+        query.innerJoin("gallery.user", "gallery_user");
+      }
+      query.where("artwork.public = true")
+        .andWhere("artist.public = true");
+      if (artistLabels != null) {
+        const [userLabel, artistLabel] = artistLabels;
+        query.andWhere("artist.label = :artistLabel", { artistLabel });
+        query.andWhere("user.label = :userLabel", { userLabel });
+      }
+      if (exhibitionLabels != null) {
+        const [galleryUserLabel, galleryLabel, exhibitionLabel] = exhibitionLabels;
+        query.andWhere("exhibition.label = :exhibitionLabel", { exhibitionLabel });
+        query.andWhere("gallery.label = :galleryLabel", { galleryLabel });
+        query.andWhere("gallery_user.label = :galleryUserLabel", { galleryUserLabel });
+      }
+      query.orderBy("random()").offset(from).limit(count);
+      return query.getMany();
     });
   }
 
@@ -59,6 +95,7 @@ export class PublicRepository {
       await mgr.query(`SELECT setseed(${nseed})`);
       return await mgr.getRepository(Gallery).createQueryBuilder("gallery")
         .innerJoinAndSelect("gallery.user", "user")
+        .innerJoinAndSelect("gallery.country", "country")
         .orderBy("random()")
         .where("gallery.public = true")
         .offset(from)
@@ -69,17 +106,39 @@ export class PublicRepository {
 
   async getRandomExhibitions(seed: number, from: number = 0, count: number = 1) {
     const nseed = seed / MAX_SEED;
-    return this.artworks.manager.transaction(async mgr => {
+    return this.artists.manager.transaction(async mgr => {
       await mgr.query(`SELECT setseed(${nseed})`);
-      return await mgr.getRepository(Exhibition).createQueryBuilder("exhibition")
+      const subQuery = mgr.getRepository(Artwork).createQueryBuilder("artwork")
+        .select(["artwork.name", "artwork.label", "artwork.artist_id"])
+        .innerJoin("artwork.exhibitions", "ex", "ex.id = exhibition.id")
+        .innerJoin("artwork.artist", "artist", "artist.id = artwork.artist_id")
+        .addSelect(["artist.name", "artist.label"])
+        .where("artwork.public = true")
+        .orderBy("random()")
+        .limit(1);
+      const query = await mgr.getRepository(Exhibition).createQueryBuilder("exhibition")
         .innerJoinAndSelect("exhibition.gallery", "gallery")
         .innerJoinAndSelect("gallery.user", "user")
+        .innerJoinAndSelect((qb) => {
+          qb.getQuery = () => `LATERAL (${subQuery.getQuery()})`;
+          return qb;
+        }, "artwork", "true")
         .orderBy("random()")
         .where("exhibition.public = true")
-        .where("gallery.public = true")
+        .andWhere("gallery.public = true")
         .offset(from)
-        .limit(count)
-        .getMany();
+        .limit(count);
+      const items = await query.getRawAndEntities();
+      const res = items.entities.map((exhibition, i) => {
+        const raw = items.raw[i];
+        const artist = deserializeEntity(mgr, Artist, raw);
+        artist.user = exhibition.gallery.user;
+        const artwork = deserializeEntity(mgr, Artwork, raw);
+        artwork.artist = artist;
+        exhibition.artworks = [artwork];
+        return exhibition;
+      });
+      return res;
     });
   }
 
@@ -91,6 +150,8 @@ export class PublicRepository {
         .leftJoinAndSelect("nft.artwork", "artwork")
         .leftJoinAndSelect("artwork.artist", "artist")
         .leftJoinAndSelect("artist.user", "user")
+        .leftJoinAndSelect("nft.wallet", "wallet")
+        .leftJoinAndSelect("wallet.user", "wallet_user")
         .orderBy("random()")
         .where("artwork.public = true")
         .offset(from)
@@ -116,7 +177,10 @@ export class PublicRepository {
   async getArtworkDetailBySlug(userLabel: string, artistLabel: string, artworkLabel: string) {
     return this.artworks.findOne({
       relations: {
-        artist: { user: true },
+        artist: {
+          country: true,
+          user: true
+        },
         artworkGenre: true,
         artworkWorktype: true,
         artworkMaterial: true,
@@ -151,7 +215,10 @@ export class PublicRepository {
   async getExhibitionDetailBySlug(userLabel: string, galleryLabel: string, exhibitionLabel: string) {
     return this.exhibitions.findOne({
       relations: {
-        gallery: { user: true }
+        gallery: {
+          country: true,
+          user: true
+        }
       },
       where: {
         label: exhibitionLabel,
@@ -159,6 +226,22 @@ export class PublicRepository {
         gallery: {
           label: galleryLabel,
           public: true,
+          user: { label: userLabel }
+        }
+      }
+    });
+  }
+
+  async getNftDetailBySlug(userLabel: string, nftLabel: string) {
+    return this.nfts.findOne({
+      relations: {
+        collection: true,
+        wallet: { user: true },
+        artwork: { artist: { user: true } },
+      },
+      where: {
+        label: nftLabel,
+        wallet: {
           user: { label: userLabel }
         }
       }
@@ -249,6 +332,11 @@ export class PublicRepository {
 
   async getItemTypes() {
     return this.unityItemTypes.find();
+  }
+
+  async saveArtwork(artwork: DeepPartial<Artwork>) {
+    const entity = this.artworks.create(artwork);
+    return this.artworks.save(entity);
   }
 
 }

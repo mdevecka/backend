@@ -1,4 +1,5 @@
-import { getMetadataArgsStorage } from 'typeorm';
+import { DataSource, EntityManager, getMetadataArgsStorage } from 'typeorm';
+import { DriverUtils } from 'typeorm/driver/DriverUtils';
 import { OptionDto } from './option.dto';
 
 export type EMPTY = "";
@@ -48,7 +49,7 @@ export function mapEmpty<T, S>(value: T | EMPTY, mapper: (value: T) => S, defaul
   return mapper(value);
 }
 
-export function convertLink(link: string): string {
+export function convertIpfsLink(link: string): string {
   let metadata = link;
 
   if (metadata.startsWith("ipfs://ipfs/")) {
@@ -90,4 +91,25 @@ export async function fetchMetadataFromIPFS(metadatalink: string): Promise<strin
     this.logger.error(error);
     return null;
   }
+
+}
+
+export function deserializeEntity<T>(_dataSource: DataSource | EntityManager, entityType: { new(): T }, rawData: any, customTableAlias?: string) {
+  const dataSource = (_dataSource instanceof DataSource) ? _dataSource : _dataSource.connection;
+  const driver = dataSource.driver;
+  const metadata = dataSource.getMetadata(entityType);
+  const entity = new entityType();
+  const columns = metadata.columns;
+  for (const column of columns) {
+    if (column.isVirtual)
+      continue;
+    const tableAlias = customTableAlias ?? metadata.tableName;
+    const propName = DriverUtils.buildAlias(driver, undefined, tableAlias, column.databaseName);
+    const value = rawData[propName];
+    if (value === undefined)
+      continue;
+    const convertedValue = driver.prepareHydratedValue(value, column);
+    column.setEntityValue(entity, convertedValue);
+  }
+  return entity as T;
 }

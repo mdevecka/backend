@@ -1,10 +1,11 @@
-import { Entity, Column, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, Column, ManyToOne, OneToOne, BeforeUpdate, BeforeInsert, Index } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { Wallet, WalletId } from './wallet.entity';
 import { Artwork } from './artwork.entity';
 import { User } from './user.entity';
 import { Collection, CollectionId } from './collection.entity';
 import { ID } from '@common/helpers';
+import slugify from 'slugify';
 
 export type NftId = ID<"Nft">;
 
@@ -19,6 +20,10 @@ export interface NftData {
 export class Nft extends BaseEntity {
 
   id: NftId;
+
+  @Index()
+  @Column('text', { nullable: true })
+  label: string;
 
   @OneToOne(() => Artwork, artwork => artwork.nft)
   artwork: Artwork;
@@ -45,5 +50,15 @@ export class Nft extends BaseEntity {
   collectionId: CollectionId;
 
   get canBeMinted() { return this.nftData.id[0] !== 'u' }
+
+  get slug() { return `${this.wallet.user.label}/${this.label}`; }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  updateLabel() {
+    if (this.nftData?.name == null)
+      return;
+    this.label = slugify(this.nftData.name, { lower: true });
+  }
 
 }
