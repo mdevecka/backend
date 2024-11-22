@@ -1,8 +1,9 @@
-import { Entity, Column, ManyToOne, Index } from 'typeorm';
+import { Entity, Column, OneToMany, ManyToOne, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Country, CountryId } from './country.entity';
 import { ArtistCategory, ArtistCategoryId } from './artist-category.entity';
 import { User, UserId } from './user.entity';
+import { Artwork } from './artwork.entity';
 import { Image } from './image';
 import { ID } from '@common/helpers';
 
@@ -41,6 +42,9 @@ export class Artist extends LabeledEntity {
 
   @Column({ nullable: true })
   artistCategoryId: ArtistCategoryId;
+
+  @OneToMany(() => Artwork, art => art.artist)
+  artworks: Artwork[];
 
   @Column(() => Image)
   avatar: Image;

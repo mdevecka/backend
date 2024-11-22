@@ -4,8 +4,6 @@
 ```
 # port on which backend runs
 PORT=3000
-# frontend url used for CORS
-FRONTEND_URL=http://localhost:4200
 # address of postgres db
 POSTGRES_HOST=127.0.0.1
 # port of postgres db

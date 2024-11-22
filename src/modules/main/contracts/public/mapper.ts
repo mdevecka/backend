@@ -7,6 +7,7 @@ import { GalleryDetailDto } from './gallery-detail.dto';
 import { ExhibitionDto } from './exhibition.dto';
 import { ExhibitionDetailDto } from './exhibition-detail.dto';
 import { NftDto } from './nft.dto';
+import { NftDetailDto } from './nft-detail.dto';
 import { mapEmpty } from '@common/helpers';
 import {
   Artist, Artwork, Gallery, Exhibition, Nft
@@ -15,6 +16,7 @@ import {
 export { createDesignerRoomDto, createDesignerLibraryItemDto } from '../admin/read';
 
 export function createArtistDto(artist: Artist): ArtistDto {
+  const artwork = artist.artworks[0];
   return {
     name: artist.name,
     born: artist.born,
@@ -22,6 +24,13 @@ export function createArtistDto(artist: Artist): ArtistDto {
     countryCode: artist.country.code,
     artistCategory: artist.artistCategory?.name,
     slug: artist.slug,
+    artwork: {
+      name: artwork.name,
+      description: artwork.description,
+      artistName: artwork.artist.name,
+      year: artwork.year,
+      slug: artwork.slug,
+    }
   };
 }
 
@@ -43,8 +52,10 @@ export function createArtworkDto(artwork: Artwork): ArtworkDto {
     name: artwork.name,
     description: artwork.description,
     artistName: artwork.artist.name,
+    countryCode: artwork.artist.country.code,
     year: artwork.year,
     slug: artwork.slug,
+    likes: artwork.likes,
   };
 }
 
@@ -56,6 +67,7 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
       name: artwork.artist.name,
       born: artwork.artist.born,
       biography: artwork.artist.biography,
+      countryCode: artwork.artist.country.code,
       slug: artwork.artist.slug,
     },
     year: artwork.year,
@@ -80,6 +92,7 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
     measurements: artwork.measurements,
     width: artwork.width,
     height: artwork.height,
+    likes: artwork.likes,
   };
 }
 
@@ -88,7 +101,7 @@ export function createGalleryDto(gallery: Gallery): GalleryDto {
     name: gallery.name,
     description: gallery.description,
     address: gallery.address,
-    countryCode: gallery.country?.code,
+    countryCode: gallery.country.code,
     gps: gallery.gps,
     slug: gallery.slug,
   };
@@ -105,13 +118,19 @@ export function createGalleryDetailDto(gallery: Gallery): GalleryDetailDto {
 }
 
 export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
+  const artwork = exhibition.artworks[0];
   return {
+    name: exhibition.name,
     fromDate: exhibition.fromDate.toISOString(),
     toDate: exhibition.toDate.toISOString(),
     curator: exhibition.curator,
     gallery: {
       name: exhibition.gallery.name,
       slug: exhibition.gallery.slug,
+    },
+    artwork: {
+      name: artwork.name,
+      slug: artwork.slug,
     },
     activeRoomId: exhibition.activeRoomId,
     slug: exhibition.slug,
@@ -120,12 +139,14 @@ export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
 
 export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDetailDto {
   return {
+    name: exhibition.name,
     fromDate: exhibition.fromDate.toISOString(),
     toDate: exhibition.toDate.toISOString(),
     curator: exhibition.curator,
     gallery: {
       name: exhibition.gallery.name,
       slug: exhibition.gallery.slug,
+      countryCode: exhibition.gallery.country.code,
     },
     activeRoomId: exhibition.activeRoomId,
   };
@@ -134,7 +155,26 @@ export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDet
 export function createNftDto(nft: Nft): NftDto {
   return {
     nftData: {
+      id: nft.nftData.id,
       name: nft.nftData.name,
+      description: nft.nftData.description,
+      image: nft.nftData.image,
+    },
+    slug: nft.slug,
+    canBeMinted: nft.canBeMinted,
+    artwork: {
+      name: nft.artwork.name,
+      slug: nft.artwork.slug,
+    }
+  };
+}
+
+export function createNftDetailDto(nft: Nft): NftDetailDto {
+  return {
+    nftData: {
+      id: nft.nftData.id,
+      name: nft.nftData.name,
+      description: nft.nftData.description,
       image: nft.nftData.image,
     },
     canBeMinted: nft.canBeMinted,
