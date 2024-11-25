@@ -37,7 +37,6 @@ export class NftController {
   @Put('create/id/:nftID/wallet/:walletAddr/artwork/:artworkId')
   async nftCreateDB(@Param("nftID") nftID: string, @Param("walletAddr") walletAddr: string, @Param("artworkId") artworkId: string, @Body() form: NftDBDto, @GetUserId() userId: string): Promise<NFTResponseDto> {
     const { ipfsLink } = form;
-    console.log("HI")
     const callData = await this.appService.createNftInDB(nftID, ipfsLink, walletAddr, artworkId, userId);
     if (callData == null) {
       throw new BadRequestException('An error occurred while creating nft call, please check your parameters');

@@ -1,23 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
-import { NftRepository } from '@modules/app-db/repositories';
+import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
+import { convertLink } from '@common/helpers';
+
+export enum MintStatus {
+  MintedAlready = 'MintedAlready',
+  Success = 'Success',
+  Failed = 'Failed'
+}
 
 @Injectable()
 export class MintCreator {
-  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository) {
+  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository, private adminRepository: AdminRepository) {
 
   }
 
-  async createMint(userId: string, artworkId: string): Promise<string> {
+  async createMint(userId: string, artworkId: string): Promise<MintStatus> {
     //First we check if user has the right to mint an NFT, if they have already minted an NFT we return null
     //If they haven't we create the NFT for them
     const user = await this.nftRepository.getUser(userId);
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
+    const artworkImage = await this.adminRepository.getArtworkImage(userId, artworkId);
+
 
     if (artwork == null || user.trialMintClaimed == true || user.trialMintId != null) {
-      return "mintedAlready";
+      return MintStatus.MintedAlready;
     }
 
     const url = this.configService.get("NFT_MODULE_URL");
@@ -37,7 +46,7 @@ export class MintCreator {
     const description = descriptionParts.join(', ');
 
     const formData = new FormData();
-    const fileBlob = new Blob([artwork.image.buffer], { type: artwork.image.mimeType });
+    const fileBlob = new Blob([artworkImage.image], { type: artworkImage.mimeType });
 
     // Append fields and files to the FormData object
     formData.append('file', fileBlob);
@@ -61,9 +70,8 @@ export class MintCreator {
       //replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
       let metadata = metadataCid as string;
       if (metadata.startsWith("ipfs://ipfs/")) {
-        metadata = "https://flk-ipfs.xyz/ipfs" + metadata.slice(11);
+        metadata = convertLink(metadata);
       }
-
       const cidResp = await fetch(metadata);
 
       const cid = await cidResp.json()
@@ -71,9 +79,8 @@ export class MintCreator {
       //also replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
       let image = cid.image as string;
       if (image.startsWith("ipfs://ipfs/")) {
-        image = "https://flk-ipfs.xyz/ipfs" + image.slice(11);
+        image = convertLink(image);
       }
-
       const nft: NftData = {
         id: `${collectionID}-${nftID}`,
         name: artwork.name,
@@ -82,7 +89,9 @@ export class MintCreator {
       }
 
       await this.nftRepository.trialMint(user.id, artworkId, nft, EvaGalleryWalletAddress);
-      return cid.name;
+      return MintStatus.Success;
     }
+
+    return MintStatus.Failed;
   }
 } 

@@ -11,7 +11,7 @@ export class ArtworkImage {
   @Column("uuid", { nullable: true })
   id: ArtworkImageId;
 
-  @Column({ type: "bytea", nullable: true })
+  @Column({ type: "bytea", nullable: true, select: false })
   buffer: Buffer = null;
 
   @Column({ type: "text", nullable: true })

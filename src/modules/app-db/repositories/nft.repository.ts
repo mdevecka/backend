@@ -210,9 +210,8 @@ export class NftRepository {
         },
       },
       // Load all required related entities
-      relations: ['artist', 'artist.user', 'image'],
+      relations: ['artist', 'artist.user'],
     });
-
     return artwork;
   }
 

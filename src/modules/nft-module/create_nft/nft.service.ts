@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
+import { convertLink } from '@common/helpers';
 
 @Injectable()
 export class NftCreator {
@@ -16,6 +17,7 @@ export class NftCreator {
     //If they didnt return null and do nothing
 
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
+    const artworkImage = await this.adminRepository.getArtworkImage(userId, artworkId);
     if (artwork == null) {
       return null
     }
@@ -37,7 +39,7 @@ export class NftCreator {
     const url = this.configService.get("NFT_MODULE_URL");
 
     const formData = new FormData();
-    const fileBlob = new Blob([artwork.image.buffer], { type: artwork.image.mimeType });
+    const fileBlob = new Blob([artworkImage.image], { type: artworkImage.mimeType });
 
     // Append fields and files to the FormData object
     formData.append('file', fileBlob);
@@ -61,9 +63,8 @@ export class NftCreator {
     //replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
     let metadata = metadataCid as string;
     if (metadata.startsWith("ipfs://ipfs/")) {
-      metadata = "https://flk-ipfs.xyz/ipfs" + metadata.slice(11);
+      metadata = convertLink(metadata);
     }
-
     const cidResp = await fetch(metadata);
 
     const cid = await cidResp.json()
@@ -71,16 +72,13 @@ export class NftCreator {
     //also replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
     let image = cid.image as string;
     if (image.startsWith("ipfs://ipfs/")) {
-      image = "https://flk-ipfs.xyz/ipfs" + image.slice(11);
+      image = convertLink(image);
     }
 
     const wallets = await this.adminRepository.getWallets(userId);
-    let wallet;
-    for (const w of wallets) {
-      if (w.walletAddress === walletAddr) {
-      wallet = w;
-      break;
-      }
+    const wallet = wallets.find(w => w.walletAddress === walletAddr);
+    if (wallet === undefined) {
+      throw new Error('Wallet not found');
     }
 
     const nft: NftData = {
