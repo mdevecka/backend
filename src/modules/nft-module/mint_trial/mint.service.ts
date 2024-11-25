@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
-import { convertLink } from '@common/helpers';
+import { convertIpfsLink } from '@common/helpers';
 
 export enum MintStatus {
   MintedAlready = 'MintedAlready',
@@ -70,7 +70,7 @@ export class MintCreator {
       //replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
       let metadata = metadataCid as string;
       if (metadata.startsWith("ipfs://ipfs/")) {
-        metadata = convertLink(metadata);
+        metadata = convertIpfsLink(metadata);
       }
       const cidResp = await fetch(metadata);
 
@@ -79,7 +79,7 @@ export class MintCreator {
       //also replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
       let image = cid.image as string;
       if (image.startsWith("ipfs://ipfs/")) {
-        image = convertLink(image);
+        image = convertIpfsLink(image);
       }
       const nft: NftData = {
         id: `${collectionID}-${nftID}`,
