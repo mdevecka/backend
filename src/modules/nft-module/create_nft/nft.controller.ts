@@ -1,8 +1,10 @@
-import { Controller, Body, Put, UseGuards, BadRequestException, Param } from '@nestjs/common';
+import { Controller, Body, Put, UseGuards, BadRequestException, Param, Get } from '@nestjs/common';
 import { NftCreator } from './nft.service';
 import { NftDto } from './dto/NFTDto';
 import { NFTResponseDto } from './dto/NFTResponseDto';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
+import { NftDBDto } from './dto/NftDBDto';
+import * as mapper from '@modules/main/contracts/admin/read/mapper';
 
 @UseGuards(SessionAuthGuard)
 @Controller('nft')
@@ -32,5 +34,24 @@ export class NftController {
     }
   }
 
+  @Put('create/id/:nftID/wallet/:walletAddr/artwork/:artworkId')
+  async nftCreateDB(@Param("nftID") nftID: string, @Param("walletAddr") walletAddr: string, @Param("artworkId") artworkId: string, @Body() form: NftDBDto, @GetUserId() userId: string): Promise<NFTResponseDto> {
+    const { ipfsLink } = form;
+    console.log("HI")
+    const callData = await this.appService.createNftInDB(nftID, ipfsLink, walletAddr, artworkId, userId);
+    if (callData == null) {
+      throw new BadRequestException('An error occurred while creating nft call, please check your parameters');
+    }
+    else {
+      return { callData }
+    }
+  }
 
+  @Get('wallet/eva')
+  async getEvaWalletDetail() {
+    const item = await this.appService.getEvaWalletDetail();
+    if (item == null)
+      throw new BadRequestException('An error occurred while creating nft call, please check your parameters');
+    return mapper.createWalletDetailDto(item);
+  }
 }

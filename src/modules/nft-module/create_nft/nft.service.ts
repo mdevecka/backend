@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
+import { NftData } from '@modules/app-db/entities';
 
 @Injectable()
 export class NftCreator {
@@ -20,17 +21,18 @@ export class NftCreator {
     }
 
     //Create metadata
-    const description = JSON.stringify({
-      description: artwork.description,
-      artist: artwork.artist.name,
-      year: artwork.year,
-      artworkGenre: artwork.artworkGenre,
-      artworkMaterial: artwork.artworkMaterial,
-      artworkTechnique: artwork.artworkTechnique,
-      artworkWorktype: artwork.artworkWorktype,
-      measurements: artwork.measurements,
-    });
+    const descriptionParts = [
+      artwork.description ? `Description: ${artwork.description}` : null,
+      artwork.artist?.name ? `Artist: ${artwork.artist.name}` : null,
+      artwork.year ? `Year: ${artwork.year}` : null,
+      artwork.artworkGenre?.name ? `Genre: ${artwork.artworkGenre.name}` : null,
+      artwork.artworkMaterial?.name ? `Material: ${artwork.artworkMaterial.name}` : null,
+      artwork.artworkTechnique?.name ? `Technique: ${artwork.artworkTechnique.name}` : null,
+      artwork.artworkWorktype?.name ? `Worktype: ${artwork.artworkWorktype.name}` : null,
+      artwork.measurements ? `Measurements: ${artwork.measurements}` : null,
+    ].filter(part => part !== null);
 
+    const description = descriptionParts.join(', ');
 
     const url = this.configService.get("NFT_MODULE_URL");
 
@@ -50,6 +52,48 @@ export class NftCreator {
     return await response.json();
   }
 
+  async createNftInDB(nftID: string, metadataCid: string, walletAddr: string , artworkId: string, userId: string): Promise<string> {
+    const artwork = await this.nftRepository.getArtwork(userId, artworkId);
+    if (artwork == null) {
+      return null
+    }
+
+    //replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
+    let metadata = metadataCid as string;
+    if (metadata.startsWith("ipfs://ipfs/")) {
+      metadata = "https://flk-ipfs.xyz/ipfs" + metadata.slice(11);
+    }
+
+    const cidResp = await fetch(metadata);
+
+    const cid = await cidResp.json()
+
+    //also replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
+    let image = cid.image as string;
+    if (image.startsWith("ipfs://ipfs/")) {
+      image = "https://flk-ipfs.xyz/ipfs" + image.slice(11);
+    }
+
+    const wallets = await this.adminRepository.getWallets(userId);
+    let wallet;
+    for (const w of wallets) {
+      if (w.walletAddress === walletAddr) {
+      wallet = w;
+      break;
+      }
+    }
+
+    const nft: NftData = {
+      id: nftID,
+      name: artwork.name,
+      description: cid.description,
+      image: image,
+    }
+
+    const resp = await this.nftRepository.createNFT(nft, wallet.id, artworkId);
+    return resp.id;
+  }
+
   async updateNFTCall(artworkId: string, userId: string): Promise<string> {
 
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
@@ -58,16 +102,18 @@ export class NftCreator {
     }
 
     //Create metadata
-    const description = JSON.stringify({
-      description: artwork.description,
-      artist: artwork.artist.name,
-      year: artwork.year,
-      artworkGenre: artwork.artworkGenre,
-      artworkMaterial: artwork.artworkMaterial,
-      artworkTechnique: artwork.artworkTechnique,
-      artworkWorktype: artwork.artworkWorktype,
-      measurements: artwork.measurements,
-    });
+    const descriptionParts = [
+      artwork.description ? `Description: ${artwork.description}` : null,
+      artwork.artist?.name ? `Artist: ${artwork.artist.name}` : null,
+      artwork.year ? `Year: ${artwork.year}` : null,
+      artwork.artworkGenre?.name ? `Genre: ${artwork.artworkGenre.name}` : null,
+      artwork.artworkMaterial?.name ? `Material: ${artwork.artworkMaterial.name}` : null,
+      artwork.artworkTechnique?.name ? `Technique: ${artwork.artworkTechnique.name}` : null,
+      artwork.artworkWorktype?.name ? `Worktype: ${artwork.artworkWorktype.name}` : null,
+      artwork.measurements ? `Measurements: ${artwork.measurements}` : null,
+    ].filter(part => part !== null);
+
+    const description = descriptionParts.join(', ');
 
     const url = this.configService.get("NFT_MODULE_URL");
 
@@ -112,4 +158,13 @@ export class NftCreator {
     await this.nftRepository.updateNFT(nft.id, nft.nftData);
 
   }
+  async getEvaWalletDetail() {
+    const url = this.configService.get("NFT_MODULE_URL");
+    const EvaGalleryWalletAddressResponse = await fetch(`${url}/eva/wallet/address`);
+    const EvaGalleryWalletAddress = await EvaGalleryWalletAddressResponse.text();
+
+    return await this.nftRepository.getWallet(EvaGalleryWalletAddress); 
+
+  }
 }
+

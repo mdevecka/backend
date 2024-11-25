@@ -468,6 +468,7 @@ export function createWalletDto(wallet: Wallet): WalletDto {
   return {
     id: wallet.id,
     walletAddress: wallet.walletAddress,
+    onlineCheck: wallet.onlineCheck,
     collections: wallet.collections.map((col): WalletCollectionDto => ({
       id: col.id,
       colData: {
@@ -510,6 +511,7 @@ export function createWalletDetailDto(wallet: Wallet): WalletDetailDto {
   return {
     id: wallet.id,
     walletAddress: wallet.walletAddress,
+    onlineCheck: wallet.onlineCheck,
     collections: wallet.collections.map((col): WalletDetailCollectionDto => ({
       id: col.id,
       colData: {

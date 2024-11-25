@@ -8,10 +8,14 @@ export class MintController {
   constructor(private readonly appService: MintCreator) { }
 
   @Put('trial/artwork/:artworkId')
-  async formUpload(@Param("artworkId") artworkId: string, @GetUserId() userId: string): Promise<void> {
+  async formUpload(@Param("artworkId") artworkId: string, @GetUserId() userId: string): Promise<{ status: string }> {
     const response = await this.appService.createMint(userId, artworkId);
-    if (response === null) {
+    if (response === "mintedAlready") {
+      return { status: "mintedAlready" };
+    } else if (response === null) {
       throw new BadRequestException('An error occurred while updating database, please check your parameters');
+    } else {
+      return { status: "minted" };
     }
   }
-}
+} 
