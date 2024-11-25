@@ -1,8 +1,9 @@
-import { Controller, Get, Query, ParseIntPipe, ParseUUIDPipe, Param, Response, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, ParseIntPipe, ParseUUIDPipe, Param, Response, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { PublicRepository, MAX_SEED } from '@modules/app-db/repositories';
 import { ArtworkId, ResourceId, UnityRoomId } from '@modules/app-db/entities';
 import { mapAsync } from '@common/helpers';
+import { AddArtworkLikeDto } from '../contracts/public';
 import { randomInt } from 'crypto';
 import * as mapper from '../contracts/public/mapper';
 
@@ -18,8 +19,10 @@ export class PublicController {
   }
 
   @Get('random/artwork')
-  async getRandomArtworks(@Query('seed', new ParseIntPipe({ optional: true })) seed = this.createSeed(), @Query('from', new ParseIntPipe({ optional: true })) from = 0, @Query('count', ParseIntPipe) count: number) {
-    return mapAsync(this.publicRepository.getRandomArtworks(seed, from, count), mapper.createArtworkDto);
+  async getRandomArtworks(@Query('seed', new ParseIntPipe({ optional: true })) seed = this.createSeed(), @Query('from', new ParseIntPipe({ optional: true })) from = 0, @Query('count', ParseIntPipe) count: number, @Query('artist') artistSlug: string, @Query('exhibition') exhibitionSlug: string) {
+    const artistLabels = (artistSlug != null) ? this.parseSlug(artistSlug, 2) : null;
+    const exhibitionLabels = (exhibitionSlug != null) ? this.parseSlug(exhibitionSlug, 3) : null;
+    return mapAsync(this.publicRepository.getRandomArtworks(seed, from, count, artistLabels, exhibitionLabels), mapper.createArtworkDto);
   }
 
   @Get('random/gallery')
@@ -39,11 +42,7 @@ export class PublicController {
 
   @Get('artist')
   async getArtistDetail(@Query('slug') slug: string) {
-    if (slug == null)
-      throw new BadRequestException('invalid slug');
-    const labels = slug.split('/');
-    if (labels.length !== 2)
-      throw new BadRequestException('invalid slug');
+    const labels = this.parseSlug(slug, 2);
     const artist = await this.publicRepository.getArtistDetailBySlug(labels[0], labels[1]);
     if (artist == null)
       throw new NotFoundException();
@@ -52,11 +51,7 @@ export class PublicController {
 
   @Get('artwork')
   async getArtworkDetail(@Query('slug') slug: string) {
-    if (slug == null)
-      throw new BadRequestException('invalid slug');
-    const labels = slug.split('/');
-    if (labels.length !== 3)
-      throw new BadRequestException('invalid slug');
+    const labels = this.parseSlug(slug, 3);
     const artwork = await this.publicRepository.getArtworkDetailBySlug(labels[0], labels[1], labels[2]);
     if (artwork == null)
       throw new NotFoundException();
@@ -65,11 +60,7 @@ export class PublicController {
 
   @Get('gallery')
   async getGalleryDetail(@Query('slug') slug: string) {
-    if (slug == null)
-      throw new BadRequestException('invalid slug');
-    const labels = slug.split('/');
-    if (labels.length !== 2)
-      throw new BadRequestException('invalid slug');
+    const labels = this.parseSlug(slug, 2);
     const gallery = await this.publicRepository.getGalleryDetailBySlug(labels[0], labels[1]);
     if (gallery == null)
       throw new NotFoundException();
@@ -78,24 +69,25 @@ export class PublicController {
 
   @Get('exhibition')
   async getExhibitionDetail(@Query('slug') slug: string) {
-    if (slug == null)
-      throw new BadRequestException('invalid slug');
-    const labels = slug.split('/');
-    if (labels.length !== 3)
-      throw new BadRequestException('invalid slug');
+    const labels = this.parseSlug(slug, 3);
     const exhibition = await this.publicRepository.getExhibitionDetailBySlug(labels[0], labels[1], labels[2]);
     if (exhibition == null)
       throw new NotFoundException();
     return mapper.createExhibitionDetailDto(exhibition);
   }
 
+  @Get('nft')
+  async getNftDetail(@Query('slug') slug: string) {
+    const labels = this.parseSlug(slug, 2);
+    const nft = await this.publicRepository.getNftDetailBySlug(labels[0], labels[1]);
+    if (nft == null)
+      throw new NotFoundException();
+    return mapper.createNftDetailDto(nft);
+  }
+
   @Get('artwork/image')
   async getArtworkImage(@Query('slug') slug: string, @Response() res: ExpressResponse) {
-    if (slug == null)
-      throw new BadRequestException('invalid slug');
-    const labels = slug.split('/');
-    if (labels.length !== 3)
-      throw new BadRequestException('invalid slug');
+    const labels = this.parseSlug(slug, 3);
     let item = await this.publicRepository.getArtworkProtectedImageBySlug(labels[0], labels[1], labels[2]);
     if (item == null) {
       item = await this.publicRepository.getArtworkImageBySlug(labels[0], labels[1], labels[2]);
@@ -107,11 +99,7 @@ export class PublicController {
 
   @Get('artwork/thumbnail')
   async getArtworkThumbnail(@Query('slug') slug: string, @Response() res: ExpressResponse) {
-    if (slug == null)
-      throw new BadRequestException('invalid slug');
-    const labels = slug.split('/');
-    if (labels.length !== 3)
-      throw new BadRequestException('invalid slug');
+    const labels = this.parseSlug(slug, 3);
     const item = await this.publicRepository.getArtworkThumbnailBySlug(labels[0], labels[1], labels[2]);
     if (item == null)
       throw new NotFoundException();
@@ -147,8 +135,27 @@ export class PublicController {
     return mapAsync(this.publicRepository.getItemTypes(), mapper.createDesignerLibraryItemDto);
   }
 
+  @Post('artwork/like')
+  async addArtworkLike(@Body() dto: AddArtworkLikeDto) {
+    const labels = this.parseSlug(dto.slug, 3);
+    const artwork = await this.publicRepository.getArtworkDetailBySlug(labels[0], labels[1], labels[2]);
+    if (artwork == null)
+      throw new NotFoundException();
+    artwork.likes++;
+    await this.publicRepository.saveArtwork(artwork);
+  }
+
   private createSeed() {
     return randomInt(MAX_SEED);
+  }
+
+  private parseSlug(slug: string, expectedCount: number) {
+    if (slug == null)
+      throw new BadRequestException('invalid slug');
+    const labels = slug.split('/');
+    if (labels.length !== expectedCount)
+      throw new BadRequestException('invalid slug');
+    return labels;
   }
 
 }

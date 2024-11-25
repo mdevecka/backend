@@ -4,7 +4,7 @@ import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
 import { NftInterface } from './interface/NftInterface';
 import { CollectionInterface } from './interface/ColInterface';
-import { convertLink, fetchMetadataFromIPFS } from '@common/helpers';
+import { convertIpfsLink, fetchMetadataFromIPFS } from '@common/helpers';
 
 @Injectable()
 export class MetaFetcher {
@@ -27,10 +27,10 @@ export class MetaFetcher {
 
     for (let i = 0; i < data.length; i++) {
       if (data[i].metadata != null) {
-        data[i].metadata = convertLink(data[i].metadata);
+        data[i].metadata = convertIpfsLink(data[i].metadata);
         data[i].metadata = await fetchMetadataFromIPFS(data[i].metadata);
         if (data[i].image != null) {
-          data[i].image = convertLink(data[i].image);
+          data[i].image = convertIpfsLink(data[i].image);
         }
       }
     }
@@ -50,10 +50,10 @@ export class MetaFetcher {
 
     for (let i = 0; i < data.length; i++) {
       if (data[i].metadata != null) {
-        data[i].metadata = convertLink(data[i].metadata);
+        data[i].metadata = convertIpfsLink(data[i].metadata);
         data[i].metadata = await fetchMetadataFromIPFS(data[i].metadata);
         if (data[i].image != null) {
-          data[i].image = convertLink(data[i].image);
+          data[i].image = convertIpfsLink(data[i].image);
         }
       }
     }

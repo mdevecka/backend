@@ -6,6 +6,7 @@ export interface ArtworkDetailDto {
     born: string;
     biography: string;
     slug: string;
+    countryCode: string;
   };
   year: string;
   nft: {
@@ -29,4 +30,5 @@ export interface ArtworkDetailDto {
   measurements: string;
   width: number;
   height: number;
+  likes: number;
 }

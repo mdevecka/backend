@@ -1,3 +1,11 @@
+export interface ArtistArtworkDto {
+  name: string;
+  description: string;
+  artistName: string;
+  year: string;
+  slug: string;
+}
+
 export interface ArtistDto {
   name: string;
   born: string;
@@ -5,4 +13,5 @@ export interface ArtistDto {
   countryCode: string;
   artistCategory: string;
   slug: string;
+  artwork: ArtistArtworkDto;
 }
