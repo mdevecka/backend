@@ -1,9 +1,8 @@
 import { Controller, Body, Put, UseGuards, BadRequestException, Param, Get } from '@nestjs/common';
 import { NftCreator } from './nft.service';
-import { NftDto } from './dto/NFTDto';
+import { NftDto, NftDBDto } from './dto/NFTDto';
 import { NFTResponseDto } from './dto/NFTResponseDto';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
-import { NftDBDto } from './dto/NftDBDto';
 import * as mapper from '@modules/main/contracts/admin/read/mapper';
 
 @UseGuards(SessionAuthGuard)

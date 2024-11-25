@@ -5,3 +5,9 @@ export class NftDto {
   @IsNotEmpty()
   address: string;
 }
+
+export class NftDBDto {
+  @IsString()
+  @IsNotEmpty()
+  ipfsLink: string;
+}
