@@ -4,6 +4,7 @@ import { AppConfig } from '@common/config';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
 import { convertIpfsLink } from '@common/helpers';
+import { AppConfigService } from '@modules/config/config.service';
 
 export enum MintStatus {
   MintedAlready = 'MintedAlready',
@@ -13,7 +14,7 @@ export enum MintStatus {
 
 @Injectable()
 export class MintCreator {
-  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository, private adminRepository: AdminRepository) {
+  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository, private adminRepository: AdminRepository, private appConfigService: AppConfigService) {
 
   }
 
@@ -61,11 +62,8 @@ export class MintCreator {
     const { nftID, metadataCid } = await response.json();
 
     if (nftID != null && metadataCid != null) {
-      const collectionIDResponse = await fetch(`${url}/eva/wallet/collection`);
-      const collectionID = await collectionIDResponse.text();
-  
-      const EvaGalleryWalletAddressResponse = await fetch(`${url}/eva/wallet/address`);
-      const EvaGalleryWalletAddress = await EvaGalleryWalletAddressResponse.text();
+      const collectionID = this.appConfigService.collectionId;
+      const EvaGalleryWalletAddress = this.appConfigService.walletAddress;
 
       //replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
       let metadata = metadataCid as string;

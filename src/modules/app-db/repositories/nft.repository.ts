@@ -310,6 +310,17 @@ export class NftRepository {
     }
   }
 
+  async createWallet(walletAddress: string) {
+    const wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
+    if (wallet == null) {
+      const wallet = new Wallet();
+      wallet.walletAddress = walletAddress;
+      wallet.onlineCheck = this.configService.get("SUBSCAN_URL") + "/account/" + walletAddress;
+      return this.wallets.save(wallet);
+    }
+    return wallet;
+  }
+
   /// Assigns metadata that was queried from API
   async assignColsMetadata(userId: string, walletAddress: string, cols: CollectionInterface[]) {
 

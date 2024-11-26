@@ -29,6 +29,7 @@ import { createOptionDto, mapEmpty } from '@common/helpers';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, UnityRoom, UnityItemType, Nft, Collection, Wallet, Resource,
 } from '@modules/app-db/entities';
+import { EvaDetailDto } from './eva-detail.dto';
 
 export function createCountryDto(country: Country): CountryDto {
   return {
@@ -405,6 +406,54 @@ export function createNftDetailDto(nft: Nft): NftDetailDto {
       height: art.height,
       public: art.public,
     }))
+  };
+}
+
+export function createEvaGalleryDetailsDto(nft: Nft, collection: Collection, wallet: Wallet): EvaDetailDto {
+  return {
+    id: nft.id,
+    walletId: nft.walletId,
+    collectionId: nft.collectionId,
+    nftData: {
+      id: nft.nftData.id,
+      name: nft.nftData.name,
+      description: nft.nftData.description,
+      image: nft.nftData.image,
+    },
+    onlineCheck: nft.onlineCheck,
+    canBeMinted: nft.canBeMinted,
+    artwork: mapEmpty(nft.artwork, art => ({
+      id: art.id,
+      name: art.name,
+      description: art.description,
+      artistId: art.artistId,
+      year: art.year,
+      ai: art.ai,
+      tags: art.tags,
+      artworkGenreId: art.artworkGenreId,
+      artworkWorktypeId: art.artworkWorktypeId,
+      artworkMaterialId: art.artworkMaterialId,
+      artworkTechniqueId: art.artworkTechniqueId,
+      measurements: art.measurements,
+      width: art.width,
+      height: art.height,
+      public: art.public,
+    })),
+    collection: {
+      id: collection.id,
+      onlineCheck: collection.onlineCheck,
+      colData: {
+        id: collection.colData.id,
+        name: collection.colData.name,
+        description: collection.colData.description,
+        image: collection.colData.image,
+      },
+    },
+      wallet: {
+        id: wallet.id,
+        walletAddress: wallet.walletAddress,
+        onlineCheck: wallet.onlineCheck,
+    }
   };
 }
 

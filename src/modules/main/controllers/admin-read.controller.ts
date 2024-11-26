@@ -5,12 +5,13 @@ import { UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId, NftI
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 import { mapAsync, mapOptionsAsync, imageMimeTypes, audioMimeTypes } from '@common/helpers';
 import * as mapper from '../contracts/admin/read/mapper';
+import { AppConfigService } from '@modules/config/config.service';
 
 @UseGuards(SessionAuthGuard)
 @Controller('admin')
 export class AdminReadController {
 
-  constructor(private adminRepository: AdminRepository) {
+  constructor(private adminRepository: AdminRepository, private appConfigService: AppConfigService) {
   }
 
   @Get('user')
@@ -247,12 +248,14 @@ export class AdminReadController {
     return mapper.createNftDetailDto(item);
   }
 
-  @Get('nft/trial/:id')
-  async getWalletTrialDetail(@Param('id', ParseUUIDPipe) id: NftId) {
-    const item = await this.adminRepository.getNftDetailTrial(id);
+  @Get('/trialinfo/nft/:id/')
+  async getTrialDetails(@Param('id', ParseUUIDPipe) id: NftId) {
+    const collectionID = this.appConfigService.collectionId;
+    const WalletAddress = this.appConfigService.walletAddress;
+    const item = await this.adminRepository.getDetailTrial(id, collectionID, WalletAddress);
     if (item == null)
       throw new NotFoundException();
-    return mapper.createNftDetailDto(item);
+    return mapper.createEvaGalleryDetailsDto(item.nft, item.collection, item.wallet);
   }
 
   @Get('collection')
@@ -268,14 +271,6 @@ export class AdminReadController {
     return mapper.createCollectionDetailDto(item);
   }
 
-  @Get('collection/trial/:id')
-  async getCollectionEvaDetail(@Param('id', ParseUUIDPipe) id: CollectionId) {
-    const item = await this.adminRepository.getCollectionEvaDetail(id);
-    if (item == null)
-      throw new NotFoundException();
-    return mapper.createCollectionDetailDto(item);
-  }
-
   @Get('wallet')
   async getWallets(@GetUserId() userId: UserId) {
     return mapAsync(this.adminRepository.getWallets(userId), mapper.createWalletDto);
@@ -284,14 +279,6 @@ export class AdminReadController {
   @Get('wallet/:id')
   async getWalletDetail(@Param('id', ParseUUIDPipe) id: WalletId, @GetUserId() userId: UserId) {
     const item = await this.adminRepository.getWalletDetail(userId, id);
-    if (item == null)
-      throw new NotFoundException();
-    return mapper.createWalletDetailDto(item);
-  }
-
-  @Get('wallet/trial/:id')
-  async getWalletEvaDetail(@Param('id', ParseUUIDPipe) id: WalletId) {
-    const item = await this.adminRepository.getWalletEvaDetail(id);
     if (item == null)
       throw new NotFoundException();
     return mapper.createWalletDetailDto(item);

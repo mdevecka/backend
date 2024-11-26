@@ -4,11 +4,13 @@ import { AppConfig } from '@common/config';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
 import { convertIpfsLink } from '@common/helpers';
+import { NftUpdateDto } from './dto/NFTDto';
+import { AppConfigService } from '@modules/config/config.service';
 
 @Injectable()
 export class NftCreator {
   private readonly logger = new Logger(NftCreator.name)
-  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository, private adminRepository: AdminRepository) {
+  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository, private adminRepository: AdminRepository, private appConfigService: AppConfigService) {
 
   }
 
@@ -92,23 +94,25 @@ export class NftCreator {
     return resp.id;
   }
 
-  async updateNFTCall(artworkId: string, userId: string): Promise<string> {
+  async updateNFTCall(form: NftUpdateDto, artworkId: string, userId: string): Promise<string> {
+
+    let { name, metadata } = form;
 
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
     if (artwork == null) {
       return null
     }
 
+    if (name === null || name === undefined || name === '') {
+      name = artwork.name;
+    }
+    if (metadata === null || metadata === undefined || metadata === '') {
+      metadata = artwork.nft.nftData.description;
+    }
+
     //Create metadata
     const descriptionParts = [
-      artwork.description ? `Description: ${artwork.description}` : null,
-      artwork.artist?.name ? `Artist: ${artwork.artist.name}` : null,
-      artwork.year ? `Year: ${artwork.year}` : null,
-      artwork.artworkGenre?.name ? `Genre: ${artwork.artworkGenre.name}` : null,
-      artwork.artworkMaterial?.name ? `Material: ${artwork.artworkMaterial.name}` : null,
-      artwork.artworkTechnique?.name ? `Technique: ${artwork.artworkTechnique.name}` : null,
-      artwork.artworkWorktype?.name ? `Worktype: ${artwork.artworkWorktype.name}` : null,
-      artwork.measurements ? `Measurements: ${artwork.measurements}` : null,
+      metadata,
     ].filter(part => part !== null);
 
     const description = descriptionParts.join(', ');
@@ -123,7 +127,7 @@ export class NftCreator {
 
     // Append fields and files to the FormData object
     formData.append('file', fileBlob);          // Ensure 'file' is a File or Blob object
-    formData.append('name', artwork.name);
+    formData.append('name', name);
     formData.append('metadata', description);
 
     const response = await fetch(`${url}/update/asset/${colAndArtId}`, {
@@ -157,9 +161,7 @@ export class NftCreator {
 
   }
   async getEvaWalletDetail() {
-    const url = this.configService.get("NFT_MODULE_URL");
-    const EvaGalleryWalletAddressResponse = await fetch(`${url}/eva/wallet/address`);
-    const EvaGalleryWalletAddress = await EvaGalleryWalletAddressResponse.text();
+    const EvaGalleryWalletAddress = this.appConfigService.walletAddress;
 
     return await this.nftRepository.getWallet(EvaGalleryWalletAddress); 
 

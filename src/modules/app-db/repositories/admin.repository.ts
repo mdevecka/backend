@@ -460,15 +460,24 @@ export class AdminRepository {
     });
   }
 
-  async getNftDetailTrial(id: NftId) {
-    return this.nfts.findOne({
+  async getDetailTrial(id: NftId, collectionID: string, walletAddress: string) {
+    //List collections
+    const nft = await this.nfts.findOne({
       relations: {
         artwork: true,
       },
-      where: {
-        id: id,
-      }
+      where: { id: id },
     });
+    const wallet = await this.wallets.findOne({
+      where: { walletAddress: walletAddress },
+    });
+    //Query wallets collections and search for one with same id in coldata
+    const collections = await this.collections.find({
+      where: { walletId: wallet.id },
+    });
+    const collection = collections.find(c => c.colData.id === collectionID);
+
+    return { nft, collection, wallet };
   }
 
   async getCollections(userId: UserId) {
@@ -494,17 +503,6 @@ export class AdminRepository {
     });
   }
 
-  async getCollectionEvaDetail(id: CollectionId) {
-    return this.collections.findOne({
-      relations: {
-        nfts: { artwork: true },
-      },
-      where: {
-        id: id,
-      }
-    });
-  }
-
   async getWallets(userId: UserId) {
     return this.wallets.find({
       relations: {
@@ -526,18 +524,6 @@ export class AdminRepository {
       where: {
         id: id,
         userId: userId
-      }
-    });
-  }
-
-  async getWalletEvaDetail(id: WalletId) {
-    return this.wallets.findOne({
-      relations: {
-        collections: { nfts: { artwork: true } },
-        nfts: { artwork: true }
-      },
-      where: {
-        id: id,
       }
     });
   }
