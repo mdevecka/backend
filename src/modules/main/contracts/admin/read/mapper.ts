@@ -126,8 +126,8 @@ export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
   return {
     id: exhibition.id,
     name: exhibition.name,
-    fromDate: exhibition.fromDate.toISOString(),
-    toDate: exhibition.toDate.toISOString(),
+    fromDate: exhibition.fromDate?.toISOString(),
+    toDate: exhibition.toDate?.toISOString(),
     curator: exhibition.curator,
     gallery: {
       id: exhibition.gallery.id,
@@ -220,8 +220,8 @@ export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDet
   return {
     id: exhibition.id,
     name: exhibition.name,
-    fromDate: exhibition.fromDate.toISOString(),
-    toDate: exhibition.toDate.toISOString(),
+    fromDate: exhibition.fromDate?.toISOString(),
+    toDate: exhibition.toDate?.toISOString(),
     curator: exhibition.curator,
     gallery: {
       id: exhibition.gallery.id,
@@ -239,8 +239,8 @@ export function createArtworkExhibitionDto(exhibition: Exhibition): ArtworkExhib
   return {
     id: exhibition.id,
     name: exhibition.name,
-    fromDate: exhibition.fromDate.toISOString(),
-    toDate: exhibition.toDate.toISOString(),
+    fromDate: exhibition.fromDate?.toISOString(),
+    toDate: exhibition.toDate?.toISOString(),
     curator: exhibition.curator,
     gallery: {
       id: exhibition.gallery.id,
@@ -254,8 +254,8 @@ export function createGalleryExhibitionDto(exhibition: Exhibition): GalleryExhib
   return {
     id: exhibition.id,
     name: exhibition.name,
-    fromDate: exhibition.fromDate.toISOString(),
-    toDate: exhibition.toDate.toISOString(),
+    fromDate: exhibition.fromDate?.toISOString(),
+    toDate: exhibition.toDate?.toISOString(),
     curator: exhibition.curator,
     gallery: {
       id: exhibition.gallery.id,

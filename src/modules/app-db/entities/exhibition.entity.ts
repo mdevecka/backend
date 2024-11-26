@@ -14,10 +14,10 @@ export class Exhibition extends LabeledEntity {
 
   id: ExhibitionId;
 
-  @Column('timestamptz')
+  @Column('timestamptz', { nullable: true })
   fromDate: Date;
 
-  @Column('timestamptz')
+  @Column('timestamptz', { nullable: true })
   toDate: Date;
 
   @Column('text', { nullable: true })

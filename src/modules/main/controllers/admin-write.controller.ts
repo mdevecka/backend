@@ -25,7 +25,7 @@ export class AdminWriteController {
       throw new BadRequestException("name must be unique");
     const artist = await this.adminRepository.saveArtist({
       name: dto.name,
-      born: dto.born,
+      born: mapEmpty(dto.born, date => date),
       biography: dto.biography,
       public: dto.public,
       facebookProfileLink: dto.facebookProfileLink,
@@ -50,7 +50,7 @@ export class AdminWriteController {
     await this.adminRepository.saveArtist({
       id: id,
       name: dto.name,
-      born: dto.born,
+      born: mapEmpty(dto.born, date => date),
       biography: dto.biography,
       public: dto.public,
       facebookProfileLink: dto.facebookProfileLink,
