@@ -11,3 +11,12 @@ export class NftDBDto {
   @IsNotEmpty()
   ipfsLink: string;
 }
+
+export class NftUpdateDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+  @IsString()
+  @IsNotEmpty()
+  metadata: string;
+}

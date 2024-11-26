@@ -1,6 +1,6 @@
 import { Controller, Body, Put, UseGuards, BadRequestException, Param, Get } from '@nestjs/common';
 import { NftCreator } from './nft.service';
-import { NftDto, NftDBDto } from './dto/NFTDto';
+import { NftDto, NftDBDto, NftUpdateDto } from './dto/NFTDto';
 import { NFTResponseDto } from './dto/NFTResponseDto';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 import * as mapper from '@modules/main/contracts/admin/read/mapper';
@@ -22,9 +22,9 @@ export class NftController {
     }
   }
 
-  @Put('update/artwork/:artworkId')
-  async updateNft(@Param("artworkId") artworkId: string, @GetUserId() userId: string): Promise<NFTResponseDto> {
-    const callData = await this.appService.updateNFTCall(artworkId, userId);
+  @Put('update/nft/:artworkId')
+  async updateNft(@Param("artworkId") artworkId: string, @GetUserId() userId: string, @Body() form: NftUpdateDto): Promise<NFTResponseDto> {
+    const callData = await this.appService.updateNFTCall(form, artworkId, userId);
     if (callData == null) {
       throw new BadRequestException('An error occurred while updating nft call, please check your parameters');
     }
