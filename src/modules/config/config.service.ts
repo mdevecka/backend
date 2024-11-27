@@ -34,7 +34,7 @@ export class AppConfigService {
     const EvaGalleryWalletAddressResponse = await fetch(`${url}/eva/wallet/address`);
     this.walletAddr = await EvaGalleryWalletAddressResponse.text();
 
-    const wallet = await this.nftRepository.createWallet(this.walletAddr);
+    const wallet = await this.nftRepository.ensureWallet(this.walletAddr);
     this.walletID = wallet.id;
   }
 

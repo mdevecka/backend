@@ -250,12 +250,10 @@ export class AdminReadController {
 
   @Get('/trialinfo/nft/:id/')
   async getTrialDetails(@Param('id', ParseUUIDPipe) id: NftId) {
-    const collectionID = this.appConfigService.collectionId;
-    const WalletAddress = this.appConfigService.walletAddress;
-    const item = await this.adminRepository.getDetailTrial(id, collectionID, WalletAddress);
+    const item = await this.adminRepository.getTrialNftDetail(id);
     if (item == null)
       throw new NotFoundException();
-    return mapper.createEvaGalleryDetailsDto(item.nft, item.collection, item.wallet);
+    return mapper.createEvaGalleryDetailsDto(item);
   }
 
   @Get('collection')

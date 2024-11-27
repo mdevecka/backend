@@ -162,9 +162,12 @@ export class NftCreator {
   }
   async getEvaWalletDetail() {
     const EvaGalleryWalletAddress = this.appConfigService.walletAddress;
-
     return await this.nftRepository.getWallet(EvaGalleryWalletAddress); 
 
+  }
+
+  async createWallet(walletAddr: string, userId: string) {
+    return await this.nftRepository.ensureWallet(walletAddr, userId);
   }
 }
 

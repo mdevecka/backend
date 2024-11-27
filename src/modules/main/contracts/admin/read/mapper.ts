@@ -409,8 +409,8 @@ export function createNftDetailDto(nft: Nft): NftDetailDto {
   };
 }
 
-export function createEvaGalleryDetailsDto(nft: Nft, collection: Collection, wallet: Wallet): EvaDetailDto {
-  return {
+export function createEvaGalleryDetailsDto(nft: Nft): EvaDetailDto {
+  return  {
     id: nft.id,
     walletId: nft.walletId,
     collectionId: nft.collectionId,
@@ -440,19 +440,19 @@ export function createEvaGalleryDetailsDto(nft: Nft, collection: Collection, wal
       public: art.public,
     })),
     collection: {
-      id: collection.id,
-      onlineCheck: collection.onlineCheck,
+      id: nft.collection.id,
+      onlineCheck: nft.collection.onlineCheck,
       colData: {
-        id: collection.colData.id,
-        name: collection.colData.name,
-        description: collection.colData.description,
-        image: collection.colData.image,
+        id: nft.collection.colData.id,
+        name: nft.collection.colData.name,
+        description: nft.collection.colData.description,
+        image: nft.collection.colData.image,
       },
     },
       wallet: {
-        id: wallet.id,
-        walletAddress: wallet.walletAddress,
-        onlineCheck: wallet.onlineCheck,
+        id: nft.collection.wallet.id,
+        walletAddress: nft.collection.wallet.walletAddress,
+        onlineCheck: nft.collection.wallet.onlineCheck,
     }
   };
 }

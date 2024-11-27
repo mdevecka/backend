@@ -4,6 +4,7 @@ import { NftDto, NftDBDto, NftUpdateDto } from './dto/NFTDto';
 import { NFTResponseDto } from './dto/NFTResponseDto';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 import * as mapper from '@modules/main/contracts/admin/read/mapper';
+import { Wallet } from '@modules/app-db/entities';
 
 @UseGuards(SessionAuthGuard)
 @Controller('nft')
@@ -51,5 +52,16 @@ export class NftController {
     if (item == null)
       throw new BadRequestException('An error occurred while creating nft call, please check your parameters');
     return mapper.createWalletDetailDto(item);
+  }
+
+  @Put('create/wallet/:walletAddr')
+  async createWallet(@Param("walletAddr") walletAddr: string, @GetUserId() userId: string): Promise<Wallet> {
+    const callData = await this.appService.createWallet(walletAddr, userId);
+    if (callData == null) {
+      throw new BadRequestException('An error occurred while creating wallet, please check your parameters');
+    }
+    else {
+      return callData;
+    }
   }
 }

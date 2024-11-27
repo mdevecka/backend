@@ -460,24 +460,17 @@ export class AdminRepository {
     });
   }
 
-  async getDetailTrial(id: NftId, collectionID: string, walletAddress: string) {
+  async getTrialNftDetail(id: NftId) {
     //List collections
     const nft = await this.nfts.findOne({
       relations: {
         artwork: true,
+        collection: { wallet: true }
       },
       where: { id: id },
     });
-    const wallet = await this.wallets.findOne({
-      where: { walletAddress: walletAddress },
-    });
-    //Query wallets collections and search for one with same id in coldata
-    const collections = await this.collections.find({
-      where: { walletId: wallet.id },
-    });
-    const collection = collections.find(c => c.colData.id === collectionID);
 
-    return { nft, collection, wallet };
+    return nft;
   }
 
   async getCollections(userId: UserId) {

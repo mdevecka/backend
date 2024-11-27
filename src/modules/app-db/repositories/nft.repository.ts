@@ -231,6 +231,20 @@ export class NftRepository {
     });
   }
 
+  async ensureWallet(walletAddress: string, userId?: string) {
+    const wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
+    if (wallet == null) {
+      const newWallet = new Wallet();
+      newWallet.walletAddress = walletAddress;
+      newWallet.onlineCheck = this.configService.get("SUBSCAN_URL") + "/account/" + walletAddress;
+      if (userId != null) {
+        newWallet.user = await this.users.findOneBy({ id: userId });
+      }
+      return this.wallets.save(newWallet);
+    }
+    return wallet
+  }
+
 
   /// Assigns metadata that was queried from API
   async assignNFTsMetadata(userId: string, walletAddress: string, nfts: NftInterface[]) {
@@ -308,17 +322,6 @@ export class NftRepository {
       }
 
     }
-  }
-
-  async createWallet(walletAddress: string) {
-    const wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
-    if (wallet == null) {
-      const wallet = new Wallet();
-      wallet.walletAddress = walletAddress;
-      wallet.onlineCheck = this.configService.get("SUBSCAN_URL") + "/account/" + walletAddress;
-      return this.wallets.save(wallet);
-    }
-    return wallet;
   }
 
   /// Assigns metadata that was queried from API
