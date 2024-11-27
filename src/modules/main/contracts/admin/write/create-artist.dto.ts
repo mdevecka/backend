@@ -10,8 +10,9 @@ export class CreateArtistDto {
   name: string;
 
   @IsOptional()
+  @AllowEmpty()
   @IsDateString()
-  born: string;
+  born: string | EMPTY;
 
   @IsOptional()
   @IsString()

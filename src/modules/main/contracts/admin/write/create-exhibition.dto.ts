@@ -7,11 +7,15 @@ export class CreateExhibitionDto {
   @IsString()
   name: string;
 
+  @IsOptional()
+  @AllowEmpty()
   @IsDateString()
-  fromDate: string;
+  fromDate: string | EMPTY;
 
+  @IsOptional()
+  @AllowEmpty()
   @IsDateString()
-  toDate: string;
+  toDate: string | EMPTY;
 
   @IsOptional()
   @IsString()
