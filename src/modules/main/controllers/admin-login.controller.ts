@@ -133,6 +133,7 @@ export class AdminLoginController {
     if (user.loginType !== LoginType.Credentials || user.registerState !== RegisterState.Registered)
       throw new BadRequestException("invalid user");
     user.password = await this.hashPassword(dto.password);
+    user.resetToken = null;
     await this.adminRepository.saveUser(user);
   }
 
