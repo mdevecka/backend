@@ -6,6 +6,7 @@ import {
   ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft, Collection, Wallet, Resource,
   UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, CountryId, ArtistCategoryId, ArtworkTechniqueId,
   ArtworkMaterialId, ArtworkGenreId, ArtworkWorktypeId, UnityRoomId, UnityItemTypeId, NftId, CollectionId, WalletId, ResourceId,
+  LoginType
 } from '../entities';
 
 @Injectable()
@@ -43,10 +44,36 @@ export class AdminRepository {
     });
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmail(email: string, loginType: LoginType) {
     return this.users.findOne({
       where: {
-        email: email,
+        email: email.toLowerCase(),
+        loginType: loginType,
+      }
+    });
+  }
+
+  async getUserByProviderId(id: string, loginType: LoginType) {
+    return this.users.findOne({
+      where: {
+        loginProviderId: id,
+        loginType: loginType,
+      }
+    });
+  }
+
+  async getUserByRegisterToken(token: string) {
+    return this.users.findOne({
+      where: {
+        registerToken: token,
+      }
+    });
+  }
+
+  async getUserByResetToken(token: string) {
+    return this.users.findOne({
+      where: {
+        resetToken: token,
       }
     });
   }
@@ -630,6 +657,11 @@ export class AdminRepository {
 
   async getResourceByName(userId: UserId, name: string) {
     return this.resources.findOneBy({ name: name, userId: userId });
+  }
+
+  async saveUser(user: DeepPartial<User>) {
+    const entity = this.users.create(user);
+    return this.users.save(entity);
   }
 
   async saveArtist(artist: DeepPartial<Artist>) {

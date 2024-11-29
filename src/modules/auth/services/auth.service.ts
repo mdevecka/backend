@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { AdminRepository } from '@modules/app-db/repositories';
+import { LoginType, RegisterState } from '@modules/app-db/entities';
 import { AppConfig } from '@common/config';
 import { compare } from 'bcrypt';
 import { randomBytes } from 'crypto';
@@ -14,12 +15,25 @@ export class AuthService {
   }
 
   async loginWithCredentials(email: string, password: string) {
-    const user = await this.adminRepository.getUserByEmail(email);
+    const user = await this.adminRepository.getUserByEmail(email, LoginType.Credentials);
     if (user == null)
       throw new UnauthorizedException();
     const validPassword = await compare(password, user.password);
     if (!validPassword)
       throw new UnauthorizedException();
+    const sessionId = this.createSession();
+    await this.storeSession(sessionId, user.id);
+    return sessionId;
+  }
+
+  async loginWithProvider(id: string, loginType: LoginType) {
+    if (id == null || id === "")
+      throw new Error(`unexpected empty provider id`);
+    const user = await this.adminRepository.getUserByProviderId(id, loginType);
+    if (user == null)
+      throw new Error(`user not found`);
+    if (user.registerState === RegisterState.Registering)
+      throw new Error(`user not registered`);
     const sessionId = this.createSession();
     await this.storeSession(sessionId, user.id);
     return sessionId;

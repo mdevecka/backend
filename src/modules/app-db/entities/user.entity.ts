@@ -8,6 +8,16 @@ import slugify from 'slugify';
 
 export type UserId = ID<"User">;
 
+export enum LoginType {
+  Credentials = 'credentials',
+  Google = 'google',
+}
+
+export enum RegisterState {
+  Registering = 'registering',
+  Registered = 'registered',
+}
+
 @Entity()
 export class User extends BaseEntity {
 
@@ -17,8 +27,11 @@ export class User extends BaseEntity {
   name: string;
 
   @Index()
-  @Column('text')
+  @Column('text', { nullable: true })
   label: string;
+
+  @Column({ type: "enum", enum: LoginType, default: LoginType.Credentials })
+  loginType: LoginType;
 
   @Index()
   @Column('text', { unique: true, nullable: true })
@@ -26,6 +39,18 @@ export class User extends BaseEntity {
 
   @Column('text', { nullable: true })
   password: string;
+
+  @Column('text', { nullable: true })
+  loginProviderId: string;
+
+  @Column({ type: "enum", enum: RegisterState, default: RegisterState.Registering })
+  registerState: RegisterState;
+
+  @Column('text', { nullable: true })
+  registerToken: string;
+
+  @Column('text', { nullable: true })
+  resetToken: string;
 
   @Column('text', { nullable: true })
   description: string;
