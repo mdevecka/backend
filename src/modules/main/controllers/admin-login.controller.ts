@@ -95,7 +95,7 @@ export class AdminLoginController {
   }
 
   @UseGuards(SessionAuthGuard)
-  @Patch('user/change-password')
+  @Post('user/change-password')
   @FormDataRequest()
   async changeUserPassword(@Body() dto: ChangePasswordDto, @GetUserId() userId: UserId) {
     const user = await this.adminRepository.getUser(userId);
