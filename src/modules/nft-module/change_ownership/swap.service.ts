@@ -37,7 +37,7 @@ export class SwapCreator {
     const url = this.configService.get("NFT_MODULE_URL");
     const collectionID = this.appConfigService.collectionId;
 
-    const response = await fetch(`${url}/transfer/collection/${collectionID}/asset/${nftID}`, {
+    await fetch(`${url}/transfer/collection/${collectionID}/asset/${nftID}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
