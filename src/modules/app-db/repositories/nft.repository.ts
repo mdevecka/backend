@@ -4,12 +4,14 @@ import { Repository } from 'typeorm';
 import {
   User, Artwork, Nft, Wallet,
   NftData,
-  Collection
+  Collection,
+  NftId
 } from '../entities';
 import { NftInterface } from '@modules/nft-module/query_metadata/interface/NftInterface';
 import { CollectionInterface } from '@modules/nft-module/query_metadata/interface/ColInterface';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
+import { AdminRepository } from './admin.repository';
 
 @Injectable()
 export class NftRepository {
@@ -17,14 +19,14 @@ export class NftRepository {
 
   constructor(
     private configService: ConfigService<AppConfig>,
+    private adminRepository: AdminRepository,
     @InjectRepository(User) private users: Repository<User>,
     @InjectRepository(Nft) private nfts: Repository<Nft>,
     @InjectRepository(Wallet) private wallets: Repository<Wallet>,
     @InjectRepository(Artwork) private artworks: Repository<Artwork>,
     @InjectRepository(Collection) private collections: Repository<Collection>,
-
+    
   ) { }
-
 
   //Returns user from database
   async getUser(userId: string) {
@@ -98,6 +100,32 @@ export class NftRepository {
         walletAddress: walletAddress
       }
     });
+  }   
+
+  //Removes NFT
+  async removeNFT(userId: string , nftId: string) {
+
+    const nft = await this.adminRepository.getNftDetail(userId, nftId);
+    const user = await this.users.findOneBy({ id: userId });
+
+    try{
+      const artwork = await this.artworks.findOneBy({ id: nft.artwork.id });
+
+      artwork.nft = null;
+      artwork.nftId = null;
+      await this.artworks.save(artwork);
+    }
+    catch(err){
+      this.logger.error(err);
+      //If artwork is not found, there is no need to update it.
+    }
+    
+    if(nft.id == user.trialMintId){
+      user.trialMintId = null;
+      await this.users.save(user);
+    }
+
+    return this.nfts.remove(nft); 
   }
 
   //Creates NFT
@@ -110,8 +138,7 @@ export class NftRepository {
     nft.nftData = nft_data;
     nft.onlineCheck = this.configService.get("KODADOT_URL") + "/gallery/" + nft_data.id;
     //Also add nft under collection if it's associated with one
-    const cols = await this.getWalletCols(wallet.walletAddress);
-
+    const cols = await this.getWalletCols(wallet.walletAddress);  
 
     const nftId = nft.nftData.id;
     //Split ids
@@ -144,11 +171,12 @@ export class NftRepository {
   }
 
   //Changes the owner of NFT in database
-  async changeOwner(nft: Nft, walletAddress: string) {
+  async changeOwner(nft: NftId, walletAddress: string) {
     const wallet = await this.wallets.findOneBy({ walletAddress: walletAddress });
-    nft.wallet = wallet;
+    const nftDB = await this.nfts.findOneBy({ id: nft });
+    nftDB.wallet = wallet;
 
-    return this.nfts.save(nft);
+    return this.nfts.save(nftDB);
   }
 
   //Changes trialmint status to true

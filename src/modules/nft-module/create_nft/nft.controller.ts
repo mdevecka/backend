@@ -1,5 +1,5 @@
 import { Controller, Body, Put, UseGuards, BadRequestException, Param, Get } from '@nestjs/common';
-import { NftCreator } from './nft.service';
+import { NftCreator, UpdateStatus } from './nft.service';
 import { NftDto, NftDBDto, NftUpdateDto } from './dto/NFTDto';
 import { NFTResponseDto } from './dto/NFTResponseDto';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
@@ -23,14 +23,25 @@ export class NftController {
     }
   }
 
-  @Put('update/nft/:artworkId')
-  async updateNft(@Param("artworkId") artworkId: string, @GetUserId() userId: string, @Body() form: NftUpdateDto): Promise<NFTResponseDto> {
-    const callData = await this.appService.updateNFTCall(form, artworkId, userId);
+  @Put('update/nft/:nftId/artwork/:artworkId')
+  async updateNft(@Param("nftId") nftId: string,@Param("artworkId") artworkId: string, @GetUserId() userId: string, @Body() form: NftUpdateDto): Promise<NFTResponseDto> {
+    const callData = await this.appService.updateNFTCall(form, artworkId, nftId, userId);
     if (callData == null) {
       throw new BadRequestException('An error occurred while updating nft call, please check your parameters');
     }
     else {
       return { callData }
+    }
+  }
+
+  @Put('amend/nft/:nftId')
+  async updateNftInDB(@Param("nftId") nftId: string, @Body() form: NftUpdateDto): Promise<{ status: UpdateStatus }> {
+    const callData = await this.appService.updateNFTInDB(form, nftId);
+    if (callData == UpdateStatus.Failed) {
+      throw new BadRequestException('An error occurred while updating nft call, please check your parameters');
+    }
+    else {
+      return { status: UpdateStatus.Success };
     }
   }
 
@@ -45,6 +56,29 @@ export class NftController {
       return { callData }
     }
   }
+
+  @Put('remove/nft/:nftId')
+  async removeNft(@Param("nftId") nftId: string, @GetUserId() userId: string): Promise<NFTResponseDto> {
+    const callData = await this.appService.removeNft(nftId, userId);
+    if (callData == null) {
+      throw new BadRequestException('An error occurred while removing nft call, please check your parameters');
+    }
+    else {
+      return { callData };
+    }
+  }
+  
+  @Put('remove/db/nft/:nftId')
+  async removeNftInDB(@Param("nftId") nftId: string, @GetUserId() userId: string): Promise<{status: UpdateStatus}> {
+    const callData = await this.appService.removeNFTinDB(nftId, userId);
+    if (callData == UpdateStatus.Failed) {
+      throw new BadRequestException('An error occurred while removing nft call, please check your parameters');
+    }
+    else {
+      return { status: UpdateStatus.Success };
+    }
+  }
+  
 
   @Get('wallet/eva')
   async getEvaWalletDetail() {

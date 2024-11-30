@@ -7,6 +7,11 @@ import { convertIpfsLink } from '@common/helpers';
 import { NftUpdateDto } from './dto/NFTDto';
 import { AppConfigService } from '@modules/config/config.service';
 
+export enum UpdateStatus {
+  Success = 'Success',
+  Failed = 'Failed'
+}
+
 @Injectable()
 export class NftCreator {
   private readonly logger = new Logger(NftCreator.name)
@@ -94,43 +99,55 @@ export class NftCreator {
     return resp.id;
   }
 
-  async updateNFTCall(form: NftUpdateDto, artworkId: string, userId: string): Promise<string> {
+  async updateNFTInDB(form: NftUpdateDto, nftId: string): Promise<UpdateStatus> {
 
-    let { name, metadata } = form;
+    const nft = await this.nftRepository.getNFT(nftId);
+    console.log(nft);
 
-    const artwork = await this.nftRepository.getArtwork(userId, artworkId);
-    if (artwork == null) {
-      return null
+
+    const nftData = nft.nftData;
+
+    nftData.name = form.name;
+    nftData.description = form.metadata
+    
+    try{
+      await this.nftRepository.updateNFT(nftId, nftData);
+    }
+    catch(err){
+      this.logger.error(err);
+      return UpdateStatus.Failed;
     }
 
-    if (name === null || name === undefined || name === '') {
-      name = artwork.name;
-    }
-    if (metadata === null || metadata === undefined || metadata === '') {
-      metadata = artwork.nft.nftData.description;
-    }
+    return UpdateStatus.Success;
+  }
 
-    //Create metadata
-    const descriptionParts = [
-      metadata,
-    ].filter(part => part !== null);
 
-    const description = descriptionParts.join(', ');
+  async updateNFTCall(form: NftUpdateDto, artworkId: string, nftId: string, userId: string): Promise<string> {
+    const { name, metadata } = form;
+    let artworkImage;
+    const nft = await this.nftRepository.getNFT(nftId);
+
+    //NFTs not associated with any artwork will fail search for artwork. Fetch image from IPFS
+    try {
+      artworkImage = await this.adminRepository.getArtworkImage(userId, artworkId);
+    }
+    catch(err){
+      this.logger.error(err);
+      artworkImage = await fetch(nft.nftData.image).then(res => res.blob());
+      artworkImage = { image: artworkImage, mimeType: artworkImage.type };
+    }
 
     const url = this.configService.get("NFT_MODULE_URL");
 
-    const colAndArtId = artwork.nft.nftData.id;
-
-
     const formData = new FormData();
-    const fileBlob = new Blob([artwork.image.buffer], { type: artwork.image.mimeType });
 
     // Append fields and files to the FormData object
-    formData.append('file', fileBlob);          // Ensure 'file' is a File or Blob object
     formData.append('name', name);
-    formData.append('metadata', description);
+    formData.append('imgType', artworkImage.mimeType);
+    formData.append('metadata', metadata);
+    formData.append('imgIpfs', nft.nftData.image);
 
-    const response = await fetch(`${url}/update/asset/${colAndArtId}`, {
+    const response = await fetch(`${url}/update/asset/${nft.nftData.id}`, {
       method: 'PUT',
       body: formData
     });
@@ -168,6 +185,30 @@ export class NftCreator {
 
   async createWallet(walletAddr: string, userId: string) {
     return await this.nftRepository.ensureWallet(walletAddr, userId);
+  }
+
+  async removeNFTinDB( nftId: string, userId: string): Promise<UpdateStatus> {
+    try{
+      await this.nftRepository.removeNFT(userId,nftId);
+    }
+    catch(err){
+      this.logger.error(err);
+      return UpdateStatus.Failed;
+    }
+    return UpdateStatus.Success;
+  }
+
+  async removeNft(nftId: string, userId: string): Promise<string> {
+
+      const nft = await this.adminRepository.getNftDetail(userId, nftId);
+
+      const url = this.configService.get("NFT_MODULE_URL");
+
+      const response = await fetch(`${url}/collection/remove/asset/${nft.nftData.id}`, {
+        method: 'DELETE',
+      });
+  
+      return await response.json();
   }
 }
 

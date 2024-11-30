@@ -78,7 +78,7 @@ export class AdminWriteController {
       throw new BadRequestException("exhibition does not exist");
     if (await this.adminRepository.getArtworkByName(dto.artistId, dto.name) != null)
       throw new BadRequestException("name must be unique");
-    const artwork = await this.adminRepository.saveArtwork({
+    const artwork = {
       name: dto.name,
       description: dto.description,
       year: dto.year,
@@ -94,8 +94,34 @@ export class AdminWriteController {
       exhibitions: mapEmpty(dto.exhibitions, (list) => list.map(id => ({ id })), []),
       image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), ArtworkImage.empty),
       protectedImage: (dto.image !== undefined) ? ArtworkImage.empty : undefined,
-    });
-    return { id: artwork.id };
+    };
+
+    const artworkDb = await this.adminRepository.saveArtwork(artwork);
+
+    let nft = null;
+    if (dto.nftId != null) {
+      nft = await this.adminRepository.getNftDetail(userId, dto.nftId);
+      if (nft != null) {
+        artworkDb.nft = nft;
+        artworkDb.nftId = dto.nftId; 
+
+        //Get image
+        const response = await fetch(nft.nftData.image);
+        if (!response.ok) {
+          throw new Error('Failed to fetch image');
+        }
+        const buffer = await response.arrayBuffer();
+        const image = {
+          buffer: Buffer.from(buffer),
+          mimeType: response.headers.get('content-type') || 'application/octet-stream'
+        };
+        artworkDb.image.buffer = image.buffer;
+        artworkDb.image.mimeType = image.mimeType;
+        await this.adminRepository.saveArtwork(artworkDb);
+      }
+    }
+
+    return { id: artworkDb.id };
   }
 
   @Patch('artwork/update/:id')
