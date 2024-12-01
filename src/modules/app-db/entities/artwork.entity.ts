@@ -116,7 +116,7 @@ export class Artwork extends LabeledEntity {
   @Column('integer', { default: 0 })
   likes: number;
 
-  @OneToOne(() => Nft, nft => nft.artwork, { nullable: true })
+  @OneToOne(() => Nft, nft => nft.artwork, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   nft: Nft;
 

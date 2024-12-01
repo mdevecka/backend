@@ -103,29 +103,9 @@ export class NftRepository {
   }   
 
   //Removes NFT
-  async removeNFT(userId: string , nftId: string) {
+  async removeNFT(nftId: string) {
 
-    const nft = await this.adminRepository.getNftDetail(userId, nftId);
-    const user = await this.users.findOneBy({ id: userId });
-
-    try{
-      const artwork = await this.artworks.findOneBy({ id: nft.artwork.id });
-
-      artwork.nft = null;
-      artwork.nftId = null;
-      await this.artworks.save(artwork);
-    }
-    catch(err){
-      this.logger.error(err);
-      //If artwork is not found, there is no need to update it.
-    }
-    
-    if(nft.id == user.trialMintId){
-      user.trialMintId = null;
-      await this.users.save(user);
-    }
-
-    return this.nfts.remove(nft); 
+    return this.nfts.remove(this.nfts.create({ id: nftId })) 
   }
 
   //Creates NFT

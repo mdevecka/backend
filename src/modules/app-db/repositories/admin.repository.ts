@@ -460,15 +460,19 @@ export class AdminRepository {
     });
   }
 
-  async getTrialNftDetail(id: NftId) {
+  async getTrialNftDetail(id: NftId, evaWalletId: WalletId) {
     //List collections
     const nft = await this.nfts.findOne({
       relations: {
-        artwork: true,
-        collection: { wallet: true }
+      artwork: true,
+      collection: { wallet: true }
       },
-      where: { id: id },
+      where: {
+      id: id,
+      walletId: evaWalletId
+      },
     });
+
 
     return nft;
   }

@@ -1,6 +1,6 @@
 import { Controller, Get, Param, NotFoundException, Response, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
-import { AdminRepository } from '@modules/app-db/repositories';
+import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId, NftId, CollectionId, WalletId, ResourceId } from '@modules/app-db/entities';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 import { mapAsync, mapOptionsAsync, imageMimeTypes, audioMimeTypes } from '@common/helpers';
@@ -11,7 +11,7 @@ import { AppConfigService } from '@modules/config/config.service';
 @Controller('admin')
 export class AdminReadController {
 
-  constructor(private adminRepository: AdminRepository, private appConfigService: AppConfigService) {
+  constructor(private adminRepository: AdminRepository, private appConfigService: AppConfigService, private nftRepository: NftRepository) {
   }
 
   @Get('user')
@@ -250,9 +250,12 @@ export class AdminReadController {
 
   @Get('/trialinfo/nft/:id/')
   async getTrialDetails(@Param('id', ParseUUIDPipe) id: NftId) {
-    const item = await this.adminRepository.getTrialNftDetail(id);
+    const evaWallet = this.appConfigService.walletId;
+    const item = await this.adminRepository.getTrialNftDetail(id, evaWallet);
+
     if (item == null)
       throw new NotFoundException();
+
     return mapper.createEvaGalleryDetailsDto(item);
   }
 

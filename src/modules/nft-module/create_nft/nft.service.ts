@@ -187,9 +187,9 @@ export class NftCreator {
     return await this.nftRepository.ensureWallet(walletAddr, userId);
   }
 
-  async removeNFTinDB( nftId: string, userId: string): Promise<UpdateStatus> {
+  async removeNFTinDB( nftId: string): Promise<UpdateStatus> {
     try{
-      await this.nftRepository.removeNFT(userId,nftId);
+      await this.nftRepository.removeNFT(nftId);
     }
     catch(err){
       this.logger.error(err);

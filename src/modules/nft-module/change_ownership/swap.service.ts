@@ -32,7 +32,6 @@ export class SwapCreator {
     if (user == null || user.trialMintClaimed == false || user.trialMintPaid == false || user.trialMintId == null || user.id != userId) {
       return SwapStatus.Failed;
     }
-    console.log("WQIEJQW")
 
     const url = this.configService.get("NFT_MODULE_URL");
     const collectionID = this.appConfigService.collectionId;

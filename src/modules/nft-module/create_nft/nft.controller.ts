@@ -69,8 +69,8 @@ export class NftController {
   }
   
   @Put('remove/db/nft/:nftId')
-  async removeNftInDB(@Param("nftId") nftId: string, @GetUserId() userId: string): Promise<{status: UpdateStatus}> {
-    const callData = await this.appService.removeNFTinDB(nftId, userId);
+  async removeNftInDB(@Param("nftId") nftId: string): Promise<{status: UpdateStatus}> {
+    const callData = await this.appService.removeNFTinDB(nftId);
     if (callData == UpdateStatus.Failed) {
       throw new BadRequestException('An error occurred while removing nft call, please check your parameters');
     }

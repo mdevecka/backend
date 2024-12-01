@@ -78,6 +78,35 @@ export class AdminWriteController {
       throw new BadRequestException("exhibition does not exist");
     if (await this.adminRepository.getArtworkByName(dto.artistId, dto.name) != null)
       throw new BadRequestException("name must be unique");
+    const artwork = await this.adminRepository.saveArtwork({
+      name: dto.name,
+      description: dto.description,
+      year: dto.year,
+      tags: dto.tags,
+      public: dto.public,
+      measurements: dto.measurements,
+      aiMode: dto.aiMode,
+      artistId: dto.artistId,
+      artworkGenreId: mapEmpty(dto.artworkGenreId, id => id),
+      artworkWorktypeId: mapEmpty(dto.artworkWorktypeId, id => id),
+      artworkMaterialId: mapEmpty(dto.artworkMaterialId, id => id),
+      artworkTechniqueId: mapEmpty(dto.artworkTechniqueId, id => id),
+      exhibitions: mapEmpty(dto.exhibitions, (list) => list.map(id => ({ id })), []),
+      image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), ArtworkImage.empty),
+      protectedImage: (dto.image !== undefined) ? ArtworkImage.empty : undefined,
+    });
+    return { id: artwork.id };
+  }
+
+  @Post('artwork/nft/create')
+  @FormDataRequest()
+  async createArtworkFromNft(@Body() dto: CreateArtworkDto, @GetUserId() userId: UserId) {
+    if (!await this.adminRepository.hasArtist(userId, dto.artistId))
+      throw new BadRequestException("artist does not exist");
+    if (dto.exhibitions != null && dto.exhibitions !== "" && !await this.adminRepository.hasExhibitions(userId, dto.exhibitions))
+      throw new BadRequestException("exhibition does not exist");
+    if (await this.adminRepository.getArtworkByName(dto.artistId, dto.name) != null)
+      throw new BadRequestException("name must be unique");
     const artwork = {
       name: dto.name,
       description: dto.description,
