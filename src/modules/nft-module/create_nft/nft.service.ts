@@ -72,13 +72,13 @@ export class NftCreator {
       metadata = this.appConfigService.convertIpfsLink(metadata);
     }
 
-    const cidResp = await  this.appConfigService.fetchMetadataFromIPFS(metadata);
+    const cidResp = await this.appConfigService.fetchMetadataFromIPFS(metadata);
     const cid = JSON.parse(cidResp)
 
     //also replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
     let image = cid.image as string;
     if (image.startsWith("ipfs://ipfs/")) {
-      image =  this.appConfigService.convertIpfsLink(image);
+      image = this.appConfigService.convertIpfsLink(image);
     }
 
     const wallets = await this.adminRepository.getWallets(userId);
@@ -163,7 +163,7 @@ export class NftCreator {
     }
     const name = artwork.name;
     //First load metadata from IPFS
-    const metadata = await  this.appConfigService.fetchMetadataFromIPFS(metadataLink);
+    const metadata = await this.appConfigService.fetchMetadataFromIPFS(metadataLink);
 
     const metadataJson = JSON.parse(metadata);
     const image = metadataJson.image;

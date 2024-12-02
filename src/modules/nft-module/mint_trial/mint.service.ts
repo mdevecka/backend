@@ -67,16 +67,16 @@ export class MintCreator {
       //replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
       let metadata = metadataCid as string;
       if (metadata.startsWith("ipfs://ipfs/")) {
-        metadata =  this.appConfigService.convertIpfsLink(metadata);
+        metadata = this.appConfigService.convertIpfsLink(metadata);
       }
-      const cidResp = await  this.appConfigService.fetchMetadataFromIPFS(metadata);
+      const cidResp = await this.appConfigService.fetchMetadataFromIPFS(metadata);
 
       const cid = JSON.parse(cidResp);
 
       //also replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
       let image = cid.image as string;
       if (image.startsWith("ipfs://ipfs/")) {
-        image =  this.appConfigService.convertIpfsLink(image);
+        image = this.appConfigService.convertIpfsLink(image);
       }
       const nft: NftData = {
         id: `${collectionID}-${nftID}`,
