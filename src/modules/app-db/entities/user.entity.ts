@@ -33,7 +33,7 @@ export class User extends BaseEntity {
   @Column(() => Image)
   avatar: Image;
 
-  @OneToOne(() => Nft, nft => nft.user)
+  @OneToOne(() => Nft, nft => nft.user, { onDelete: 'SET NULL' })
   @JoinColumn()
   trialMint: Nft;
 

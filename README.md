@@ -20,8 +20,14 @@ SESSION_LIFETIME=600
 LOG_REQUESTS=true
 # URL for NFT MODULE
 NFT_MODULE_URL=http://localhost:3000
+#Kodadot NFT Explorer
+KODADOT_URL=https://kodadot.xyz/ahk 
 #Subscan URL
 SUBSCAN_URL=https://assethub-kusama.subscan.io
+#IPFS username
+IPFS_USERNAME=ipfs
+#IPFS password
+IPFS_PASSWORD=password
 ```
 
 ## migrations
