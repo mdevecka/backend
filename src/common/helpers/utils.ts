@@ -1,8 +1,6 @@
 import { DataSource, EntityManager, getMetadataArgsStorage } from 'typeorm';
 import { DriverUtils } from 'typeorm/driver/DriverUtils';
 import { OptionDto } from './option.dto';
-import { AppConfig } from '@common/config';
-import { ConfigService } from '@nestjs/config';
 
 export type EMPTY = "";
 
@@ -49,50 +47,6 @@ export function mapEmpty<T, S>(value: T | EMPTY, mapper: (value: T) => S, defaul
   if (value === null || value === "")
     return defaultEmpty;
   return mapper(value);
-}
-const configService = new ConfigService<AppConfig>();
-
-export function convertIpfsLink(link: string): string {
-  let metadata = link;
-
-  if (metadata.startsWith("ipfs://ipfs/")) {
-    metadata = configService.get("IPFS_URL") + "/ipfs" + metadata.slice(11);
-  }
-  else if (metadata.startsWith("https://ipfs.io/ipfs/")) {
-    metadata = configService.get("IPFS_URL") + "/ipfs" + metadata.slice(16);
-  }
-  else if (metadata.startsWith("ipfs:/")) {
-    metadata = configService.get("IPFS_URL") + "/ipfs" + metadata.slice(7);
-  }
-  else if (!metadata.startsWith("https://ipfs1.fiit.stuba.sk")) {
-    metadata = configService.get("IPFS_URL") + "/ipfs" + metadata;
-  }
-  return metadata;
-}
-
-export async function fetchMetadataFromIPFS(metadatalink: string): Promise<string> {
-  // Fetch metadata from IPFS
-  // Return the metadata 
-
-  try {
-    const response = await fetch(metadatalink, {
-      headers: {
-        'Authorization': 'Basic ' + btoa(configService.get('IPFS_USERNAME') + ':' + configService.get('IPFS_PASSWORD'))
-      }
-    });
-    if (!response.ok) {
-      return null;
-    }
-    if (response != null) {
-      const parsed_data = await response.json();
-      return parsed_data;
-    }
-
-  } catch (error) {
-    this.logger.error(error);
-    return null;
-  }
-
 }
 
 export function deserializeEntity<T>(_dataSource: DataSource | EntityManager, entityType: { new(): T }, rawData: any, customTableAlias?: string) {

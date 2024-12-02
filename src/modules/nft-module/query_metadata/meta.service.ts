@@ -4,12 +4,12 @@ import { AppConfig } from '@common/config';
 import { NftRepository } from '@modules/app-db/repositories';
 import { NftInterface } from './interface/NftInterface';
 import { CollectionInterface } from './interface/ColInterface';
-import { convertIpfsLink, fetchMetadataFromIPFS } from '@common/helpers';
+import { AppConfigService } from '@modules/config/config.service';
 
 @Injectable()
 export class MetaFetcher {
 
-  constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>) {
+  constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>, private appConfigService: AppConfigService) {
 
   }
 
@@ -28,14 +28,14 @@ export class MetaFetcher {
     for (let i = 0; i < data.length; i++) {
       if (data[i].metadata != null) {
 
-        data[i].metadata = convertIpfsLink(data[i].metadata);
-        const fetchedData = await fetchMetadataFromIPFS(data[i].metadata);
+        data[i].metadata =  this.appConfigService.convertIpfsLink(data[i].metadata);
+        const fetchedData = await  this.appConfigService.fetchMetadataFromIPFS(data[i].metadata);
         const newData = typeof fetchedData === 'string' ? JSON.parse(fetchedData) : fetchedData;
         if (data[i].image != null) {
-          data[i].image = convertIpfsLink(data[i].image);
+          data[i].image =  this.appConfigService.convertIpfsLink(data[i].image);
         }
         else if (data[i].image == null) {
-          data[i].image = convertIpfsLink(newData.image);
+          data[i].image =  this.appConfigService.convertIpfsLink(newData.image);
         }
         if (data[i].name == null) {
           data[i].name = newData.name
@@ -60,14 +60,14 @@ export class MetaFetcher {
     for (let i = 0; i < data.length; i++) {
       if (data[i].metadata != null) {
 
-        data[i].metadata = convertIpfsLink(data[i].metadata);
-        const fetchedData = await fetchMetadataFromIPFS(data[i].metadata);
+        data[i].metadata =  this.appConfigService.convertIpfsLink(data[i].metadata);
+        const fetchedData = await  this.appConfigService.fetchMetadataFromIPFS(data[i].metadata);
         const newData = typeof fetchedData === 'string' ? JSON.parse(fetchedData) : fetchedData;
         if (data[i].image != null) {
-          data[i].image = convertIpfsLink(data[i].image);
+          data[i].image =  this.appConfigService.convertIpfsLink(data[i].image);
         }
         else if (data[i].image == null) {
-          data[i].image = convertIpfsLink(newData.image);
+          data[i].image =  this.appConfigService.convertIpfsLink(newData.image);
         }
         if (data[i].name == null) {
           data[i].name = newData.name
