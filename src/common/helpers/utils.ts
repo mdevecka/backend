@@ -80,7 +80,6 @@ export async function fetchMetadataFromIPFS(metadatalink: string): Promise<strin
         'Authorization': 'Basic ' + btoa(configService.get('IPFS_USERNAME')+':'+configService.get('IPFS_PASSWORD'))
       }
     });
-    console.log(response);
     if (!response.ok) {
       return null;
     }
