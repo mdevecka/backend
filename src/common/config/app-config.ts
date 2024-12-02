@@ -12,4 +12,5 @@ export interface AppConfig {
   SUBSCAN_URL: string;
   IPFS_USERNAME: string;
   IPFS_PASSWORD: string;
+  IPFS_URL: string;
 }

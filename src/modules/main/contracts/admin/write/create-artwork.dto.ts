@@ -72,8 +72,4 @@ export class CreateArtworkDto {
   @HasMimeType(imageMimeTypes)
   image: MemoryStoredFile | EMPTY;
 
-  @IsOptional()
-  @AllowEmpty()
-  nftId: string;
-
 }

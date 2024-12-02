@@ -1,6 +1,5 @@
 import { IsString, IsNumberString, IsOptional, IsUUID } from 'class-validator';
-import { AllowEmpty } from '@common/helpers';
-import { ArtistId } from '@modules/app-db/entities';
+import { ArtistId, NftId } from '@modules/app-db/entities';
 
 export class CreateArtworNFTDto {
 
@@ -18,8 +17,7 @@ export class CreateArtworNFTDto {
   @IsUUID()
   artistId: ArtistId;
 
-  @IsOptional()
-  @AllowEmpty()
-  nftId: string;
+  @IsUUID()
+  nftId: NftId;
 
 }

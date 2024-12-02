@@ -50,21 +50,22 @@ export function mapEmpty<T, S>(value: T | EMPTY, mapper: (value: T) => S, defaul
     return defaultEmpty;
   return mapper(value);
 }
+const configService = new ConfigService<AppConfig>();
 
 export function convertIpfsLink(link: string): string {
   let metadata = link;
 
   if (metadata.startsWith("ipfs://ipfs/")) {
-    metadata = "https://ipfs1.fiit.stuba.sk/ipfs" + metadata.slice(11);
+    metadata = configService.get("IPFS_URL") + "/ipfs" + metadata.slice(11);
   }
   else if (metadata.startsWith("https://ipfs.io/ipfs/")) {
-    metadata = "https://ipfs1.fiit.stuba.sk/ipfs" + metadata.slice(16);
+    metadata = configService.get("IPFS_URL") + "/ipfs" + metadata.slice(16);
   }
   else if (metadata.startsWith("ipfs:/")) {
-    metadata = "https://ipfs1.fiit.stuba.sk/ipfs" + metadata.slice(7);
+    metadata = configService.get("IPFS_URL") + "/ipfs" + metadata.slice(7);
   }
   else if (!metadata.startsWith("https://ipfs1.fiit.stuba.sk")) {
-    metadata = "https://ipfs1.fiit.stuba.sk/ipfs" + metadata;
+    metadata = configService.get("IPFS_URL") + "/ipfs" + metadata;
   }
   return metadata;
 }
@@ -72,7 +73,6 @@ export function convertIpfsLink(link: string): string {
 export async function fetchMetadataFromIPFS(metadatalink: string): Promise<string> {
   // Fetch metadata from IPFS
   // Return the metadata 
-  const configService = new ConfigService<AppConfig>();
 
   try {
     const response = await fetch(metadatalink, {
