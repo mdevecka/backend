@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
-import { convertIpfsLink } from '@common/helpers';
+import { convertIpfsLink, fetchMetadataFromIPFS } from '@common/helpers';
 import { AppConfigService } from '@modules/config/config.service';
 
 export enum MintStatus {
@@ -65,16 +65,16 @@ export class MintCreator {
       const collectionID = this.appConfigService.collectionId;
       const EvaGalleryWalletAddress = this.appConfigService.walletAddress;
 
-      //replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
+      //replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
       let metadata = metadataCid as string;
       if (metadata.startsWith("ipfs://ipfs/")) {
         metadata = convertIpfsLink(metadata);
       }
-      const cidResp = await fetch(metadata);
+      const cidResp = await fetchMetadataFromIPFS(metadata);
+      
+      const cid = JSON.parse(cidResp);
 
-      const cid = await cidResp.json()
-
-      //also replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
+      //also replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
       let image = cid.image as string;
       if (image.startsWith("ipfs://ipfs/")) {
         image = convertIpfsLink(image);

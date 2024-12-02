@@ -24,6 +24,10 @@ NFT_MODULE_URL=http://localhost:3000
 KODADOT_URL=https://kodadot.xyz/ahk 
 #Subscan URL
 SUBSCAN_URL=https://assethub-kusama.subscan.io
+#IPFS username
+IPFS_USERNAME=ipfs
+#IPFS password
+IPFS_PASSWORD=password
 ```
 
 ## migrations

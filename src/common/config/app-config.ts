@@ -10,4 +10,6 @@ export interface AppConfig {
   NFT_MODULE_URL: string;
   KODADOT_URL: string;
   SUBSCAN_URL: string;
+  IPFS_USERNAME: string;
+  IPFS_PASSWORD: string;
 }

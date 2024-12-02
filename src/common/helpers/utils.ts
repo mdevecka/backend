@@ -1,6 +1,8 @@
 import { DataSource, EntityManager, getMetadataArgsStorage } from 'typeorm';
 import { DriverUtils } from 'typeorm/driver/DriverUtils';
 import { OptionDto } from './option.dto';
+import { AppConfig } from '@common/config';
+import { ConfigService } from '@nestjs/config';
 
 export type EMPTY = "";
 
@@ -53,16 +55,16 @@ export function convertIpfsLink(link: string): string {
   let metadata = link;
 
   if (metadata.startsWith("ipfs://ipfs/")) {
-    metadata = "https://flk-ipfs.xyz/ipfs" + metadata.slice(11);
+    metadata = "https://ipfs1.fiit.stuba.sk/ipfs" + metadata.slice(11);
   }
   else if (metadata.startsWith("https://ipfs.io/ipfs/")) {
-    metadata = "https://flk-ipfs.xyz/ipfs/" + metadata.slice(16);
+    metadata = "https://ipfs1.fiit.stuba.sk/ipfs" + metadata.slice(16);
   }
   else if (metadata.startsWith("ipfs:/")) {
-    metadata = "https://flk-ipfs.xyz/ipfs/" + metadata.slice(7);
+    metadata = "https://ipfs1.fiit.stuba.sk/ipfs" + metadata.slice(7);
   }
-  else if (!metadata.startsWith("https://flk-ipfs.xyz/")) {
-    metadata = "https://flk-ipfs.xyz/ipfs/" + metadata;
+  else if (!metadata.startsWith("https://ipfs1.fiit.stuba.sk")) {
+    metadata = "https://ipfs1.fiit.stuba.sk/ipfs" + metadata;
   }
   return metadata;
 }
@@ -70,21 +72,21 @@ export function convertIpfsLink(link: string): string {
 export async function fetchMetadataFromIPFS(metadatalink: string): Promise<string> {
   // Fetch metadata from IPFS
   // Return the metadata 
+  const configService = new ConfigService<AppConfig>();
+
   try {
-    const response = await fetch(metadatalink);
+    const response = await fetch(metadatalink, {
+      headers: {
+        'Authorization': 'Basic ' + btoa(configService.get('IPFS_USERNAME')+':'+configService.get('IPFS_PASSWORD'))
+      }
+    });
+    console.log(response);
     if (!response.ok) {
       return null;
     }
     if (response != null) {
       const parsed_data = await response.json();
-      //If data doesnt contain description field or Description field return null
-      if (parsed_data.description != null) {
-        return parsed_data.description;
-      }
-      else if (parsed_data.Description != null) {
-        return parsed_data.Description;
-      }
-      return null;
+      return parsed_data;
     }
 
   } catch (error) {

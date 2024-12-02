@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppConfig } from '@common/config';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
-import { convertIpfsLink } from '@common/helpers';
+import { convertIpfsLink, fetchMetadataFromIPFS } from '@common/helpers';
 import { NftUpdateDto } from './dto/NFTDto';
 import { AppConfigService } from '@modules/config/config.service';
 
@@ -67,16 +67,16 @@ export class NftCreator {
       return null
     }
 
-    //replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
+    //replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
     let metadata = metadataCid as string;
     if (metadata.startsWith("ipfs://ipfs/")) {
       metadata = convertIpfsLink(metadata);
     }
-    const cidResp = await fetch(metadata);
+    
+    const cidResp = await fetchMetadataFromIPFS(metadata);
+    const cid = JSON.parse(cidResp)
 
-    const cid = await cidResp.json()
-
-    //also replace ipfs://ipfs/ with https://flk-ipfs.xyz/ipfs
+    //also replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
     let image = cid.image as string;
     if (image.startsWith("ipfs://ipfs/")) {
       image = convertIpfsLink(image);
@@ -102,8 +102,6 @@ export class NftCreator {
   async updateNFTInDB(form: NftUpdateDto, nftId: string): Promise<UpdateStatus> {
 
     const nft = await this.nftRepository.getNFT(nftId);
-    console.log(nft);
-
 
     const nftData = nft.nftData;
 
@@ -166,8 +164,9 @@ export class NftCreator {
     }
     const name = artwork.name;
     //First load metadata from IPFS
-    const metadata = await fetch(`https://flk-ipfs.xyz/ipfs/${metadataLink}`);
-    const metadataJson = await metadata.json();
+    const metadata = await fetchMetadataFromIPFS(metadataLink);
+
+    const metadataJson = JSON.parse(metadata);
     const image = metadataJson.image;
 
     //Get nft metadata and update name, metadata, image columns
