@@ -24,7 +24,7 @@ export class NftController {
   }
 
   @Put('update/nft/:nftId/artwork/:artworkId')
-  async updateNft(@Param("nftId") nftId: string,@Param("artworkId") artworkId: string, @GetUserId() userId: string, @Body() form: NftUpdateDto): Promise<NFTResponseDto> {
+  async updateNft(@Param("nftId") nftId: string, @Param("artworkId") artworkId: string, @GetUserId() userId: string, @Body() form: NftUpdateDto): Promise<NFTResponseDto> {
     const callData = await this.appService.updateNFTCall(form, artworkId, nftId, userId);
     if (callData == null) {
       throw new BadRequestException('An error occurred while updating nft call, please check your parameters');
@@ -67,9 +67,9 @@ export class NftController {
       return { callData };
     }
   }
-  
+
   @Put('remove/db/nft/:nftId')
-  async removeNftInDB(@Param("nftId") nftId: string): Promise<{status: UpdateStatus}> {
+  async removeNftInDB(@Param("nftId") nftId: string): Promise<{ status: UpdateStatus }> {
     const callData = await this.appService.removeNFTinDB(nftId);
     if (callData == UpdateStatus.Failed) {
       throw new BadRequestException('An error occurred while removing nft call, please check your parameters');
@@ -78,7 +78,7 @@ export class NftController {
       return { status: UpdateStatus.Success };
     }
   }
-  
+
 
   @Get('wallet/eva')
   async getEvaWalletDetail() {

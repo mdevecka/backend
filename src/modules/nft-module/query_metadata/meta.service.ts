@@ -37,12 +37,12 @@ export class MetaFetcher {
         else if (data[i].image == null) {
           data[i].image = convertIpfsLink(newData.image);
         }
-        if (data[i].name == null){
+        if (data[i].name == null) {
           data[i].name = newData.name
         }
 
         data[i].metadata = newData.description;
-      } 
+      }
     }
     await this.nftRepo.assignNFTsMetadata(userID, address, data);
     return data;
@@ -69,12 +69,12 @@ export class MetaFetcher {
         else if (data[i].image == null) {
           data[i].image = convertIpfsLink(newData.image);
         }
-        if (data[i].name == null){
+        if (data[i].name == null) {
           data[i].name = newData.name
         }
 
         data[i].metadata = newData.description;
-      } 
+      }
     }
 
     await this.nftRepo.assignColsMetadata(userID, address, data);

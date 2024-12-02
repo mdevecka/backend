@@ -77,7 +77,7 @@ export async function fetchMetadataFromIPFS(metadatalink: string): Promise<strin
   try {
     const response = await fetch(metadatalink, {
       headers: {
-        'Authorization': 'Basic ' + btoa(configService.get('IPFS_USERNAME')+':'+configService.get('IPFS_PASSWORD'))
+        'Authorization': 'Basic ' + btoa(configService.get('IPFS_USERNAME') + ':' + configService.get('IPFS_PASSWORD'))
       }
     });
     if (!response.ok) {

@@ -25,7 +25,7 @@ export class NftRepository {
     @InjectRepository(Wallet) private wallets: Repository<Wallet>,
     @InjectRepository(Artwork) private artworks: Repository<Artwork>,
     @InjectRepository(Collection) private collections: Repository<Collection>,
-    
+
   ) { }
 
   //Returns user from database
@@ -100,12 +100,12 @@ export class NftRepository {
         walletAddress: walletAddress
       }
     });
-  }   
+  }
 
   //Removes NFT
   async removeNFT(nftId: string) {
 
-    return this.nfts.remove(this.nfts.create({ id: nftId })) 
+    return this.nfts.remove(this.nfts.create({ id: nftId }))
   }
 
   //Creates NFT
@@ -118,7 +118,7 @@ export class NftRepository {
     nft.nftData = nft_data;
     nft.onlineCheck = this.configService.get("KODADOT_URL") + "/gallery/" + nft_data.id;
     //Also add nft under collection if it's associated with one
-    const cols = await this.getWalletCols(wallet.walletAddress);  
+    const cols = await this.getWalletCols(wallet.walletAddress);
 
     const nftId = nft.nftData.id;
     //Split ids
@@ -210,7 +210,7 @@ export class NftRepository {
     // Include userId condition directly in the findOneBy query
     const artwork = await this.artworks.findOne({
       where: {
-        id: artworkId, 
+        id: artworkId,
         artist: {
           user: {
             id: userId,
@@ -367,17 +367,17 @@ export class NftRepository {
       col.wallet = wallet;
 
       const existingCol = await this.collections.createQueryBuilder("collection")
-      .where("collection.colData ->> 'id' = :id", { id: col.colData.id })
-      .getOne();
+        .where("collection.colData ->> 'id' = :id", { id: col.colData.id })
+        .getOne();
 
-    if (existingCol != null) {
-      this.logger.log(`Collection with id ${id} already exists in the database`);
-    }
+      if (existingCol != null) {
+        this.logger.log(`Collection with id ${id} already exists in the database`);
+      }
       else {
         // Save the NFT to the database and associate it with the wallet
         wallet.collections.push(col); // Push the NFT to the wallet's nfts array
         await this.collections.save(col); // Save the NFT to the database  
       }
     }
-  } 
+  }
 }

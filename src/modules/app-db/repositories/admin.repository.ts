@@ -464,12 +464,12 @@ export class AdminRepository {
     //List collections
     const nft = await this.nfts.findOne({
       relations: {
-      artwork: true,
-      collection: { wallet: true }
+        artwork: true,
+        collection: { wallet: true }
       },
       where: {
-      id: id,
-      walletId: evaWalletId
+        id: id,
+        walletId: evaWalletId
       },
     });
 

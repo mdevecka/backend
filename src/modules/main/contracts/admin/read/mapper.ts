@@ -410,7 +410,7 @@ export function createNftDetailDto(nft: Nft): NftDetailDto {
 }
 
 export function createEvaGalleryDetailsDto(nft: Nft): EvaDetailDto {
-  return  {
+  return {
     id: nft.id,
     walletId: nft.walletId,
     collectionId: nft.collectionId,
@@ -449,10 +449,10 @@ export function createEvaGalleryDetailsDto(nft: Nft): EvaDetailDto {
         image: nft.collection.colData.image,
       },
     },
-      wallet: {
-        id: nft.collection.wallet.id,
-        walletAddress: nft.collection.wallet.walletAddress,
-        onlineCheck: nft.collection.wallet.onlineCheck,
+    wallet: {
+      id: nft.collection.wallet.id,
+      walletAddress: nft.collection.wallet.walletAddress,
+      onlineCheck: nft.collection.wallet.onlineCheck,
     }
   };
 }

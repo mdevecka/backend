@@ -120,7 +120,7 @@ export class AdminWriteController {
         const artworkDb = await this.adminRepository.saveArtwork(artwork);
 
         artworkDb.nft = nft;
-        artworkDb.nftId = dto.nftId; 
+        artworkDb.nftId = dto.nftId;
 
         //Get image
         const response = await fetch(nft.nftData.image);

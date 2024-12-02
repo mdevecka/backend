@@ -33,16 +33,16 @@ export interface EvaDetailDto {
     id: CollectionId;
     onlineCheck: string;
     colData: {
-        id: string;
-        name: string;
-        description: string;
-        image: string;
+      id: string;
+      name: string;
+      description: string;
+      image: string;
     }
-    }
-    wallet: {
-        id: WalletId;
-        walletAddress: string;
-        onlineCheck: string;
-    }
+  }
+  wallet: {
+    id: WalletId;
+    walletAddress: string;
+    onlineCheck: string;
+  }
 }
 

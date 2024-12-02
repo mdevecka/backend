@@ -45,7 +45,7 @@ export class SwapCreator {
         "address": accountAddress,
       })
     });
-  
+
     return SwapStatus.Success;
   }
 

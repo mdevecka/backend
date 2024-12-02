@@ -61,7 +61,7 @@ export class NftCreator {
     return await response.json();
   }
 
-  async createNftInDB(nftID: string, metadataCid: string, walletAddr: string , artworkId: string, userId: string): Promise<string> {
+  async createNftInDB(nftID: string, metadataCid: string, walletAddr: string, artworkId: string, userId: string): Promise<string> {
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
     if (artwork == null) {
       return null
@@ -72,7 +72,7 @@ export class NftCreator {
     if (metadata.startsWith("ipfs://ipfs/")) {
       metadata = convertIpfsLink(metadata);
     }
-    
+
     const cidResp = await fetchMetadataFromIPFS(metadata);
     const cid = JSON.parse(cidResp)
 
@@ -107,11 +107,11 @@ export class NftCreator {
 
     nftData.name = form.name;
     nftData.description = form.metadata
-    
-    try{
+
+    try {
       await this.nftRepository.updateNFT(nftId, nftData);
     }
-    catch(err){
+    catch (err) {
       this.logger.error(err);
       return UpdateStatus.Failed;
     }
@@ -129,7 +129,7 @@ export class NftCreator {
     try {
       artworkImage = await this.adminRepository.getArtworkImage(userId, artworkId);
     }
-    catch(err){
+    catch (err) {
       this.logger.error(err);
       artworkImage = await fetch(nft.nftData.image).then(res => res.blob());
       artworkImage = { image: artworkImage, mimeType: artworkImage.type };
@@ -178,7 +178,7 @@ export class NftCreator {
   }
   async getEvaWalletDetail() {
     const EvaGalleryWalletAddress = this.appConfigService.walletAddress;
-    return await this.nftRepository.getWallet(EvaGalleryWalletAddress); 
+    return await this.nftRepository.getWallet(EvaGalleryWalletAddress);
 
   }
 
@@ -186,11 +186,11 @@ export class NftCreator {
     return await this.nftRepository.ensureWallet(walletAddr, userId);
   }
 
-  async removeNFTinDB( nftId: string): Promise<UpdateStatus> {
-    try{
+  async removeNFTinDB(nftId: string): Promise<UpdateStatus> {
+    try {
       await this.nftRepository.removeNFT(nftId);
     }
-    catch(err){
+    catch (err) {
       this.logger.error(err);
       return UpdateStatus.Failed;
     }
@@ -199,15 +199,15 @@ export class NftCreator {
 
   async removeNft(nftId: string, userId: string): Promise<string> {
 
-      const nft = await this.adminRepository.getNftDetail(userId, nftId);
+    const nft = await this.adminRepository.getNftDetail(userId, nftId);
 
-      const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.get("NFT_MODULE_URL");
 
-      const response = await fetch(`${url}/collection/remove/asset/${nft.nftData.id}`, {
-        method: 'DELETE',
-      });
-  
-      return await response.json();
+    const response = await fetch(`${url}/collection/remove/asset/${nft.nftData.id}`, {
+      method: 'DELETE',
+    });
+
+    return await response.json();
   }
 }
 

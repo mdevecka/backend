@@ -6,20 +6,20 @@ import { NftRepository } from '@modules/app-db/repositories';
 
 @Injectable()
 export class AppConfigService {
-    get walletAddress(): string {
-        return this.walletAddr;
-    }
-    private collectionID: string;
-    private walletAddr: string;
-    private walletID: string;
+  get walletAddress(): string {
+    return this.walletAddr;
+  }
+  private collectionID: string;
+  private walletAddr: string;
+  private walletID: string;
 
-    get collectionId(): string {
-        return this.collectionID;
-    }
+  get collectionId(): string {
+    return this.collectionID;
+  }
 
-    get walletId(): string {
-        return this.walletID;
-    }
+  get walletId(): string {
+    return this.walletID;
+  }
 
   constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository) {
 

@@ -11,7 +11,7 @@ export class SwapController {
   @Put('transfer/asset/:assetID/account/:accountAddress')
   async getSwapCall(
     @Param("accountAddress") accountAddress: string, @GetUserId() userId: string,
-    @Param("assetID") assetID: string): Promise<{status: SwapStatus}> {
+    @Param("assetID") assetID: string): Promise<{ status: SwapStatus }> {
     const callData = await this.appService.createSwapCall(accountAddress, assetID, userId);
     if (callData == SwapStatus.Failed) {
       throw new BadRequestException('An error occurred while creating swap call, please check your parameters');
@@ -34,7 +34,7 @@ export class SwapController {
 
   @Put('updateDB/account/:accountAddress')
   async updateDB(
-    @Param("accountAddress") accountAddress: string, ): Promise<{ status: SwapStatus }> {
+    @Param("accountAddress") accountAddress: string,): Promise<{ status: SwapStatus }> {
     const response = await this.appService.swapNFTOwnershipInDB(accountAddress);
     if (response === SwapStatus.Failed) {
       throw new BadRequestException('An error occurred while updating database, please check your parameters');

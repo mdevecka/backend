@@ -71,7 +71,7 @@ export class MintCreator {
         metadata = convertIpfsLink(metadata);
       }
       const cidResp = await fetchMetadataFromIPFS(metadata);
-      
+
       const cid = JSON.parse(cidResp);
 
       //also replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
