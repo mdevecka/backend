@@ -59,12 +59,22 @@ export class MetaFetcher {
 
     for (let i = 0; i < data.length; i++) {
       if (data[i].metadata != null) {
+
         data[i].metadata = convertIpfsLink(data[i].metadata);
-        data[i].metadata = await fetchMetadataFromIPFS(data[i].metadata);
+        const fetchedData = await fetchMetadataFromIPFS(data[i].metadata);
+        const newData = typeof fetchedData === 'string' ? JSON.parse(fetchedData) : fetchedData;
         if (data[i].image != null) {
           data[i].image = convertIpfsLink(data[i].image);
         }
-      }
+        else if (data[i].image == null) {
+          data[i].image = convertIpfsLink(newData.image);
+        }
+        if (data[i].name == null){
+          data[i].name = newData.name
+        }
+
+        data[i].metadata = newData.description;
+      } 
     }
 
     await this.nftRepo.assignColsMetadata(userID, address, data);

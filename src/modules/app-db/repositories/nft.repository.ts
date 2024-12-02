@@ -371,7 +371,7 @@ export class NftRepository {
       .getOne();
 
     if (existingCol != null) {
-      this.logger.log(`NFT with id ${id} already exists in the database`);
+      this.logger.log(`Collection with id ${id} already exists in the database`);
     }
       else {
         // Save the NFT to the database and associate it with the wallet
