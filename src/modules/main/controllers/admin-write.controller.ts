@@ -6,7 +6,8 @@ import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 import {
   CreateArtistDto, UpdateArtistDto, CreateArtworkDto, UpdateArtworkDto,
   CreateGalleryDto, UpdateGalleryDto, CreateExhibitionDto, UpdateExhibitionDto,
-  CreateResourceDto, UpdateResourceDto, SaveDesignerRoomDto
+  CreateResourceDto, UpdateResourceDto, SaveDesignerRoomDto,
+  CreateArtworNFTDto
 } from '../contracts/admin/write';
 import { mapEmpty, imageMimeTypes, audioMimeTypes } from '@common/helpers';
 import { randomUUID } from 'crypto';
@@ -96,6 +97,51 @@ export class AdminWriteController {
       protectedImage: (dto.image !== undefined) ? ArtworkImage.empty : undefined,
     });
     return { id: artwork.id };
+  }
+
+  @Post('artwork/nft/create')
+  @FormDataRequest()
+  async createArtworkFromNft(@Body() dto: CreateArtworNFTDto, @GetUserId() userId: UserId) {
+    if (!await this.adminRepository.hasArtist(userId, dto.artistId))
+      throw new BadRequestException("artist does not exist");
+    if (await this.adminRepository.getArtworkByName(dto.artistId, dto.name) != null)
+      throw new BadRequestException("name must be unique");
+    const artwork = {
+      name: dto.name,
+      description: dto.description,
+      year: dto.year,
+      artistId: dto.artistId,
+    };
+
+    let nft = null;
+    if (dto.nftId != null) {
+      nft = await this.adminRepository.getNftDetail(userId, dto.nftId);
+      if (nft != null) {
+        const artworkDb = await this.adminRepository.saveArtwork(artwork);
+
+        artworkDb.nft = nft;
+        artworkDb.nftId = dto.nftId;
+
+        //Get image
+        const response = await fetch(nft.nftData.image);
+        if (!response.ok) {
+          throw new Error('Failed to fetch image');
+        }
+        const buffer = await response.arrayBuffer();
+        const image = {
+          buffer: Buffer.from(buffer),
+          mimeType: response.headers.get('content-type') || 'application/octet-stream'
+        };
+        artworkDb.image.buffer = image.buffer;
+        artworkDb.image.mimeType = image.mimeType;
+        await this.adminRepository.saveArtwork(artworkDb);
+
+        return { id: artworkDb.id };
+      }
+      else {
+        throw new BadRequestException("NFT does not exist");
+      }
+    }
   }
 
   @Patch('artwork/update/:id')

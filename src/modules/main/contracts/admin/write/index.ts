@@ -9,3 +9,4 @@ export * from './update-artwork.dto';
 export * from './update-exhibition.dto';
 export * from './update-gallery.dto';
 export * from './update-resource.dto';
+export * from './create-artwork-nft.dto';
