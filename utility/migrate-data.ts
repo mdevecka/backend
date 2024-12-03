@@ -12,6 +12,7 @@ import { Config } from './config';
 import { filterEntities } from '@common/helpers';
 import * as se from './entities';
 import * as de from '@modules/app-db/entities';
+import { randomUUID } from 'crypto';
 import slugify from 'slugify';
 
 const imageImportLimit = 999;
@@ -19,7 +20,7 @@ const imageImportLimit = 999;
 const sourceEntities = filterEntities(Object.values(se));
 const destEntities = filterEntities(Object.values(de));
 
-const imageCache = new Map<string, { buffer: Buffer, mimeType: string }>();
+const imageCache = new Map<string, { id: string, buffer: Buffer, mimeType: string }>();
 
 async function getMimeType(image: Buffer) {
   const sharpImage = sharp(image);
@@ -32,7 +33,7 @@ async function getImage(path: string) {
   if (imageData == null) {
     const image = readFileSync(path);
     const mimeType = await getMimeType(image);
-    imageData = { buffer: image, mimeType: mimeType };
+    imageData = { id: randomUUID(), buffer: image, mimeType: mimeType };
     imageCache.set(path, imageData);
   }
   return imageData;

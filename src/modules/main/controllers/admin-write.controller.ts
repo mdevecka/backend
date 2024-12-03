@@ -3,11 +3,12 @@ import { FormDataRequest } from 'nestjs-form-data';
 import { Image, ArtworkImage, UserId, ArtistId, ArtworkId, GalleryId, ExhibitionId, UnityRoomId, ResourceId } from '@modules/app-db/entities';
 import { AdminRepository } from '@modules/app-db/repositories';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
+import { HttpApiService } from '@modules/http-api';
 import {
   CreateArtistDto, UpdateArtistDto, CreateArtworkDto, UpdateArtworkDto,
   CreateGalleryDto, UpdateGalleryDto, CreateExhibitionDto, UpdateExhibitionDto,
   CreateResourceDto, UpdateResourceDto, SaveDesignerRoomDto,
-  CreateArtworNFTDto
+  CreateArtworNFTDto, AiProcessImageDto
 } from '../contracts/admin/write';
 import { mapEmpty, imageMimeTypes, audioMimeTypes } from '@common/helpers';
 import { randomUUID } from 'crypto';
@@ -16,7 +17,7 @@ import { randomUUID } from 'crypto';
 @Controller('admin')
 export class AdminWriteController {
 
-  constructor(private adminRepository: AdminRepository) {
+  constructor(private adminRepository: AdminRepository, private httpApi: HttpApiService) {
   }
 
   @Post('artist/create')
@@ -48,7 +49,7 @@ export class AdminWriteController {
     const otherArtist = (dto.name != null) ? await this.adminRepository.getArtistByName(userId, dto.name) : null;
     if (otherArtist != null && otherArtist.id !== id)
       throw new BadRequestException("name must be unique");
-    await this.adminRepository.saveArtist({
+    await this.adminRepository.updateArtist({
       id: id,
       name: dto.name,
       born: mapEmpty(dto.born, date => date),
@@ -87,6 +88,7 @@ export class AdminWriteController {
       public: dto.public,
       measurements: dto.measurements,
       aiMode: dto.aiMode,
+      aiGeneratedStatus: dto.aiGeneratedStatus,
       artistId: dto.artistId,
       artworkGenreId: mapEmpty(dto.artworkGenreId, id => id),
       artworkWorktypeId: mapEmpty(dto.artworkWorktypeId, id => id),
@@ -169,15 +171,22 @@ export class AdminWriteController {
       public: dto.public,
       measurements: dto.measurements,
       aiMode: dto.aiMode,
+      aiGeneratedStatus: dto.aiGeneratedStatus,
       artistId: dto.artistId,
       artworkGenreId: mapEmpty(dto.artworkGenreId, id => id),
       artworkWorktypeId: mapEmpty(dto.artworkWorktypeId, id => id),
       artworkMaterialId: mapEmpty(dto.artworkMaterialId, id => id),
       artworkTechniqueId: mapEmpty(dto.artworkTechniqueId, id => id),
       exhibitions: mapEmpty(dto.exhibitions, (list) => list.map(id => ({ id })), []),
-      image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), ArtworkImage.empty),
-      protectedImage: (dto.image !== undefined) ? ArtworkImage.empty : undefined,
     });
+    // fix image update
+    if (dto.image !== undefined) {
+      await this.adminRepository.updateArtwork({
+        id: id,
+        image: mapEmpty(dto.image, image => ({ id: randomUUID(), buffer: image.buffer, mimeType: image.mimeType }), ArtworkImage.empty),
+        protectedImage: ArtworkImage.empty,
+      });
+    }
   }
 
   @Delete('artwork/delete/:id')
@@ -212,7 +221,7 @@ export class AdminWriteController {
     const otherGallery = (dto.name != null) ? await this.adminRepository.getGalleryByName(userId, dto.name) : null;
     if (otherGallery != null && otherGallery.id !== id)
       throw new BadRequestException("name must be unique");
-    await this.adminRepository.saveGallery({
+    await this.adminRepository.updateGallery({
       id: id,
       name: dto.name,
       description: dto.description,
@@ -393,6 +402,18 @@ export class AdminWriteController {
     if (!await this.adminRepository.hasRoom(userId, id))
       throw new NotFoundException();
     await this.adminRepository.removeRoom(id);
+  }
+
+  @Post('ai/process-image')
+  async aiProcessImage(@Body() dto: AiProcessImageDto, @GetUserId() userId: UserId) {
+    const artwork = await this.adminRepository.getArtworkDetailForAi(userId, dto.id);
+    if (artwork == null)
+      throw new NotFoundException();
+    await this.httpApi.processImage(artwork);
+    await this.adminRepository.updateArtwork({
+      id: artwork.id,
+      aiProcessing: true,
+    });
   }
 
 }

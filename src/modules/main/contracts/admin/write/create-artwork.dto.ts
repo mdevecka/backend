@@ -2,7 +2,7 @@ import { IsString, IsNumberString, IsArray, IsBooleanString, IsOptional, IsEnum,
 import { ArtworkGenreExists, ArtworkWorktypeExists, ArtworkMaterialExists, ArtworkTechniqueExists } from '@modules/app-db/validators';
 import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
 import { EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
-import { AiMode, ArtistId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId, ExhibitionId } from '@modules/app-db/entities';
+import { AiMode, AiGeneratedStatus, ArtistId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId, ExhibitionId } from '@modules/app-db/entities';
 
 export class CreateArtworkDto {
 
@@ -32,6 +32,10 @@ export class CreateArtworkDto {
   @IsOptional()
   @IsEnum(AiMode)
   aiMode: AiMode;
+
+  @IsOptional()
+  @IsEnum(AiGeneratedStatus)
+  aiGeneratedStatus: AiGeneratedStatus;
 
   @IsUUID()
   artistId: ArtistId;

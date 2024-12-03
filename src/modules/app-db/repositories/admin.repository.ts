@@ -195,6 +195,36 @@ export class AdminRepository {
     });
   }
 
+  async getArtworkDetailForAi(userId: UserId, id: ArtworkId) {
+    return this.artworks.findOne({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        year: true,
+        measurements: true,
+        aiGeneratedStatus: true,
+        image: { id: true, buffer: true, mimeType: true },
+        artist: { name: true },
+        artworkGenre: { name: true },
+        artworkWorktype: { name: true },
+        artworkMaterial: { name: true },
+        artworkTechnique: { name: true },
+      },
+      relations: {
+        artist: true,
+        artworkGenre: true,
+        artworkWorktype: true,
+        artworkMaterial: true,
+        artworkTechnique: true,
+      },
+      where: {
+        id: id,
+        artist: { userId: userId },
+      }
+    });
+  }
+
   async getGalleryDetail(userId: UserId, id: GalleryId) {
     return this.galleries.findOne({
       relations: {
@@ -681,9 +711,19 @@ export class AdminRepository {
     return this.users.save(entity);
   }
 
+  async updateUser(user: Partial<User>) {
+    const entity = this.users.create(user);
+    return this.users.update(user.id, entity);
+  }
+
   async saveArtist(artist: DeepPartial<Artist>) {
     const entity = this.artists.create(artist);
     return this.artists.save(entity);
+  }
+
+  async updateArtist(artist: Partial<Artist>) {
+    const entity = this.artists.create(artist);
+    return this.artists.update(artist.id, entity);
   }
 
   async removeArtist(id: ArtistId) {
@@ -696,6 +736,11 @@ export class AdminRepository {
     return this.artworks.save(entity);
   }
 
+  async updateArtwork(artwork: Partial<Artwork>) {
+    const entity = this.artworks.create(artwork);
+    return this.artworks.update(artwork.id, entity);
+  }
+
   async removeArtwork(id: ArtworkId) {
     const entity = this.artworks.create({ id: id });
     return this.artworks.remove(entity);
@@ -706,6 +751,11 @@ export class AdminRepository {
     return this.galleries.save(entity);
   }
 
+  async updateGallery(gallery: Partial<Gallery>) {
+    const entity = this.galleries.create(gallery);
+    return this.galleries.update(gallery.id, entity);
+  }
+
   async removeGallery(id: GalleryId) {
     const entity = this.galleries.create({ id: id });
     return this.galleries.remove(entity);
@@ -714,6 +764,11 @@ export class AdminRepository {
   async saveExhibition(exhibition: DeepPartial<Exhibition>) {
     const entity = this.exhibitions.create(exhibition);
     return this.exhibitions.save(entity);
+  }
+
+  async updateExhibition(exhibition: Partial<Exhibition>) {
+    const entity = this.exhibitions.create(exhibition);
+    return this.exhibitions.update(exhibition.id, entity);
   }
 
   async removeExhibition(id: ExhibitionId) {

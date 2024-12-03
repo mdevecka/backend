@@ -1,7 +1,8 @@
 import { Controller, Get, Post, Body, Query, ParseIntPipe, ParseUUIDPipe, Param, Response, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { PublicRepository, MAX_SEED } from '@modules/app-db/repositories';
-import { ArtworkId, ResourceId, UnityRoomId } from '@modules/app-db/entities';
+import { ArtworkId, ResourceId, UnityRoomId, ArtworkImageId } from '@modules/app-db/entities';
+import { HttpApiService } from '@modules/http-api';
 import { mapAsync } from '@common/helpers';
 import { AddArtworkLikeDto } from '../contracts/public';
 import { randomInt } from 'crypto';
@@ -10,7 +11,7 @@ import * as mapper from '../contracts/public/mapper';
 @Controller('public')
 export class PublicController {
 
-  constructor(private publicRepository: PublicRepository) {
+  constructor(private publicRepository: PublicRepository, private httpApi: HttpApiService) {
   }
 
   @Get('random/artist')
@@ -156,6 +157,18 @@ export class PublicController {
     if (labels.length !== expectedCount)
       throw new BadRequestException('invalid slug');
     return labels;
+  }
+
+  @Get('artwork/search-query')
+  async artworkSearchQuery(@Query('query') query: string, @Query('count', ParseIntPipe) count: number, @Query('page', ParseIntPipe) page: number) {
+    const imageIds = await this.httpApi.searchQuery(query, count, page);
+    return mapAsync(this.publicRepository.getArtworksByImageIds(imageIds), mapper.createArtworkDto);
+  }
+
+  @Get('artwork/search-image')
+  async artworkSearchImage(@Query('imageId', ParseUUIDPipe) imageId: ArtworkImageId, @Query('count', ParseIntPipe) count: number, @Query('page', ParseIntPipe) page: number) {
+    const imageIds = await this.httpApi.searchImage(imageId, count, page);
+    return mapAsync(this.publicRepository.getArtworksByImageIds(imageIds), mapper.createArtworkDto);
   }
 
 }
