@@ -9,6 +9,7 @@ export interface AppConfig {
   SESSION_LIFETIME: string;
   LOG_REQUESTS: string;
   NFT_MODULE_URL: string;
+  KODADOT_URL: string;
   SUBSCAN_URL: string;
   AUTH_CALLBACK_DOMAIN: string;
   AUTH_FAILURE_ROUTE: string;

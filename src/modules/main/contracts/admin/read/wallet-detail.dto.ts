@@ -29,6 +29,7 @@ export interface WalletDetailCollectionDto {
 export interface WalletDetailDto {
   id: WalletId;
   walletAddress: string;
+  onlineCheck: string;
   collections: WalletDetailCollectionDto[];
   orphanNfts: WalletDetailCollectionNftDto[];
 }

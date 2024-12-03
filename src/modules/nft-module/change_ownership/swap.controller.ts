@@ -1,6 +1,5 @@
-import { Controller, Body, Param, Put, BadRequestException, UseGuards, Get } from '@nestjs/common';
-import { SwapCreator } from './swap.service';
-import { SwapDto } from './dto/SwapDto';
+import { Controller, Param, Put, BadRequestException, UseGuards, Get } from '@nestjs/common';
+import { SwapCreator, SwapStatus } from './swap.service';
 import { SwapResponseDto } from './dto/SwapResponseDto';
 import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 
@@ -9,19 +8,16 @@ import { SessionAuthGuard, GetUserId } from '@modules/auth/helpers';
 export class SwapController {
   constructor(private readonly appService: SwapCreator) { }
 
-  @Put('transfer/collection/:collectionID/asset/:assetID')
+  @Put('transfer/asset/:assetID/account/:accountAddress')
   async getSwapCall(
-    @Body() swapData: SwapDto,
-    @Param("collectionID") collectionID: string,
-    @GetUserId() userId: string,
-    @Param("assetID") assetID: string): Promise<SwapResponseDto> {
-    const callData = await this.appService.createSwapCall(swapData, collectionID, assetID, userId);
-    if (callData == null || callData == 'null') {
+    @Param("accountAddress") accountAddress: string, @GetUserId() userId: string,
+    @Param("assetID") assetID: string): Promise<{ status: SwapStatus }> {
+    const callData = await this.appService.createSwapCall(accountAddress, assetID, userId);
+    if (callData == SwapStatus.Failed) {
       throw new BadRequestException('An error occurred while creating swap call, please check your parameters');
-
     }
     else {
-      return { callData }
+      return { status: SwapStatus.Success };
     }
   }
 
@@ -38,11 +34,13 @@ export class SwapController {
 
   @Put('updateDB/account/:accountAddress')
   async updateDB(
-    @Param("accountAddress") accountAddress: string, @GetUserId() userId: string,
-  ): Promise<void> {
-    const response = await this.appService.swapNFTOwnershipInDB(accountAddress, userId);
-    if (response === null) {
+    @Param("accountAddress") accountAddress: string,): Promise<{ status: SwapStatus }> {
+    const response = await this.appService.swapNFTOwnershipInDB(accountAddress);
+    if (response === SwapStatus.Failed) {
       throw new BadRequestException('An error occurred while updating database, please check your parameters');
+    }
+    else {
+      return { status: SwapStatus.Success };
     }
   }
 }

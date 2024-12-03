@@ -11,6 +11,7 @@ import { CollectionModule } from '@modules/nft-module/create_collection/collecti
 import { NftModule } from '@modules/nft-module/create_nft/nft.module';
 import { MetadataModule } from '@modules/nft-module/query_metadata/meta.module';
 import { SwapModule } from '@modules/nft-module/change_ownership/swap.module';
+import { AppConfigModule } from '@modules/config/config.module';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { SwapModule } from '@modules/nft-module/change_ownership/swap.module';
     // todo use Redis as cache provider
     CacheModule.register({ isGlobal: true }),
     MainModule,
-    MintModule, CollectionModule, NftModule, MetadataModule, SwapModule
+    MintModule, CollectionModule, NftModule, MetadataModule, SwapModule, AppConfigModule,
   ],
 })
 export class AppModule implements NestModule {
