@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Query, ParseIntPipe, ParseUUIDPipe, Param, Response, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Response as ExpressResponse } from 'express';
 import { PublicRepository, MAX_SEED } from '@modules/app-db/repositories';
-import { ArtworkId, ResourceId, UnityRoomId, ArtworkImageId } from '@modules/app-db/entities';
+import { ArtworkId, ResourceId, UnityRoomId } from '@modules/app-db/entities';
 import { HttpApiService } from '@modules/http-api';
 import { mapAsync } from '@common/helpers';
 import { AddArtworkLikeDto } from '../contracts/public';
@@ -136,6 +136,22 @@ export class PublicController {
     return mapAsync(this.publicRepository.getItemTypes(), mapper.createDesignerLibraryItemDto);
   }
 
+  @Get('artwork/search-query')
+  async artworkSearchQuery(@Query('query') query: string, @Query('count', ParseIntPipe) count: number, @Query('page', ParseIntPipe) page: number) {
+    const imageIds = await this.httpApi.searchQuery(query, count, page);
+    return mapAsync(this.publicRepository.getArtworksByImageIds(imageIds), mapper.createArtworkDto);
+  }
+
+  @Get('artwork/search-image')
+  async artworkSearchImage(@Query('slug') slug: string, @Query('count', ParseIntPipe) count: number, @Query('page', ParseIntPipe) page: number) {
+    const labels = this.parseSlug(slug, 3);
+    const artwork = await this.publicRepository.getArtworkDetailBySlug(labels[0], labels[1], labels[2]);
+    if (artwork == null)
+      throw new NotFoundException();
+    const imageIds = await this.httpApi.searchImage(artwork.image.id, count, page);
+    return mapAsync(this.publicRepository.getArtworksByImageIds(imageIds), mapper.createArtworkDto);
+  }
+
   @Post('artwork/like')
   async addArtworkLike(@Body() dto: AddArtworkLikeDto) {
     const labels = this.parseSlug(dto.slug, 3);
@@ -157,18 +173,6 @@ export class PublicController {
     if (labels.length !== expectedCount)
       throw new BadRequestException('invalid slug');
     return labels;
-  }
-
-  @Get('artwork/search-query')
-  async artworkSearchQuery(@Query('query') query: string, @Query('count', ParseIntPipe) count: number, @Query('page', ParseIntPipe) page: number) {
-    const imageIds = await this.httpApi.searchQuery(query, count, page);
-    return mapAsync(this.publicRepository.getArtworksByImageIds(imageIds), mapper.createArtworkDto);
-  }
-
-  @Get('artwork/search-image')
-  async artworkSearchImage(@Query('imageId', ParseUUIDPipe) imageId: ArtworkImageId, @Query('count', ParseIntPipe) count: number, @Query('page', ParseIntPipe) page: number) {
-    const imageIds = await this.httpApi.searchImage(imageId, count, page);
-    return mapAsync(this.publicRepository.getArtworksByImageIds(imageIds), mapper.createArtworkDto);
   }
 
 }
