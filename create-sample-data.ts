@@ -13,6 +13,7 @@ import {
   BaseEntity, User, Country, Artist, ArtistCategory, Artwork, ArtworkGenre, ArtworkMaterial,
   ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition, Nft, Resource,
   UnityRoom, UnityWall, UnityImage, UnityLamp, UnityItem, UnityItemType,
+  LoginType
 } from '@modules/app-db/entities';
 import * as entities from '@modules/app-db/entities';
 
@@ -1011,6 +1012,7 @@ async function main() {
         {
           "email": "lubo@ivancak.sk",
           "password": await hash("test", 10),
+          "loginType": LoginType.Credentials,
           "name": "Ľubo Ivančák",
           "description": "<p>grafik, programátor, tvorca počítačových hier</p>",
           "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },
@@ -1019,6 +1021,7 @@ async function main() {
         {
           "email": "john.snow@winterfell.castle",
           "password": await hash("niteking", 10),
+          "loginType": LoginType.Credentials,
           "name": "John Snow",
           "description": "Lord Commander of the Night's Watch",
           "avatar": { buffer: getImage("users/avatar-01.jpg"), mimeType: "image/jpeg" },

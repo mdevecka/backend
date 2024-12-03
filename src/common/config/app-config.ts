@@ -1,5 +1,6 @@
 export interface AppConfig {
   PORT: string;
+  FRONTEND_URL: string;
   POSTGRES_HOST: string;
   POSTGRES_PORT: string;
   POSTGRES_USER: string;
@@ -10,4 +11,13 @@ export interface AppConfig {
   NFT_MODULE_URL: string;
   KODADOT_URL: string;
   SUBSCAN_URL: string;
+  AUTH_CALLBACK_DOMAIN: string;
+  AUTH_FAILURE_ROUTE: string;
+  AUTH_CREATE_USER_ROUTE: string;
+  AUTH_RESET_USER_ROUTE: string;
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
+  GOOGLE_EMAIL: string;
+  GOOGLE_EMAIL_REFRESH_TOKEN: string;
+  GOOGLE_MAILBOX: string;
 }

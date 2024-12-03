@@ -68,3 +68,18 @@ export function deserializeEntity<T>(_dataSource: DataSource | EntityManager, en
   }
   return entity as T;
 }
+
+export function urlCombine(...urls: string[]) {
+  const parts = [];
+  for (let i = 0; i < urls.length; i++) {
+    let part = urls[i];
+    if (i !== 0) {
+      part = part.replace(/^\//, '');
+    }
+    if (i !== urls.length - 1) {
+      part = part.replace(/\/$/, '');
+    }
+    parts.push(part);
+  }
+  return parts.join("/");
+}
