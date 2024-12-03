@@ -44,6 +44,10 @@ GOOGLE_EMAIL=email@gmail.com
 GOOGLE_EMAIL_REFRESH_TOKEN=
 # Google email mailbox
 GOOGLE_MAILBOX=EMAIL <email@gmail.com>
+# AI module base URL
+AI_MODULE_URL=http://localhost:5000
+# JWT access token secret used for auth between AI module and backend
+AI_ACCESS_TOKEN_SECRET=
 ```
 
 ## migrations
