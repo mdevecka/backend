@@ -26,10 +26,6 @@ NFT_MODULE_URL=http://localhost:3000
 KODADOT_URL=https://kodadot.xyz/ahk 
 #Subscan URL
 SUBSCAN_URL=https://assethub-kusama.subscan.io
-#IPFS username
-IPFS_USERNAME=ipfs
-#IPFS password
-IPFS_PASSWORD=password
 # Server domain used for auth callbacks
 AUTH_CALLBACK_DOMAIN=http://localhost:3000
 # Frontend route to redirect to after unsuccessful login
