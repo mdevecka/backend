@@ -12,6 +12,11 @@ export class AppConfigService {
   private collectionID: string;
   private walletAddr: string;
   private walletID: string;
+  private ipfsLink: string;
+
+  get ipfsUrl(): string {
+    return this.ipfsLink;
+  }
 
   get collectionId(): string {
     return this.collectionID;
@@ -37,22 +42,25 @@ export class AppConfigService {
 
     const wallet = await this.nftRepository.ensureWallet(this.walletAddr);
     this.walletID = wallet.id;
+
+    const ipfsUrl = await fetch(`${url}/eva/ipfs/url`);
+    this.ipfsLink = await ipfsUrl.text();
   }
 
   convertIpfsLink(link: string): string {
     let metadata = link;
 
     if (metadata.startsWith("ipfs://ipfs/")) {
-      metadata = this.configService.get("IPFS_URL") + "/ipfs" + metadata.slice(11);
+      metadata = this.ipfsLink + "/ipfs" + metadata.slice(11);
     }
     else if (metadata.startsWith("https://ipfs.io/ipfs/")) {
-      metadata = this.configService.get("IPFS_URL") + "/ipfs" + metadata.slice(16);
+      metadata = this.ipfsLink + "/ipfs" + metadata.slice(16);
     }
     else if (metadata.startsWith("ipfs:/")) {
-      metadata = this.configService.get("IPFS_URL") + "/ipfs" + metadata.slice(7);
+      metadata = this.ipfsLink + "/ipfs" + metadata.slice(7);
     }
     else if (!metadata.startsWith("https://ipfs1.fiit.stuba.sk")) {
-      metadata = this.configService.get("IPFS_URL") + "/ipfs" + metadata;
+      metadata = this.ipfsLink + "/ipfs" + metadata;
     }
     return metadata;
   }
@@ -62,16 +70,13 @@ export class AppConfigService {
     // Return the metadata 
 
     try {
-      const response = await fetch(metadatalink, {
-        headers: {
-          'Authorization': 'Basic ' + btoa(this.configService.get('IPFS_USERNAME') + ':' + this.configService.get('IPFS_PASSWORD'))
-        }
-      });
+      const response = await fetch(metadatalink);
+
       if (!response.ok) {
         return null;
       }
       if (response != null) {
-        const parsed_data = await response.json();
+        const parsed_data = await response.text();
         return parsed_data;
       }
 
