@@ -10,6 +10,7 @@ export interface DesignerArtworkDto {
   worktype: string;
   material: string;
   technique: string;
+  genre: string;
   measurements: string;
   exhibition: string;
   gallery: string;
