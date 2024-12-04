@@ -30,8 +30,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
   constructor(private config: ConfigService<AppConfig>, private adminRepository: AdminRepository) {
     super({
-      clientID: config.get("GOOGLE_CLIENT_ID"),
-      clientSecret: config.get("GOOGLE_CLIENT_SECRET"),
+      clientID: config.get("GOOGLE_CLIENT_ID") ?? "-",
+      clientSecret: config.get("GOOGLE_CLIENT_SECRET") ?? "",
       callbackURL: urlCombine(config.get("AUTH_CALLBACK_DOMAIN") ?? "", callbackRoute),
       scope: ['email', 'profile'],
     });
