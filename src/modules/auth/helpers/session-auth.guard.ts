@@ -24,9 +24,11 @@ export class SessionAuthGuard implements CanActivate {
       return true;
     const request = context.switchToHttp().getRequest<RequestWithUserInfo>();
     const sessionId = this.getSessionFromRequest(request);
+    console.log("!sessionId", sessionId);
     if (sessionId == null)
       throw new UnauthorizedException();
     const userId = await this.authService.getSessionUserId(sessionId);
+    console.log("!userId", userId);
     if (userId == null)
       throw new UnauthorizedException();
     await this.authService.refreshSession(sessionId, userId);
@@ -37,6 +39,8 @@ export class SessionAuthGuard implements CanActivate {
 
   private getSessionFromRequest(req: ExpressRequest) {
     const authHeader = req.headers.authorization;
+    console.log("!header", authHeader);
+    console.log("!cookie", req.cookies[SESSION_COOKIE]);
     const match = /^Bearer\s+(.*)$/.exec(authHeader);
     if (match != null)
       return match[1];
