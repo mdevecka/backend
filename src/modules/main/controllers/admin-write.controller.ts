@@ -209,6 +209,7 @@ export class AdminWriteController {
       gps: dto.gps,
       public: dto.public,
       userId: userId,
+      image: mapEmpty(dto.image, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
     });
     return { id: gallery.id };
   }
@@ -229,6 +230,7 @@ export class AdminWriteController {
       countryId: dto.countryId,
       gps: dto.gps,
       public: dto.public,
+      image: mapEmpty(dto.image, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
     });
   }
 

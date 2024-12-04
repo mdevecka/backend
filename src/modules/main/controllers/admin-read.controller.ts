@@ -235,6 +235,14 @@ export class AdminReadController {
     res.set({ "Content-Type": item.mimeType }).send(item.image);
   }
 
+  @Get('gallery/:id/image')
+  async getGalleryImage(@Param('id', ParseUUIDPipe) id: GalleryId, @GetUserId() userId: UserId, @Response() res: ExpressResponse) {
+    const item = await this.adminRepository.getGalleryImage(userId, id);
+    if (item == null)
+      throw new NotFoundException();
+    res.set({ "Content-Type": item.mimeType }).send(item.image);
+  }
+
   @Get('nft')
   async getNfts(@GetUserId() userId: UserId) {
     return mapAsync(this.adminRepository.getNfts(userId), mapper.createNftDto);

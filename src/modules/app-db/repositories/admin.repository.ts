@@ -445,6 +445,16 @@ export class AdminRepository {
     }).then(a => (a != null && a.unityImage?.buffer != null) ? { image: a.unityImage?.buffer, mimeType: a.unityImage?.mimeType } : null);
   }
 
+  async getGalleryImage(userId: UserId, id: GalleryId) {
+    return this.galleries.findOne({
+      select: { id: true, image: { buffer: true, mimeType: true } },
+      where: {
+        id: id,
+        userId: userId,
+      }
+    }).then(a => (a != null && a.image?.buffer != null) ? { image: a.image?.buffer, mimeType: a.image?.mimeType } : null);
+  }
+
   async getUserAvatar(userId: UserId) {
     return this.users.findOne({
       select: { avatar: { buffer: true, mimeType: true } },

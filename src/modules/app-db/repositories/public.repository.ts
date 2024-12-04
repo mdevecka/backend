@@ -305,6 +305,17 @@ export class PublicRepository {
     }).then(a => (a != null && a.unityImage?.buffer != null) ? { image: a.unityImage?.buffer, mimeType: a.unityImage?.mimeType } : null);
   }
 
+  async getGalleryImageBySlug(userLabel: string, galleryLabel: string) {
+    return this.galleries.findOne({
+      select: { id: true, image: { buffer: true, mimeType: true } },
+      where: {
+        label: galleryLabel,
+        public: true,
+        user: { label: userLabel }
+      }
+    }).then(a => (a != null && a.image?.buffer != null) ? { image: a.image?.buffer, mimeType: a.image?.mimeType } : null);
+  }
+
   async getResourceContent(id: ResourceId) {
     return this.resources.findOne({
       select: { data: true, mimeType: true },
