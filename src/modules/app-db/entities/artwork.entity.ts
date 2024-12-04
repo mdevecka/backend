@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, ManyToMany, OneToOne, JoinColumn, AfterLoad, BeforeInsert, BeforeUpdate, Index } from 'typeorm';
+import { Entity, Column, VirtualColumn, ManyToOne, ManyToMany, OneToOne, JoinColumn, AfterLoad, BeforeInsert, BeforeUpdate, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Artist, ArtistId } from './artist.entity';
 import { Exhibition } from './exhibition.entity';
@@ -17,6 +17,18 @@ export type ArtworkId = ID<"Artwork">;
 export enum AiMode {
   Automatic = 'automatic',
   Manual = 'manual',
+}
+
+export enum AiGeneratedStatus {
+  NotGenerated = "not-generated",
+  Generated = "generated",
+  GeneratedProtected = "generated-protected",
+}
+
+export enum ImageDuplicateStatus {
+  Ok = "ok",
+  Exists = "exists",
+  Plagiarized = "plagiarized",
 }
 
 async function createUnityImage(image: Buffer, maxSize: number) {
@@ -40,6 +52,7 @@ const unityTextureSize = 2048;
 @Index(['label', 'artistId'], { unique: true })
 export class Artwork extends LabeledEntity {
 
+  @VirtualColumn({ query: () => null })
   private _lastImage: Buffer;
 
   id: ArtworkId;
@@ -70,6 +83,15 @@ export class Artwork extends LabeledEntity {
 
   @Column({ type: "enum", enum: AiMode, default: AiMode.Automatic })
   aiMode: AiMode;
+
+  @Column('boolean', { default: false })
+  aiProcessing: boolean;
+
+  @Column({ type: "enum", enum: AiGeneratedStatus, default: AiGeneratedStatus.NotGenerated })
+  aiGeneratedStatus: AiGeneratedStatus;
+
+  @Column({ type: "enum", enum: ImageDuplicateStatus, default: ImageDuplicateStatus.Ok })
+  aiDuplicateStatus: ImageDuplicateStatus;
 
   @Column({ type: 'text', nullable: true })
   tags: string;
@@ -138,8 +160,10 @@ export class Artwork extends LabeledEntity {
   @BeforeInsert()
   @BeforeUpdate()
   async updateImageData() {
-    const buffer = this.protectedImage?.buffer ?? this.image?.buffer;
-    if (buffer != this._lastImage) {
+    if (this.image?.buffer === undefined && this.protectedImage?.buffer === undefined)
+      return;
+    const buffer = this.protectedImage?.buffer ?? this.image?.buffer ?? null;
+    if (buffer !== this._lastImage) {
       if (buffer != null) {
         const imageInfo = await sharp(buffer).metadata();
         this.thumbnail = { buffer: await createThumbnail(buffer), mimeType: "image/jpeg" };

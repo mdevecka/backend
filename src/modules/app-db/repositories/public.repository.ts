@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial } from 'typeorm';
+import { Repository, DeepPartial, In } from 'typeorm';
 import { deserializeEntity } from '@common/helpers';
 import {
   Artist, Artwork, Gallery, Exhibition, Nft, Resource, UnityRoom, UnityItemType,
   ArtworkId, ResourceId, UnityRoomId,
+  ArtworkImageId
 } from '../entities';
 
 export const MAX_SEED = 2 ** 32;
@@ -327,6 +328,17 @@ export class PublicRepository {
           public: true,
         }
       }
+    });
+  }
+
+  async getArtworksByImageIds(ids: ArtworkImageId[]) {
+    return this.artworks.find({
+      relations: {
+        artist: {
+          user: true
+        }
+      },
+      where: { image: { id: In(ids) } }
     });
   }
 

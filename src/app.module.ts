@@ -2,6 +2,7 @@ import { Module, NestModule, NestMiddleware, MiddlewareConsumer } from '@nestjs/
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
+import { JwtModule } from '@nestjs/jwt';
 import { AppConfig } from '@common/config';
 import { LogRequestMiddleware } from '@common/middleware';
 import { MainModule } from '@modules/.';
@@ -30,6 +31,14 @@ import { AppConfigModule } from '@modules/config/config.module';
         migrationsTableName: "migration",
         migrations: ["dist/src/migrations/*.js"],
         migrationsRun: true,
+      }),
+      inject: [ConfigService],
+    }),
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService<AppConfig>) => ({
+        secret: configService.get<string>("AI_ACCESS_TOKEN_SECRET"),
       }),
       inject: [ConfigService],
     }),

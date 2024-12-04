@@ -86,7 +86,7 @@ export class AdminLoginController {
   @Patch('user/change-profile')
   @FormDataRequest()
   async changeUserProfile(@Body() dto: ChangeUserDto, @GetUserId() userId: UserId) {
-    await this.adminRepository.saveUser({
+    await this.adminRepository.updateUser({
       id: userId,
       name: dto.name,
       description: dto.description,
@@ -102,7 +102,7 @@ export class AdminLoginController {
     const validPassword = await compare(dto.oldPassword, user.password);
     if (!validPassword)
       throw new UnauthorizedException();
-    await this.adminRepository.saveUser({
+    await this.adminRepository.updateUser({
       id: userId,
       password: await this.hashPassword(dto.newPassword)
     });

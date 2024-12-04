@@ -1,5 +1,5 @@
 import { OptionDto } from '@common/helpers';
-import { AiMode, ArtistId, ArtworkId, NftId, CollectionId, WalletId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId } from '@modules/app-db/entities';
+import { AiMode, AiGeneratedStatus, ImageDuplicateStatus, ArtistId, ArtworkId, NftId, CollectionId, WalletId, ArtworkGenreId, ArtworkWorktypeId, ArtworkMaterialId, ArtworkTechniqueId } from '@modules/app-db/entities';
 
 export interface ArtworkDto {
   id: ArtworkId;
@@ -36,6 +36,9 @@ export interface ArtworkDto {
   }
   ai: boolean;
   aiMode: AiMode;
+  aiProcessing: boolean;
+  aiGeneratedStatus: AiGeneratedStatus;
+  aiDuplicateStatus: ImageDuplicateStatus;
   tags: string;
   artworkGenre: OptionDto<ArtworkGenreId>;
   artworkWorktype: OptionDto<ArtworkWorktypeId>;

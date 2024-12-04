@@ -9,6 +9,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { Repository, DataSource, DeepPartial, getMetadataArgsStorage } from 'typeorm';
 import { AppConfig } from '@common/config';
 import { filterEntities } from '@common/helpers';
+import { randomUUID } from 'crypto';
 import {
   BaseEntity, User, Country, Artist, ArtistCategory, Artwork, ArtworkGenre, ArtworkMaterial,
   ArtworkTechnique, ArtworkWorktype, Gallery, Exhibition, Nft, Resource,
@@ -1064,7 +1065,7 @@ async function main() {
         {
           "name": "Liptovské Hole",
           "description": "<p>Liptovské Hole je jedno z typických diel Martina Benku, ktoré zachytáva idylický obraz slovenského vidieka. Dielo zobrazuje skupinu roľníkov pracujúcich na poli počas žatvy. Benka svojím jedinečným štýlom zvýrazňuje dynamiku pohybu a harmóniu medzi človekom a prírodou. V popredí vidíme postavy roľníkov v tradičných krojoch, ktoré sú pre Benku charakteristické. Na pozadí sa rozprestierajú zelené kopce a modrá obloha, čo pridáva obrazu pocit pokoja a rovnováhy. Toto dielo nielen oslavuje pracovný život slovenského ľudu, ale aj krásu a jedinečnosť slovenskej krajiny.</p>",
-          "image": { buffer: getImage("artworks/01.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/01.jpg"), mimeType: "image/jpeg" },
           "year": "1925",
           "measurements": "68 x 43 cm",
           "artist": artists[0],
@@ -1077,7 +1078,7 @@ async function main() {
         {
           "name": "Za dedinou",
           "description": "",
-          "image": { buffer: getImage("artworks/02.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/02.jpg"), mimeType: "image/jpeg" },
           "year": "1920",
           "measurements": "62,5 x 44,5 cm",
           "artist": artists[1],
@@ -1089,7 +1090,7 @@ async function main() {
         {
           "name": "Sklabina Valley",
           "description": "",
-          "image": { buffer: getImage("artworks/03.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/03.jpg"), mimeType: "image/jpeg" },
           "year": "1935",
           "measurements": "132 x 100 cm",
           "artist": artists[0],
@@ -1101,7 +1102,7 @@ async function main() {
         {
           "name": "Z Liptova",
           "description": "",
-          "image": { buffer: getImage("artworks/04.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/04.jpg"), mimeType: "image/jpeg" },
           "year": "1937",
           "measurements": "100 x 132 cm",
           "artist": artists[0],
@@ -1113,7 +1114,7 @@ async function main() {
         {
           "name": "Drevári",
           "description": "",
-          "image": { buffer: getImage("artworks/05.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/05.jpg"), mimeType: "image/jpeg" },
           "year": "1933",
           "measurements": "67 x 46 cm",
           "artist": artists[0],
@@ -1125,7 +1126,7 @@ async function main() {
         {
           "name": "Štúdia – Revúca",
           "description": "",
-          "image": { buffer: getImage("artworks/06.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/06.jpg"), mimeType: "image/jpeg" },
           "year": "1933",
           "measurements": "32.5 x 44 cm",
           "artist": artists[0],
@@ -1137,7 +1138,7 @@ async function main() {
         {
           "name": "WOMEN FARMERS II",
           "description": "",
-          "image": { buffer: getImage("artworks/07.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/07.jpg"), mimeType: "image/jpeg" },
           "year": "1948",
           "measurements": "30 x 40 cm",
           "artist": artists[0],
@@ -1149,7 +1150,7 @@ async function main() {
         {
           "name": "Outside the village",
           "description": "",
-          "image": { buffer: getImage("artworks/08.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/08.jpg"), mimeType: "image/jpeg" },
           "year": "1932",
           "measurements": "62,5 x 44 cm",
           "artist": artists[0],
@@ -1161,7 +1162,7 @@ async function main() {
         {
           "name": "Barn",
           "description": "",
-          "image": { buffer: getImage("artworks/09.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/09.jpg"), mimeType: "image/jpeg" },
           "year": "1929",
           "measurements": "38 x 30 cm",
           "artist": artists[0],
@@ -1173,7 +1174,7 @@ async function main() {
         {
           "name": "MOŘE U CAPRI",
           "description": "",
-          "image": { buffer: getImage("artworks/10.jpg"), mimeType: "image/jpeg" },
+          "image": { id: randomUUID(), buffer: getImage("artworks/10.jpg"), mimeType: "image/jpeg" },
           "year": "1927",
           "measurements": "52 x 35x5 cm",
           "artist": artists[0],

@@ -1,3 +1,4 @@
+export * from './ai-process-image.dto';
 export * from './create-artist.dto';
 export * from './create-artwork.dto';
 export * from './create-exhibition.dto';

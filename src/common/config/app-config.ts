@@ -20,4 +20,6 @@ export interface AppConfig {
   GOOGLE_EMAIL: string;
   GOOGLE_EMAIL_REFRESH_TOKEN: string;
   GOOGLE_MAILBOX: string;
+  AI_MODULE_URL: string;
+  AI_ACCESS_TOKEN_SECRET: string;
 }
