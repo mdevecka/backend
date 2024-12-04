@@ -2,6 +2,7 @@ import { Entity, Column, ManyToOne, Index } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Country, CountryId } from './country.entity';
 import { User, UserId } from './user.entity';
+import { Image } from './image';
 import { ID } from '@common/helpers';
 
 export type GalleryId = ID<"Gallery">;
@@ -27,6 +28,9 @@ export class Gallery extends LabeledEntity {
 
   @Column('text', { nullable: true })
   gps: string;
+
+  @Column(() => Image)
+  image: Image;
 
   @Column({ type: 'boolean', default: false })
   public: boolean;
