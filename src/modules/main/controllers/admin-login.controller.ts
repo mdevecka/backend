@@ -1,29 +1,28 @@
 import { Controller, Get, Post, Patch, Request, Response, Redirect, UseGuards, UseFilters, Body, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Request as ExpressRequest, Response as ExpressResponse } from 'express';
 import { FormDataRequest } from 'nestjs-form-data';
 import { AuthService, GoogleUser } from '@modules/auth/services';
 import { SessionAuthGuard, GoogleOauthGuard, AuthRedirectFilter, SESSION_COOKIE, GetSessionId, GetUserId } from '@modules/auth/helpers';
 import { MailService } from '@modules/mail';
 import { AdminRepository } from '@modules/app-db/repositories';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { LoginType, RegisterState, Image, UserId } from '@modules/app-db/entities';
 import { LoginDto, CreateUserDto, RegisterUserDto, ChangeUserDto, ChangePasswordDto, RequestPasswordResetDto, ResetPasswordDto } from '../contracts/admin/login';
 import { registerUserSubject, registerUserBody, resetUserSubject, resetUserBody } from '../templates';
-import { AppConfig } from '@common/config';
-import { urlCombine, mapEmpty } from '@common/helpers';
+import { urlCombine, mapEmpty, isLocalhostOrigin } from '@common/helpers';
 import { randomBytes } from 'crypto';
 import { hash, compare } from 'bcrypt';
 
 @Controller('admin')
 export class AdminLoginController {
 
-  constructor(private config: ConfigService<AppConfig>, private authService: AuthService, private mailService: MailService, private adminRepository: AdminRepository) {
+  constructor(private config: AppConfigService, private authService: AuthService, private mailService: MailService, private adminRepository: AdminRepository) {
   }
 
   @Post('login')
-  async login(@Body() login: LoginDto, @Response({ passthrough: true }) res: ExpressResponse) {
+  async login(@Body() login: LoginDto, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse) {
     const sessionId = await this.authService.loginWithCredentials(login.email, login.password);
-    res.cookie(SESSION_COOKIE, sessionId, { httpOnly: true, secure: true, sameSite: "strict" });
+    this.setCookie(req, res, sessionId);
   }
 
   @UseGuards(GoogleOauthGuard)
@@ -52,14 +51,14 @@ export class AdminLoginController {
       registerState: RegisterState.Registering,
       registerToken: token,
     });
-    const redirectUrl = urlCombine(this.config.get("FRONTEND_URL"), this.config.get("AUTH_CREATE_USER_ROUTE"));
+    const redirectUrl = urlCombine(this.config.frontendUrl, this.config.authCreateUserRoute);
     const url = `${redirectUrl}?token=${encodeURIComponent(token)}&loginType=${encodeURIComponent(LoginType.Credentials)}`;
     await this.mailService.send(dto.email, registerUserSubject(), registerUserBody(url));
   }
 
   @Post('user/create')
   @FormDataRequest()
-  async createUser(@Body() dto: CreateUserDto, @Response({ passthrough: true }) res: ExpressResponse) {
+  async createUser(@Body() dto: CreateUserDto, @Request() req: ExpressRequest, @Response({ passthrough: true }) res: ExpressResponse) {
     const user = await this.adminRepository.getUserByRegisterToken(dto.token);
     if (user == null)
       throw new NotFoundException();
@@ -79,7 +78,7 @@ export class AdminLoginController {
     const sessionId = (user.loginType === LoginType.Credentials) ?
       await this.authService.loginWithCredentials(user.email, dto.password) :
       await this.authService.loginWithProvider(user.loginProviderId, user.loginType);
-    res.cookie(SESSION_COOKIE, sessionId, { httpOnly: true, secure: true, sameSite: "strict" });
+    this.setCookie(req, res, sessionId);
   }
 
   @UseGuards(SessionAuthGuard)
@@ -119,7 +118,7 @@ export class AdminLoginController {
       id: user.id,
       resetToken: token,
     });
-    const redirectUrl = urlCombine(this.config.get("FRONTEND_URL"), this.config.get("AUTH_RESET_USER_ROUTE"));
+    const redirectUrl = urlCombine(this.config.frontendUrl, this.config.authResetUserRoute);
     const url = `${redirectUrl}?token=${encodeURIComponent(token)}`;
     await this.mailService.send(dto.email, resetUserSubject(), resetUserBody(url));
   }
@@ -135,6 +134,12 @@ export class AdminLoginController {
     user.password = await this.hashPassword(dto.password);
     user.resetToken = null;
     await this.adminRepository.saveUser(user);
+  }
+
+  @UseGuards(SessionAuthGuard)
+  @Get('session')
+  async getSession(@GetSessionId() sessionId: string) {
+    return { id: sessionId };
   }
 
   @UseGuards(SessionAuthGuard)
@@ -155,15 +160,21 @@ export class AdminLoginController {
         registerState: RegisterState.Registering,
         registerToken: token,
       });
-      const redirectUrl = urlCombine(this.config.get("FRONTEND_URL"), this.config.get("AUTH_CREATE_USER_ROUTE"));
+      const redirectUrl = urlCombine(this.config.frontendUrl, this.config.authCreateUserRoute);
       const name = req.user.name ?? "";
       return { url: `${redirectUrl}?token=${encodeURIComponent(token)}&name=${encodeURIComponent(name)}&loginType=${encodeURIComponent(loginType)}` };
     }
     const sessionId = await this.authService.loginWithProvider(req.user.id, loginType);
-    res.cookie(SESSION_COOKIE, sessionId, { httpOnly: true, secure: true, sameSite: "strict" });
+    this.setCookie(req, res, sessionId);
     const redirectRoute = (req.query.state as string) ?? "";
-    const redirectUrl = urlCombine(this.config.get("FRONTEND_URL"), redirectRoute);
+    const redirectUrl = urlCombine(this.config.frontendUrl, redirectRoute);
     return { url: redirectUrl };
+  }
+
+  private setCookie(req: ExpressRequest, res: ExpressResponse, sessionId: string) {
+    const useSameSiteNone = (this.config.forceSameSiteNone || (this.config.allowLocalhostRequests && isLocalhostOrigin(req)));
+    const sameSite = (useSameSiteNone) ? "none" : "strict";
+    res.cookie(SESSION_COOKIE, sessionId, { httpOnly: true, secure: true, sameSite: sameSite });
   }
 
   private async hashPassword(password: string) {

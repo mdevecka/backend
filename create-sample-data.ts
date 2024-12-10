@@ -7,7 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, InjectRepository, getRepositoryToken } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { Repository, DataSource, DeepPartial, getMetadataArgsStorage } from 'typeorm';
-import { AppConfig } from '@common/config';
+import { AppConfig } from '@modules/config';
 import { filterEntities } from '@common/helpers';
 import { randomUUID } from 'crypto';
 import {

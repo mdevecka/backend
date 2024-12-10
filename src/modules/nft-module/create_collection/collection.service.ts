@@ -1,12 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { MemoryStoredFile } from 'nestjs-form-data';
 
 @Injectable()
 export class CollectionCreator {
+
   private readonly logger = new Logger(CollectionCreator.name)
-  constructor(private configService: ConfigService<AppConfig>) {
+
+  constructor(private configService: AppConfigService) {
   }
 
   async createCollectionCall(file: MemoryStoredFile, name: string, description: string, address: string): Promise<string> {
@@ -23,7 +24,7 @@ export class CollectionCreator {
     formData.append('metadata', description);
     formData.append('owner', address);
 
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.nftModuleUrl;
 
     const response = await fetch(`${url}/collection/create`, {
       method: 'PUT',

@@ -1,6 +1,8 @@
 export interface AppConfig {
   PORT: string;
   FRONTEND_URL: string;
+  ALLOW_LOCALHOST_REQUESTS: string;
+  FORCE_SAMESITE_NONE: string;
   POSTGRES_HOST: string;
   POSTGRES_PORT: string;
   POSTGRES_USER: string;

@@ -1,9 +1,8 @@
 import { Module, NestModule, NestMiddleware, MiddlewareConsumer } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import { JwtModule } from '@nestjs/jwt';
-import { AppConfig } from '@common/config';
 import { LogRequestMiddleware } from '@common/middleware';
 import { MainModule } from '@modules/.';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
@@ -12,50 +11,51 @@ import { CollectionModule } from '@modules/nft-module/create_collection/collecti
 import { NftModule } from '@modules/nft-module/create_nft/nft.module';
 import { MetadataModule } from '@modules/nft-module/query_metadata/meta.module';
 import { SwapModule } from '@modules/nft-module/change_ownership/swap.module';
-import { AppConfigModule } from '@modules/config/config.module';
+import { AppConfigModule, AppConfigService } from '@modules/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    AppConfigModule,
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService<AppConfig>) => ({
+      imports: [AppConfigModule],
+      useFactory: (appConfig: AppConfigService) => ({
         type: 'postgres',
-        host: config.get("POSTGRES_HOST"),
-        port: parseInt(config.get("POSTGRES_PORT")),
-        username: config.get("POSTGRES_USER"),
-        password: config.get("POSTGRES_PASSWORD"),
-        database: config.get("POSTGRES_DATABASE"),
+        host: appConfig.postgresHost,
+        port: appConfig.postgresPort,
+        username: appConfig.postgresUser,
+        password: appConfig.postgresPassword,
+        database: appConfig.postgresDatabase,
         autoLoadEntities: true,
         namingStrategy: new SnakeNamingStrategy(),
         migrationsTableName: "migration",
         migrations: ["dist/src/migrations/*.js"],
         migrationsRun: true,
       }),
-      inject: [ConfigService],
+      inject: [AppConfigService],
     }),
     JwtModule.registerAsync({
       global: true,
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService<AppConfig>) => ({
-        secret: configService.get<string>("AI_ACCESS_TOKEN_SECRET"),
+      imports: [AppConfigModule],
+      useFactory: (appConfig: AppConfigService) => ({
+        secret: appConfig.aiAccessTokenSecret,
       }),
-      inject: [ConfigService],
+      inject: [AppConfigService],
     }),
     // todo use Redis as cache provider
     CacheModule.register({ isGlobal: true }),
     MainModule,
-    MintModule, CollectionModule, NftModule, MetadataModule, SwapModule, AppConfigModule,
+    MintModule, CollectionModule, NftModule, MetadataModule, SwapModule,
   ],
 })
 export class AppModule implements NestModule {
 
-  constructor(private config: ConfigService<AppConfig>) {
+  constructor(private config: AppConfigService) {
   }
 
   configure(consumer: MiddlewareConsumer) {
     const middlewares: { new(): NestMiddleware }[] = [];
-    if (this.config.get("LOG_REQUESTS") === "true") {
+    if (this.config.logRequests) {
       middlewares.push(LogRequestMiddleware);
     }
     consumer.apply(...middlewares).forRoutes('*');

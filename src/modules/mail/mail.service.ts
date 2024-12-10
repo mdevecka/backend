@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { createTransport } from 'nodemailer';
 
 @Injectable()
 export class MailService {
 
-  constructor(private config: ConfigService<AppConfig>) {
+  constructor(private config: AppConfigService) {
   }
 
   async send(to: string, subject: string, body: string) {
@@ -14,14 +13,14 @@ export class MailService {
       service: 'gmail',
       auth: {
         type: "OAuth2",
-        user: this.config.get("GOOGLE_EMAIL"),
-        clientId: this.config.get("GOOGLE_CLIENT_ID"),
-        clientSecret: this.config.get("GOOGLE_CLIENT_SECRET"),
-        refreshToken: this.config.get("GOOGLE_EMAIL_REFRESH_TOKEN"),
+        user: this.config.googleEmail,
+        clientId: this.config.googleClientId,
+        clientSecret: this.config.googleClientSecret,
+        refreshToken: this.config.googleEmailRefreshToken,
       }
     });
     const mailOptions = {
-      from: this.config.get("GOOGLE_MAILBOX"),
+      from: this.config.googleMailbox,
       to: to,
       subject: subject,
       text: body,

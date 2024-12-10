@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { Artwork, ArtworkImageId } from '@modules/app-db/entities';
 import { ProcessImageDataDto } from './contracts';
 
@@ -13,8 +12,8 @@ export class HttpApiService {
   private readonly patch = this.http.axiosRef.patch;
   private readonly baseUrl: string;
 
-  constructor(private config: ConfigService<AppConfig>, private http: HttpService) {
-    this.baseUrl = this.config.get("AI_MODULE_URL");
+  constructor(private config: AppConfigService, private http: HttpService) {
+    this.baseUrl = this.config.aiModuleUrl;
   }
 
   async processImage(artwork: Artwork) {

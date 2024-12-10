@@ -4,7 +4,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { NestFactory } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfig } from '@modules/config';
 import { filterEntities } from '@common/helpers';
 import * as entities from '@modules/app-db/entities';
 

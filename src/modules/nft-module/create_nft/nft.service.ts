@@ -1,10 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
 import { NftUpdateDto } from './dto/NFTDto';
-import { AppConfigService } from '@modules/config/config.service';
+import { NftConfigService } from '@modules/config';
 
 export enum UpdateStatus {
   Success = 'Success',
@@ -13,9 +12,10 @@ export enum UpdateStatus {
 
 @Injectable()
 export class NftCreator {
-  private readonly logger = new Logger(NftCreator.name)
-  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository, private adminRepository: AdminRepository, private appConfigService: AppConfigService) {
 
+  private readonly logger = new Logger(NftCreator.name)
+
+  constructor(private configService: AppConfigService, private nftRepository: NftRepository, private adminRepository: AdminRepository, private nftConfigService: NftConfigService) {
   }
 
   async createNFTCall(collectionID: string, artworkId: string, address: string, userId: string): Promise<string> {
@@ -42,7 +42,7 @@ export class NftCreator {
 
     const description = descriptionParts.join(', ');
 
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.nftModuleUrl;
 
     const formData = new FormData();
     const fileBlob = new Blob([artworkImage.image], { type: artworkImage.mimeType });
@@ -69,16 +69,16 @@ export class NftCreator {
     //replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
     let metadata = metadataCid as string;
     if (metadata.startsWith("ipfs://ipfs/")) {
-      metadata = this.appConfigService.convertIpfsLink(metadata);
+      metadata = this.nftConfigService.convertIpfsLink(metadata);
     }
 
-    const cidResp = await this.appConfigService.fetchMetadataFromIPFS(metadata);
+    const cidResp = await this.nftConfigService.fetchMetadataFromIPFS(metadata);
     const cid = JSON.parse(cidResp)
 
     //also replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
     let image = cid.image as string;
     if (image.startsWith("ipfs://ipfs/")) {
-      image = this.appConfigService.convertIpfsLink(image);
+      image = this.nftConfigService.convertIpfsLink(image);
     }
 
     const wallets = await this.adminRepository.getWallets(userId);
@@ -134,7 +134,7 @@ export class NftCreator {
       artworkImage = { image: artworkImage, mimeType: artworkImage.type };
     }
 
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.nftModuleUrl;
 
     const formData = new FormData();
 
@@ -163,7 +163,7 @@ export class NftCreator {
     }
     const name = artwork.name;
     //First load metadata from IPFS
-    const metadata = await this.appConfigService.fetchMetadataFromIPFS(metadataLink);
+    const metadata = await this.nftConfigService.fetchMetadataFromIPFS(metadataLink);
 
     const metadataJson = JSON.parse(metadata);
     const image = metadataJson.image;
@@ -176,7 +176,7 @@ export class NftCreator {
 
   }
   async getEvaWalletDetail() {
-    const EvaGalleryWalletAddress = this.appConfigService.walletAddress;
+    const EvaGalleryWalletAddress = this.nftConfigService.walletAddress;
     return await this.nftRepository.getWallet(EvaGalleryWalletAddress);
 
   }
@@ -200,7 +200,7 @@ export class NftCreator {
 
     const nft = await this.adminRepository.getNftDetail(userId, nftId);
 
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.nftModuleUrl;
 
     const response = await fetch(`${url}/collection/remove/asset/${nft.nftData.id}`, {
       method: 'DELETE',

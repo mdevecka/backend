@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ConfigService } from '@nestjs/config';
 import { AdminRepository } from '@modules/app-db/repositories';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { Strategy, VerifyCallback } from 'passport-google-oauth2';
 import { urlCombine } from '@common/helpers';
 
@@ -28,11 +27,11 @@ export interface GoogleUser {
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
-  constructor(private config: ConfigService<AppConfig>, private adminRepository: AdminRepository) {
+  constructor(private config: AppConfigService, private adminRepository: AdminRepository) {
     super({
-      clientID: config.get("GOOGLE_CLIENT_ID") ?? "-",
-      clientSecret: config.get("GOOGLE_CLIENT_SECRET") ?? "",
-      callbackURL: urlCombine(config.get("AUTH_CALLBACK_DOMAIN") ?? "", callbackRoute),
+      clientID: config.googleClientId,
+      clientSecret: config.googleClientSecret,
+      callbackURL: urlCombine(config.authCallbackDomain, callbackRoute),
       scope: ['email', 'profile'],
     });
   }

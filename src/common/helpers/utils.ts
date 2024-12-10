@@ -1,6 +1,7 @@
 import { DataSource, EntityManager, getMetadataArgsStorage } from 'typeorm';
 import { DriverUtils } from 'typeorm/driver/DriverUtils';
 import { OptionDto } from './option.dto';
+import { Request as ExpressRequest } from 'express';
 
 export type EMPTY = "";
 
@@ -82,4 +83,17 @@ export function urlCombine(...urls: string[]) {
     parts.push(part);
   }
   return parts.join("/");
+}
+
+export function parseBool(value: string) {
+  if (value === "1" || value === "true")
+    return true;
+  if (value === "0" || value === "false")
+    return false;
+  return undefined;
+}
+
+export function isLocalhostOrigin(req: ExpressRequest) {
+  const origin = req.header('Origin') ?? "";
+  return origin.toLowerCase().startsWith("http://localhost:");
 }
