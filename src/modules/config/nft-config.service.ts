@@ -49,8 +49,8 @@ export class NftConfigService {
     else if (metadata.startsWith("https://ipfs.io/ipfs/")) {
       metadata = this.ipfsLink + "/ipfs" + metadata.slice(16);
     }
-    else if (metadata.startsWith("ipfs:/")) {
-      metadata = this.ipfsLink + "/ipfs" + metadata.slice(7);
+    else if (metadata.startsWith("ipfs://")) {
+      metadata = this.ipfsLink + "/ipfs/" + metadata.slice(7);
     }
     else if (!metadata.startsWith("https://ipfs1.fiit.stuba.sk")) {
       metadata = this.ipfsLink + "/ipfs" + metadata;
