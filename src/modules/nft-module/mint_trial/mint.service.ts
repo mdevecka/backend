@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
-import { AppConfigService } from '@modules/config/config.service';
+import { NftConfigService } from '@modules/config';
 
 export enum MintStatus {
   MintedAlready = 'MintedAlready',
@@ -13,8 +12,8 @@ export enum MintStatus {
 
 @Injectable()
 export class MintCreator {
-  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository, private adminRepository: AdminRepository, private appConfigService: AppConfigService) {
 
+  constructor(private configService: AppConfigService, private nftRepository: NftRepository, private adminRepository: AdminRepository, private nftConfigService: NftConfigService) {
   }
 
   async createMint(userId: string, artworkId: string): Promise<MintStatus> {
@@ -29,7 +28,7 @@ export class MintCreator {
       return MintStatus.MintedAlready;
     }
 
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.nftModuleUrl;
 
     //Create metadata
     const descriptionParts = [
@@ -61,22 +60,22 @@ export class MintCreator {
     const { nftID, metadataCid } = await response.json();
 
     if (nftID != null && metadataCid != null) {
-      const collectionID = this.appConfigService.collectionId;
-      const EvaGalleryWalletAddress = this.appConfigService.walletAddress;
+      const collectionID = this.nftConfigService.collectionId;
+      const EvaGalleryWalletAddress = this.nftConfigService.walletAddress;
 
       //replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
       let metadata = metadataCid as string;
       if (metadata.startsWith("ipfs://ipfs/")) {
-        metadata = this.appConfigService.convertIpfsLink(metadata);
+        metadata = this.nftConfigService.convertIpfsLink(metadata);
       }
-      const cidResp = await this.appConfigService.fetchMetadataFromIPFS(metadata);
+      const cidResp = await this.nftConfigService.fetchMetadataFromIPFS(metadata);
 
       const cid = JSON.parse(cidResp);
 
       //also replace ipfs://ipfs/ with https://ipfs1.fiit.stuba.sk/ipfs/
       let image = cid.image as string;
       if (image.startsWith("ipfs://ipfs/")) {
-        image = this.appConfigService.convertIpfsLink(image);
+        image = this.nftConfigService.convertIpfsLink(image);
       }
       const nft: NftData = {
         id: `${collectionID}-${nftID}`,

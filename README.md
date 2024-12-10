@@ -6,6 +6,10 @@
 PORT=3000
 # frontend url used for CORS and auth callbacks
 FRONTEND_URL=http://localhost:4200
+# allow CORS for all localhost requests
+ALLOW_LOCALHOST_REQUESTS=true
+# force send cookies with samesite=none, not recommended for production environments
+FORCE_SAMESITE_NONE=false
 # address of postgres db
 POSTGRES_HOST=127.0.0.1
 # port of postgres db

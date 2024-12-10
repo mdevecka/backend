@@ -1,9 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { NftRepository } from '@modules/app-db/repositories';
-import { AppConfigService } from '@modules/config/config.service';
-
+import { NftConfigService } from '@modules/config';
 
 export enum SwapStatus {
   Success = 'Success',
@@ -12,8 +10,8 @@ export enum SwapStatus {
 
 @Injectable()
 export class SwapCreator {
-  constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>, private appConfigService: AppConfigService) {
 
+  constructor(private nftRepo: NftRepository, private configService: AppConfigService, private nftConfigService: NftConfigService) {
   }
 
   async createSwapCall(accountAddress: string, assetID: string, userId: string): Promise<SwapStatus> {
@@ -33,8 +31,8 @@ export class SwapCreator {
       return SwapStatus.Failed;
     }
 
-    const url = this.configService.get("NFT_MODULE_URL");
-    const collectionID = this.appConfigService.collectionId;
+    const url = this.configService.nftModuleUrl;
+    const collectionID = this.nftConfigService.collectionId;
 
     await fetch(`${url}/transfer/collection/${collectionID}/asset/${nftID}`, {
       method: 'POST',
@@ -59,7 +57,7 @@ export class SwapCreator {
 
     //These checks might need to be changed in the future when we allow users to transfer ownership within APP.
 
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.nftModuleUrl;
 
     const response = await fetch(`${url}/pay/${address}`, {
       method: 'GET',

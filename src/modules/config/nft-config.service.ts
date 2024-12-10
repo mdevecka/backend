@@ -1,38 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from './app-config.service';
 import { NftRepository } from '@modules/app-db/repositories';
 
-
 @Injectable()
-export class AppConfigService {
-  get walletAddress(): string {
-    return this.walletAddr;
-  }
+export class NftConfigService {
+
+  private readonly logger = new Logger(NftConfigService.name)
+
   private collectionID: string;
+  private ipfsLink: string;
   private walletAddr: string;
   private walletID: string;
-  private ipfsLink: string;
 
-  get ipfsUrl(): string {
-    return this.ipfsLink;
-  }
+  get collectionId() { return this.collectionID; }
+  get ipfsUrl() { return this.ipfsLink; }
+  get walletId() { return this.walletID; }
+  get walletAddress() { return this.walletAddr; }
 
-  get collectionId(): string {
-    return this.collectionID;
-  }
-
-  get walletId(): string {
-    return this.walletID;
-  }
-
-  private readonly logger = new Logger(AppConfigService.name)
-  constructor(private configService: ConfigService<AppConfig>, private nftRepository: NftRepository) {
-
+  constructor(private appConfig: AppConfigService, private nftRepository: NftRepository) {
   }
 
   async onModuleInit() {
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.appConfig.nftModuleUrl;
     if (url == null) {
       console.warn("missing configuration for NFT MODULE - all NFT related functionality will not be available");
       return;
@@ -72,7 +61,6 @@ export class AppConfigService {
   async fetchMetadataFromIPFS(metadatalink: string): Promise<string> {
     // Fetch metadata from IPFS
     // Return the metadata 
-
     try {
       const response = await fetch(metadatalink);
 

@@ -1,15 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { NftRepository } from '@modules/app-db/repositories';
 import { NftInterface } from './interface/NftInterface';
 import { CollectionInterface } from './interface/ColInterface';
-import { AppConfigService } from '@modules/config/config.service';
+import { NftConfigService } from '@modules/config';
 
 @Injectable()
 export class MetaFetcher {
 
-  constructor(private nftRepo: NftRepository, private configService: ConfigService<AppConfig>, private appConfigService: AppConfigService) {
+  constructor(private nftRepo: NftRepository, private configService: AppConfigService, private nftConfigService: NftConfigService) {
 
   }
 
@@ -17,7 +16,7 @@ export class MetaFetcher {
     //We will fetch metadata for user and save them to the database, 
     //this call is made each time user loads their profile to see NFTS
     //Returns 200 ok if successful so project can fetch from DB
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.nftModuleUrl;
 
     const response = await fetch(
       `${url}/metadata/nft/address/${address}`
@@ -28,14 +27,14 @@ export class MetaFetcher {
     for (let i = 0; i < data.length; i++) {
       if (data[i].metadata != null) {
 
-        data[i].metadata = this.appConfigService.convertIpfsLink(data[i].metadata);
-        const fetchedData = await this.appConfigService.fetchMetadataFromIPFS(data[i].metadata);
+        data[i].metadata = this.nftConfigService.convertIpfsLink(data[i].metadata);
+        const fetchedData = await this.nftConfigService.fetchMetadataFromIPFS(data[i].metadata);
         const newData = typeof fetchedData === 'string' ? JSON.parse(fetchedData) : fetchedData;
         if (data[i].image != null) {
-          data[i].image = this.appConfigService.convertIpfsLink(data[i].image);
+          data[i].image = this.nftConfigService.convertIpfsLink(data[i].image);
         }
         else if (data[i].image == null) {
-          data[i].image = this.appConfigService.convertIpfsLink(newData.image);
+          data[i].image = this.nftConfigService.convertIpfsLink(newData.image);
         }
         if (data[i].name == null) {
           data[i].name = newData.name
@@ -49,7 +48,7 @@ export class MetaFetcher {
   }
 
   async fetchColMetadata(userID: string, address: string): Promise<CollectionInterface[]> {
-    const url = this.configService.get("NFT_MODULE_URL");
+    const url = this.configService.nftModuleUrl;
 
     const response = await fetch(
       `${url}/metadata/collection/address/${address}`
@@ -60,14 +59,14 @@ export class MetaFetcher {
     for (let i = 0; i < data.length; i++) {
       if (data[i].metadata != null) {
 
-        data[i].metadata = this.appConfigService.convertIpfsLink(data[i].metadata);
-        const fetchedData = await this.appConfigService.fetchMetadataFromIPFS(data[i].metadata);
+        data[i].metadata = this.nftConfigService.convertIpfsLink(data[i].metadata);
+        const fetchedData = await this.nftConfigService.fetchMetadataFromIPFS(data[i].metadata);
         const newData = typeof fetchedData === 'string' ? JSON.parse(fetchedData) : fetchedData;
         if (data[i].image != null) {
-          data[i].image = this.appConfigService.convertIpfsLink(data[i].image);
+          data[i].image = this.nftConfigService.convertIpfsLink(data[i].image);
         }
         else if (data[i].image == null) {
-          data[i].image = this.appConfigService.convertIpfsLink(newData.image);
+          data[i].image = this.nftConfigService.convertIpfsLink(newData.image);
         }
         if (data[i].name == null) {
           data[i].name = newData.name

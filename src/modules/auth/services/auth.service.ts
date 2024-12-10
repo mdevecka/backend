@@ -1,17 +1,16 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { AdminRepository } from '@modules/app-db/repositories';
 import { LoginType, RegisterState } from '@modules/app-db/entities';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { compare } from 'bcrypt';
 import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
 
-  constructor(private config: ConfigService<AppConfig>, private adminRepository: AdminRepository, @Inject(CACHE_MANAGER) private cacheManager: Cache) {
+  constructor(private config: AppConfigService, private adminRepository: AdminRepository, @Inject(CACHE_MANAGER) private cacheManager: Cache) {
   }
 
   async loginWithCredentials(email: string, password: string) {
@@ -52,7 +51,7 @@ export class AuthService {
   }
 
   private async storeSession(sessionId: string, userId: string) {
-    const sessionLifetime = parseInt(this.config.get("SESSION_LIFETIME")) * 1000;
+    const sessionLifetime = this.config.sessionLifetime * 1000;
     await this.cacheManager.set(this.getSessionKey(sessionId), userId, sessionLifetime);
   }
 

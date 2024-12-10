@@ -9,23 +9,22 @@ import {
 } from '../entities';
 import { NftInterface } from '@modules/nft-module/query_metadata/interface/NftInterface';
 import { CollectionInterface } from '@modules/nft-module/query_metadata/interface/ColInterface';
-import { ConfigService } from '@nestjs/config';
-import { AppConfig } from '@common/config';
+import { AppConfigService } from '@modules/config/app-config.service';
 import { AdminRepository } from './admin.repository';
 
 @Injectable()
 export class NftRepository {
+
   private readonly logger = new Logger(NftRepository.name)
 
   constructor(
-    private configService: ConfigService<AppConfig>,
+    private appConfig: AppConfigService,
     private adminRepository: AdminRepository,
     @InjectRepository(User) private users: Repository<User>,
     @InjectRepository(Nft) private nfts: Repository<Nft>,
     @InjectRepository(Wallet) private wallets: Repository<Wallet>,
     @InjectRepository(Artwork) private artworks: Repository<Artwork>,
     @InjectRepository(Collection) private collections: Repository<Collection>,
-
   ) { }
 
   //Returns user from database
@@ -116,7 +115,7 @@ export class NftRepository {
     nft.artwork = artwork;
     nft.wallet = wallet;
     nft.nftData = nft_data;
-    nft.onlineCheck = this.configService.get("KODADOT_URL") + "/gallery/" + nft_data.id;
+    nft.onlineCheck = this.appConfig.kodadotUrl + "/gallery/" + nft_data.id;
     //Also add nft under collection if it's associated with one
     const cols = await this.getWalletCols(wallet.walletAddress);
 
@@ -244,7 +243,7 @@ export class NftRepository {
     if (wallet == null) {
       const newWallet = new Wallet();
       newWallet.walletAddress = walletAddress;
-      newWallet.onlineCheck = this.configService.get("SUBSCAN_URL") + "/account/" + walletAddress;
+      newWallet.onlineCheck = this.appConfig.subscanUrl + "/account/" + walletAddress;
       if (userId != null) {
         newWallet.user = await this.users.findOneBy({ id: userId });
       }
@@ -263,7 +262,7 @@ export class NftRepository {
       const newWallet = new Wallet();
       newWallet.walletAddress = walletAddress;
       newWallet.user = await this.users.findOneBy({ id: userId });
-      newWallet.onlineCheck = this.configService.get("SUBSCAN_URL") + "/account/" + walletAddress;
+      newWallet.onlineCheck = this.appConfig.subscanUrl + "/account/" + walletAddress;
       await this.wallets.save(newWallet);
       wallet = newWallet;
     }
@@ -288,7 +287,7 @@ export class NftRepository {
         description: metadata,
         image,
       };
-      nft.onlineCheck = this.configService.get("KODADOT_URL") + "/gallery/" + id;
+      nft.onlineCheck = this.appConfig.kodadotUrl + "/gallery/" + id;
       nft.wallet = wallet;
 
       //Parse nft id to check if it's associated with this collection
@@ -341,7 +340,7 @@ export class NftRepository {
       const newWallet = new Wallet();
       newWallet.walletAddress = walletAddress;
       newWallet.user = await this.users.findOneBy({ id: userId });
-      newWallet.onlineCheck = this.configService.get("SUBSCAN_URL") + "/account/" + walletAddress;
+      newWallet.onlineCheck = this.appConfig.subscanUrl + "/account/" + walletAddress;
       await this.wallets.save(newWallet);
       wallet = newWallet;
     }
@@ -363,7 +362,7 @@ export class NftRepository {
         image,
       };
 
-      col.onlineCheck = this.configService.get("KODADOT_URL") + "/collection/" + id;
+      col.onlineCheck = this.appConfig.kodadotUrl + "/collection/" + id;
       col.wallet = wallet;
 
       const existingCol = await this.collections.createQueryBuilder("collection")
