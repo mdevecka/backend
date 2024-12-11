@@ -25,10 +25,10 @@ export class HttpApiService {
         description: artwork.description ?? undefined,
         artist: artwork.artist.name ?? undefined,
         year: artwork.year ?? undefined,
-        artworkGenre: artwork.artworkGenre.name ?? undefined,
-        artworkMaterial: artwork.artworkMaterial.name ?? undefined,
-        artworkTechnique: artwork.artworkTechnique.name ?? undefined,
-        artworkWorktype: artwork.artworkWorktype.name ?? undefined,
+        artworkGenre: artwork.artworkGenre?.name ?? undefined,
+        artworkMaterial: artwork.artworkMaterial?.name ?? undefined,
+        artworkTechnique: artwork.artworkTechnique?.name ?? undefined,
+        artworkWorktype: artwork.artworkWorktype?.name ?? undefined,
         measurements: artwork.measurements ?? undefined,
       }
     };

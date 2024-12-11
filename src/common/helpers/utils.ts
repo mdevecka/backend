@@ -97,3 +97,7 @@ export function isLocalhostOrigin(req: ExpressRequest) {
   const origin = req.header('Origin') ?? "";
   return origin.toLowerCase().startsWith("http://localhost:");
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
