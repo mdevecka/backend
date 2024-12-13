@@ -38,6 +38,7 @@ const processImageCount = 1;
 
 async function run() {
   const logger = new Logger(AiSyncModule.name)
+  logger.log("INIT");
   const app = await NestFactory.create(AiSyncModule);
   const aiRepository = app.get(AiRepository);
   const httpApi = app.get(HttpApiService);
