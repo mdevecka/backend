@@ -23,7 +23,7 @@ export class NftConfigService {
   async onModuleInit() {
     const url = this.appConfig.nftModuleUrl;
     if (url == null) {
-      console.warn("missing configuration for NFT MODULE - all NFT related functionality will not be available");
+      this.logger.warn("missing configuration for NFT MODULE - all NFT related functionality will not be available");
       return;
     }
     const collectionIDResponse = await fetch(`${url}/eva/wallet/collection`);
