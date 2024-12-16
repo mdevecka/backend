@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial, IsNull, Not } from 'typeorm';
+import { Repository, DeepPartial, IsNull, Not, Raw } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import {
   User, Artist, Artwork, Gallery, Exhibition, Country, ArtistCategory, ArtworkTechnique,
   ArtworkMaterial, ArtworkGenre, ArtworkWorktype, UnityRoom, UnityItemType, Nft, Collection, Wallet, Resource,
@@ -66,6 +67,7 @@ export class AdminRepository {
     return this.users.findOne({
       where: {
         registerToken: token,
+        registerTokenExpiration: Raw((alias) => `${alias} > now()`),
       }
     });
   }
@@ -74,6 +76,7 @@ export class AdminRepository {
     return this.users.findOne({
       where: {
         resetToken: token,
+        resetTokenExpiration: Raw((alias) => `${alias} > now()`),
       }
     });
   }
@@ -716,8 +719,8 @@ export class AdminRepository {
     return this.resources.findOneBy({ name: name, userId: userId });
   }
 
-  async saveUser(user: DeepPartial<User>) {
-    const entity = this.users.create(user);
+  async saveUser(user: DeepPartial<User> | QueryDeepPartialEntity<User>) {
+    const entity = this.users.create(user as any);
     return this.users.save(entity);
   }
 

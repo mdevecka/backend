@@ -124,6 +124,15 @@ export class PublicController {
     res.set({ "Content-Type": item.mimeType }).send(item.image);
   }
 
+  @Get('gallery/thumbnail')
+  async getGalleryThumbnail(@Query('slug') slug: string, @Response() res: ExpressResponse) {
+    const labels = this.parseSlug(slug, 2);
+    const item = await this.publicRepository.getGalleryThumbnailBySlug(labels[0], labels[1]);
+    if (item == null)
+      throw new NotFoundException();
+    res.set({ "Content-Type": item.mimeType }).send(item.image);
+  }
+
   @Get('resource/:id/content')
   async getResourceContent(@Param('id', ParseUUIDPipe) id: ResourceId, @Response() res: ExpressResponse) {
     const item = await this.publicRepository.getResourceContent(id);

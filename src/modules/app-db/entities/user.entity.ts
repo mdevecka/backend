@@ -49,8 +49,14 @@ export class User extends BaseEntity {
   @Column('text', { nullable: true })
   registerToken: string;
 
+  @Column({ type: 'timestamptz', nullable: true })
+  registerTokenExpiration: Date;
+
   @Column('text', { nullable: true })
   resetToken: string;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  resetTokenExpiration: Date;
 
   @Column('text', { nullable: true })
   description: string;

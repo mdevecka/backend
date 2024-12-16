@@ -316,6 +316,17 @@ export class PublicRepository {
     }).then(a => (a != null && a.image?.buffer != null) ? { image: a.image?.buffer, mimeType: a.image?.mimeType } : null);
   }
 
+  async getGalleryThumbnailBySlug(userLabel: string, galleryLabel: string) {
+    return this.galleries.findOne({
+      select: { id: true, thumbnail: { buffer: true, mimeType: true } },
+      where: {
+        label: galleryLabel,
+        public: true,
+        user: { label: userLabel }
+      }
+    }).then(a => (a != null && a.thumbnail?.buffer != null) ? { image: a.thumbnail?.buffer, mimeType: a.thumbnail?.mimeType } : null);
+  }
+
   async getResourceContent(id: ResourceId) {
     return this.resources.findOne({
       select: { data: true, mimeType: true },

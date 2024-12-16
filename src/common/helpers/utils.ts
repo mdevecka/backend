@@ -2,6 +2,7 @@ import { DataSource, EntityManager, getMetadataArgsStorage } from 'typeorm';
 import { DriverUtils } from 'typeorm/driver/DriverUtils';
 import { OptionDto } from './option.dto';
 import { Request as ExpressRequest } from 'express';
+import * as sharp from 'sharp';
 
 export type EMPTY = "";
 
@@ -10,6 +11,12 @@ export type Environment = "local" | "development" | "production" | "test";
 export const imageMimeTypes = ['image/jpeg', 'image/png', 'image/tiff'];
 
 export const audioMimeTypes = ['audio/mpeg'];
+
+const mimeExtMap = new Map<string, string>([
+  ['image/jpeg', 'jpg'],
+  ['image/png', 'png'],
+  ['image/tiff', 'tif'],
+]);
 
 export function getEnv(): Environment {
   return (process.env.NODE_ENV as Environment) || "local";
@@ -100,4 +107,12 @@ export function isLocalhostOrigin(req: ExpressRequest) {
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function createThumbnail(image: Buffer) {
+  return sharp(image).resize({ width: 480 }).toFormat('jpg').toBuffer();
+}
+
+export function getExtensionForMimeType(mimeType: string) {
+  return mimeExtMap.get(mimeType);
 }
