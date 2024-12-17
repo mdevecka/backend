@@ -1233,7 +1233,7 @@ async function main() {
           "toDate": "2024-06-29",
           "curator": "Tomáš Lukačka",
           "gallery": galleries[0],
-          "artworks": [artworks[0], artworks[1], artworks[3], artworks[8], artworks[2]],
+          "artworks": [artworks[0], artworks[3], artworks[8], artworks[2]],
         },
         {
           "name": "Naše leto",

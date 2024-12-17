@@ -9,7 +9,7 @@ export class ArtworkImage {
 
   @Index()
   @Column("uuid", { nullable: true })
-  id: ArtworkImageId;
+  id: ArtworkImageId = null;
 
   @Column({ type: "bytea", nullable: true, select: false })
   buffer: Buffer = null;

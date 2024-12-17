@@ -50,6 +50,7 @@ export class AdminLoginController {
       email: dto.email.toLowerCase(),
       registerState: RegisterState.Registering,
       registerToken: token,
+      registerTokenExpiration: () => "now() + '1 days'",
     });
     const redirectUrl = urlCombine(this.config.frontendUrl, this.config.authCreateUserRoute);
     const url = `${redirectUrl}?token=${encodeURIComponent(token)}&loginType=${encodeURIComponent(LoginType.Credentials)}`;
@@ -74,6 +75,7 @@ export class AdminLoginController {
     user.avatar = mapEmpty(dto.avatar, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty);
     user.registerState = RegisterState.Registered;
     user.registerToken = null;
+    user.registerTokenExpiration = null;
     await this.adminRepository.saveUser(user);
     const sessionId = (user.loginType === LoginType.Credentials) ?
       await this.authService.loginWithCredentials(user.email, dto.password) :
@@ -117,6 +119,7 @@ export class AdminLoginController {
     this.adminRepository.saveUser({
       id: user.id,
       resetToken: token,
+      resetTokenExpiration: () => "now() + '30 minutes'",
     });
     const redirectUrl = urlCombine(this.config.frontendUrl, this.config.authResetUserRoute);
     const url = `${redirectUrl}?token=${encodeURIComponent(token)}`;
@@ -133,6 +136,7 @@ export class AdminLoginController {
       throw new BadRequestException("invalid user");
     user.password = await this.hashPassword(dto.password);
     user.resetToken = null;
+    user.resetTokenExpiration = null;
     await this.adminRepository.saveUser(user);
   }
 

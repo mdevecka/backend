@@ -1,9 +1,9 @@
-import { Entity, Column, ManyToOne, Index } from 'typeorm';
+import { Entity, Column, VirtualColumn, ManyToOne, Index, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { LabeledEntity } from './labeled.entity';
 import { Country, CountryId } from './country.entity';
 import { User, UserId } from './user.entity';
 import { Image } from './image';
-import { ID } from '@common/helpers';
+import { ID, createThumbnail } from '@common/helpers';
 
 export type GalleryId = ID<"Gallery">;
 
@@ -11,6 +11,9 @@ export type GalleryId = ID<"Gallery">;
 @Index(['name', 'userId'], { unique: true })
 @Index(['label', 'userId'], { unique: true })
 export class Gallery extends LabeledEntity {
+
+  @VirtualColumn({ query: () => null })
+  private _lastImage: Buffer;
 
   id: GalleryId;
 
@@ -32,6 +35,9 @@ export class Gallery extends LabeledEntity {
   @Column(() => Image)
   image: Image;
 
+  @Column(() => Image)
+  thumbnail: Image;
+
   @Column({ type: 'boolean', default: false })
   public: boolean;
 
@@ -42,5 +48,21 @@ export class Gallery extends LabeledEntity {
   userId: UserId;
 
   get slug() { return `${this.user.label}/${this.label}`; }
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async updateImageData() {
+    if (this.image?.buffer === undefined)
+      return;
+    const buffer = this.image?.buffer ?? null;
+    if (buffer !== this._lastImage) {
+      if (buffer != null) {
+        this.thumbnail = { buffer: await createThumbnail(buffer), mimeType: "image/jpeg" };
+      } else {
+        this.thumbnail = Image.empty;
+      }
+      this._lastImage = buffer;
+    }
+  }
 
 }

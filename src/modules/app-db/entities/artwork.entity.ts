@@ -9,7 +9,7 @@ import { ArtworkTechnique, ArtworkTechniqueId } from './artwork-technique.entity
 import { Nft, NftId } from './nft.entity';
 import { Image } from './image';
 import { ArtworkImage } from './artwork-image';
-import { ID } from '@common/helpers';
+import { ID, createThumbnail } from '@common/helpers';
 import * as sharp from 'sharp';
 
 export type ArtworkId = ID<"Artwork">;
@@ -39,10 +39,6 @@ async function createUnityImage(image: Buffer, maxSize: number) {
     return image;
   const opt: sharp.ResizeOptions = (meta.width > meta.height) ? { width: maxSize } : { height: maxSize };
   return sharpImage.resize(opt).toFormat('jpg').toBuffer();
-}
-
-async function createThumbnail(image: Buffer) {
-  return sharp(image).resize({ width: 480 }).toFormat('jpg').toBuffer();
 }
 
 const unityTextureSize = 2048;

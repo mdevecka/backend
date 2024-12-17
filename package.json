@@ -1,6 +1,6 @@
 {
   "name": "E.V.A. Gallery Backend",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "GPL-3.0",
   "scripts": {
     "build:dev": "cross-env NODE_ENV=development nest build",
@@ -14,7 +14,7 @@
     "migration:run": "npm run typeorm -- migration:run",
     "migration:revert": "npm run typeorm -- migration:revert",
     "migration:show": "npm run typeorm -- migration:show",
-    "migration:create": "npm run typeorm -- migration:create",
+    "migration:create": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:create",
     "update-version": "npm version patch --no-git-tag-version",
     "format": "tsfmt -r",
     "start": "nest start",
