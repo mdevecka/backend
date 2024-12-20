@@ -31,4 +31,6 @@ export interface ArtworkDetailDto {
   width: number;
   height: number;
   likes: number;
+  imageFilename: string;
+  thumbnailFilename: string;
 }

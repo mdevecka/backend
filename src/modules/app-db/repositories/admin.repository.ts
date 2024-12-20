@@ -719,6 +719,32 @@ export class AdminRepository {
     return this.resources.findOneBy({ name: name, userId: userId });
   }
 
+  async getArtworkImageHashes() {
+    return this.artworks.find({
+      select: {
+        id: true,
+        name: true,
+        imageHash: true,
+        artist: {
+          id: true,
+          user: {
+            id: true
+          }
+        }
+      },
+      relations: {
+        artist: { user: true }
+      },
+      where: {
+        imageHash: Not(IsNull()),
+        public: true,
+        artist: {
+          public: true
+        }
+      }
+    });
+  }
+
   async saveUser(user: DeepPartial<User> | QueryDeepPartialEntity<User>) {
     const entity = this.users.create(user as any);
     return this.users.save(entity);
@@ -807,6 +833,10 @@ export class AdminRepository {
   async removeResource(id: ResourceId) {
     const entity = this.resources.create({ id: id });
     return this.resources.remove(entity);
+  }
+
+  async updateArtworkImageHashes() {
+    return this.artworks.update({}, { imageHash: () => `md5(COALESCE(protected_image_id, image_id)::text)` });
   }
 
 }

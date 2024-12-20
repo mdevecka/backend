@@ -24,4 +24,5 @@ export interface AppConfig {
   GOOGLE_MAILBOX: string;
   AI_MODULE_URL: string;
   AI_ACCESS_TOKEN_SECRET: string;
+  STATIC_FILE_ROOT: string;
 }

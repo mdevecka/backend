@@ -56,6 +56,8 @@ export function createArtworkDto(artwork: Artwork): ArtworkDto {
     year: artwork.year,
     slug: artwork.slug,
     likes: artwork.likes,
+    imageFilename: artwork.imageFilename,
+    thumbnailFilename: artwork.thumbnailFilename,
   };
 }
 
@@ -93,6 +95,8 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
     width: artwork.width,
     height: artwork.height,
     likes: artwork.likes,
+    imageFilename: artwork.imageFilename,
+    thumbnailFilename: artwork.thumbnailFilename,
   };
 }
 

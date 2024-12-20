@@ -1,8 +1,10 @@
 import { Module, Logger } from '@nestjs/common';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { AppDbModule, AuthModule, MailModule, HttpApiModule } from '@modules/.';
+import { MessengerService, Message } from '@modules/messenger';
 import { AdminLoginController, AdminReadController, AdminWriteController, PublicController, HealthCheckController, AiController } from './controllers';
 import { NftConfigModule } from '@modules/config';
+import { getEnv } from '@common/helpers';
 import { Worker } from 'worker_threads';
 import { join } from 'path';
 
@@ -16,12 +18,32 @@ export class MainModule {
 
   private readonly logger = new Logger(MainModule.name)
 
+  constructor(private messenger: MessengerService) {
+  }
+
   async onModuleInit() {
-    const worker = new Worker(join(workerDirPath, 'ai-sync.worker.js'));
+    if (getEnv() === "test")
+      return;
+    this.createWorker('ai-sync.worker.js');
+    this.createWorker('static-image-sync.worker.js');
+  }
+
+  private createWorker(filename: string) {
+    const worker = new Worker(join(workerDirPath, filename));
+    const sub = this.messenger.onMessage.subscribe(msg => {
+      worker.postMessage(msg);
+    });
+    worker.on('exit', () => {
+      sub.unsubscribe();
+    });
     worker.on('error', (error) => {
       this.logger.error(error, error.stack);
       worker.terminate();
     });
+    worker.on('message', (msg: Message) => {
+      this.messenger.sendMessage(msg);
+    });
+    return worker;
   }
 
 }

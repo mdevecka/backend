@@ -2,6 +2,7 @@ import { DataSource, EntityManager, getMetadataArgsStorage } from 'typeorm';
 import { DriverUtils } from 'typeorm/driver/DriverUtils';
 import { OptionDto } from './option.dto';
 import { Request as ExpressRequest } from 'express';
+import { Observable } from 'rxjs';
 import * as sharp from 'sharp';
 
 export type EMPTY = "";
@@ -115,4 +116,32 @@ export async function createThumbnail(image: Buffer) {
 
 export function getExtensionForMimeType(mimeType: string) {
   return mimeExtMap.get(mimeType);
+}
+
+export function createText(...parts: string[]) {
+  return parts.join("\n");
+}
+
+export function delayExecution<T>(func: (value: T) => Promise<any>) {
+  return (source: Observable<T>) => new Observable(dest => {
+    let running = false;
+    let reemit: T = null;
+    const exec = (value: T) => {
+      if (running) {
+        reemit = value;
+        return;
+      }
+      running = true;
+      func(value).then(() => {
+        dest.next(value);
+        running = false;
+        if (reemit != null) {
+          const v = reemit;
+          reemit = null;
+          exec(v);
+        }
+      });
+    }
+    source.subscribe(exec);
+  });
 }

@@ -33,8 +33,9 @@ export class AppConfigService {
   get googleMailbox() { return this.configService.get("GOOGLE_MAILBOX"); }
   get aiModuleUrl() { return this.configService.get("AI_MODULE_URL"); }
   get aiAccessTokenSecret() { return this.configService.get("AI_ACCESS_TOKEN_SECRET"); }
+  get staticFileRoot() { return this.configService.get("STATIC_FILE_ROOT"); }
 
-  constructor(private configService: ConfigService<AppConfig>) {
+  constructor(protected configService: ConfigService<AppConfig>) {
   }
 
 }

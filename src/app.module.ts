@@ -12,11 +12,13 @@ import { NftModule } from '@modules/nft-module/create_nft/nft.module';
 import { MetadataModule } from '@modules/nft-module/query_metadata/meta.module';
 import { SwapModule } from '@modules/nft-module/change_ownership/swap.module';
 import { AppConfigModule, AppConfigService } from '@modules/config';
+import { MessengerModule } from '@modules/messenger';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     AppConfigModule,
+    MessengerModule,
     TypeOrmModule.forRootAsync({
       imports: [AppConfigModule],
       useFactory: (appConfig: AppConfigService) => ({

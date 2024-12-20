@@ -17,6 +17,8 @@ export class AuthService {
     const user = await this.adminRepository.getUserByEmail(email, LoginType.Credentials);
     if (user == null)
       throw new UnauthorizedException();
+    if (user.registerState === RegisterState.Registering)
+      throw new UnauthorizedException();
     const validPassword = await compare(password, user.password);
     if (!validPassword)
       throw new UnauthorizedException();
