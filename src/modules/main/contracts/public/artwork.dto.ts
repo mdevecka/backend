@@ -6,4 +6,6 @@ export interface ArtworkDto {
   year: string;
   slug: string;
   likes: number;
+  imageFilename: string;
+  thumbnailFilename: string;
 }

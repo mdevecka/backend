@@ -9,7 +9,7 @@ import { ArtworkTechnique, ArtworkTechniqueId } from './artwork-technique.entity
 import { Nft, NftId } from './nft.entity';
 import { Image } from './image';
 import { ArtworkImage } from './artwork-image';
-import { ID, createThumbnail } from '@common/helpers';
+import { ID, createThumbnail, getExtensionForMimeType } from '@common/helpers';
 import * as sharp from 'sharp';
 
 export type ArtworkId = ID<"Artwork">;
@@ -70,6 +70,10 @@ export class Artwork extends LabeledEntity {
 
   @Column(() => Image)
   unityImage: Image;
+
+  @Index()
+  @Column('text', { nullable: true })
+  imageHash: string;
 
   @Column(() => Image)
   thumbnail: Image;
@@ -147,6 +151,10 @@ export class Artwork extends LabeledEntity {
   get ai() { return this.protectedImage?.buffer != null; }
 
   get slug() { return `${this.artist.slug}/${this.label}`; }
+
+  get imageFilename() { return `${this.imageHash}.${getExtensionForMimeType(this.image.mimeType)}`; }
+
+  get thumbnailFilename() { return `${this.imageHash}.${getExtensionForMimeType(this.thumbnail.mimeType)}`; }
 
   @AfterLoad()
   afterLoad() {

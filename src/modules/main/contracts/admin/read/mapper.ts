@@ -45,6 +45,7 @@ export function createUserDto(user: User): UserDto {
     name: user.name,
     email: user.email,
     description: user.description,
+    loginType: user.loginType,
     trialMintId: user.trialMintId,
     trialMintClaimed: user.trialMintClaimed,
     trialMintPaid: user.trialMintPaid,

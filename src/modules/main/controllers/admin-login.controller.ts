@@ -8,7 +8,7 @@ import { AdminRepository } from '@modules/app-db/repositories';
 import { AppConfigService } from '@modules/config/app-config.service';
 import { LoginType, RegisterState, Image, UserId } from '@modules/app-db/entities';
 import { LoginDto, CreateUserDto, RegisterUserDto, ChangeUserDto, ChangePasswordDto, RequestPasswordResetDto, ResetPasswordDto } from '../contracts/admin/login';
-import { registerUserSubject, registerUserBody, resetUserSubject, resetUserBody } from '../templates';
+import { registerUserSubject, registerUserTextBody, resetUserSubject, resetUserTextBody } from '../templates';
 import { urlCombine, mapEmpty, isLocalhostOrigin } from '@common/helpers';
 import { randomBytes } from 'crypto';
 import { hash, compare } from 'bcrypt';
@@ -54,7 +54,11 @@ export class AdminLoginController {
     });
     const redirectUrl = urlCombine(this.config.frontendUrl, this.config.authCreateUserRoute);
     const url = `${redirectUrl}?token=${encodeURIComponent(token)}&loginType=${encodeURIComponent(LoginType.Credentials)}`;
-    await this.mailService.send(dto.email, registerUserSubject(), registerUserBody(url));
+    await this.mailService.send({
+      to: dto.email,
+      subject: registerUserSubject(),
+      text: registerUserTextBody(url),
+    });
   }
 
   @Post('user/create')
@@ -123,7 +127,11 @@ export class AdminLoginController {
     });
     const redirectUrl = urlCombine(this.config.frontendUrl, this.config.authResetUserRoute);
     const url = `${redirectUrl}?token=${encodeURIComponent(token)}`;
-    await this.mailService.send(dto.email, resetUserSubject(), resetUserBody(url));
+    await this.mailService.send({
+      to: dto.email,
+      subject: resetUserSubject(),
+      text: resetUserTextBody(url),
+    });
   }
 
   @Post('user/reset-password')
