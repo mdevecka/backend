@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial, In } from 'typeorm';
+import { Repository, DeepPartial } from 'typeorm';
+import { isUUID } from 'class-validator';
 import { deserializeEntity } from '@common/helpers';
 import {
   Artist, Artwork, Gallery, Exhibition, Nft, Resource, UnityRoom, UnityItemType,
@@ -354,14 +355,21 @@ export class PublicRepository {
   }
 
   async getArtworksByImageIds(ids: ArtworkImageId[]) {
-    return this.artworks.find({
-      relations: {
-        artist: {
-          user: true
-        }
-      },
-      where: { image: { id: In(ids) } }
-    });
+    if (ids.some(id => !isUUID(id)))
+      throw new Error(`invalid input ids`);
+    const stringIds = ids.map(id => `'${id}'`);
+    const query = this.artworks.createQueryBuilder("artwork")
+      .innerJoinAndSelect("artwork.artist", "artist")
+      .innerJoinAndSelect("artist.user", "user")
+      .innerJoinAndSelect("artist.country", "country")
+      .innerJoin((qb) => {
+        qb.getQuery = () => `unnest(ARRAY[${stringIds.join(",")}]::uuid[]) WITH ORDINALITY`;
+        return qb;
+      }, "artwork_image_id", "artwork.image_id = artwork_image_id")
+      .where("artwork.public = true")
+      .andWhere("artist.public = true")
+      .orderBy("ordinality");
+    return query.getMany();
   }
 
   async getItemTypes() {

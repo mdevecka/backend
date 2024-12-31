@@ -37,6 +37,6 @@ export class CreateExhibitionDto {
 
   @IsOptional()
   @IsBooleanString()
-  public: boolean;
+  public: string;
 
 }

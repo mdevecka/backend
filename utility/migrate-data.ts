@@ -9,7 +9,7 @@ import { TypeOrmModule, InjectRepository, getDataSourceToken, getRepositoryToken
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { Repository, DataSource, DeepPartial, MoreThanOrEqual, Not, IsNull } from 'typeorm';
 import { Config } from './config';
-import { filterEntities } from '@common/helpers';
+import { MimeType, filterEntities } from '@common/helpers';
 import * as se from './entities';
 import * as de from '@modules/app-db/entities';
 import { randomUUID } from 'crypto';
@@ -20,12 +20,12 @@ const imageImportLimit = 999;
 const sourceEntities = filterEntities(Object.values(se));
 const destEntities = filterEntities(Object.values(de));
 
-const imageCache = new Map<string, { id: string, buffer: Buffer, mimeType: string }>();
+const imageCache = new Map<string, { id: string, buffer: Buffer, mimeType: MimeType }>();
 
 async function getMimeType(image: Buffer) {
   const sharpImage = sharp(image);
   const meta = await sharpImage.metadata();
-  return `image/${meta.format}`;
+  return `image/${meta.format}` as MimeType;
 }
 
 async function getImage(path: string) {

@@ -1,6 +1,6 @@
 import { IsString, IsOptional, IsBooleanString } from 'class-validator';
-import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
-import { imageMimeTypes, audioMimeTypes } from '@common/helpers';
+import { IsFile, HasMimeType } from 'nestjs-form-data';
+import { FileType, imageMimeTypes, audioMimeTypes } from '@common/helpers';
 
 export class CreateResourceDto {
 
@@ -9,7 +9,7 @@ export class CreateResourceDto {
 
   @IsFile()
   @HasMimeType([...imageMimeTypes, ...audioMimeTypes])
-  data: MemoryStoredFile;
+  data: FileType;
 
   @IsOptional()
   @IsBooleanString()

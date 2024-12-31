@@ -1,7 +1,7 @@
 import { Entity, Column, ManyToOne, Index } from 'typeorm';
 import { BaseEntity } from './base.entity';
 import { User, UserId } from './user.entity';
-import { ID } from '@common/helpers';
+import { ID, MimeType } from '@common/helpers';
 
 export type ResourceId = ID<"Resource">;
 
@@ -18,7 +18,7 @@ export class Resource extends BaseEntity {
   data: Buffer;;
 
   @Column({ type: "text" })
-  mimeType: string;
+  mimeType: MimeType;
 
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user: User;

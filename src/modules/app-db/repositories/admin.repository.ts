@@ -198,6 +198,14 @@ export class AdminRepository {
     });
   }
 
+  async isArtworkBeingProcessed(userId: UserId, id: ArtworkId) {
+    return this.artworks.existsBy({
+      id: id,
+      aiProcessing: true,
+      artist: { userId: userId },
+    });
+  }
+
   async getArtworkDetailForAi(userId: UserId, id: ArtworkId) {
     return this.artworks.findOne({
       select: {
@@ -213,6 +221,7 @@ export class AdminRepository {
         artworkWorktype: { name: true },
         artworkMaterial: { name: true },
         artworkTechnique: { name: true },
+        public: true,
       },
       relations: {
         artist: true,

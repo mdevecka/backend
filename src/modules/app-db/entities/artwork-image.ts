@@ -1,5 +1,5 @@
 import { Column, Index } from "typeorm";
-import { ID } from '@common/helpers';
+import { ID, MimeType } from '@common/helpers';
 
 export type ArtworkImageId = ID<"ArtworkImage">;
 
@@ -15,6 +15,6 @@ export class ArtworkImage {
   buffer: Buffer = null;
 
   @Column({ type: "text", nullable: true })
-  mimeType: string = null;
+  mimeType: MimeType = null;
 
 }

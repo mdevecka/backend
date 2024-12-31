@@ -9,14 +9,27 @@ export type EMPTY = "";
 
 export type Environment = "local" | "development" | "production" | "test";
 
-export const imageMimeTypes = ['image/jpeg', 'image/png', 'image/tiff'];
+export const usedMimeTypes = ['image/jpeg', 'image/png', 'image/tiff', 'audio/mpeg'] as const;
 
-export const audioMimeTypes = ['audio/mpeg'];
+export type MimeType = typeof usedMimeTypes[number];
 
-const mimeExtMap = new Map<string, string>([
+export const imageMimeTypes: MimeType[] = ['image/jpeg', 'image/png', 'image/tiff'];
+
+export const audioMimeTypes: MimeType[] = ['audio/mpeg'];
+
+const mimeExtMap = new Map<MimeType, string>([
   ['image/jpeg', 'jpg'],
   ['image/png', 'png'],
   ['image/tiff', 'tif'],
+  ['audio/mpeg', 'mp3'],
+]);
+
+const extMimeMap = new Map<string, MimeType>([
+  ['jpg', 'image/jpeg'],
+  ['jpeg', 'image/jpeg'],
+  ['png', 'image/png'],
+  ['tif', 'image/tiff'],
+  ['mp3', 'audio/mpeg'],
 ]);
 
 export function getEnv(): Environment {
@@ -114,8 +127,12 @@ export async function createThumbnail(image: Buffer) {
   return sharp(image).resize({ width: 480 }).toFormat('jpg').toBuffer();
 }
 
-export function getExtensionForMimeType(mimeType: string) {
+export function getExtensionForMimeType(mimeType: MimeType) {
   return mimeExtMap.get(mimeType);
+}
+
+export function getMimeTypeForExtension(ext: string) {
+  return extMimeMap.get(ext);
 }
 
 export function createText(...parts: string[]) {

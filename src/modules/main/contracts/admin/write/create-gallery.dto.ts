@@ -1,6 +1,6 @@
 import { IsString, IsBooleanString, IsOptional, IsUUID } from 'class-validator';
-import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
-import { EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
+import { IsFile, HasMimeType } from 'nestjs-form-data';
+import { FileType, EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
 import { CountryExists } from '@modules/app-db/validators';
 import { CountryId } from '@modules/app-db/entities';
 
@@ -26,12 +26,12 @@ export class CreateGalleryDto {
 
   @IsOptional()
   @IsBooleanString()
-  public: boolean;
+  public: string;
 
   @IsOptional()
   @AllowEmpty()
   @IsFile()
   @HasMimeType(imageMimeTypes)
-  image: MemoryStoredFile | EMPTY;
+  image: FileType | EMPTY;
 
 }

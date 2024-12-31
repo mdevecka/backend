@@ -2,13 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
 import {
-  Artwork, ArtworkImageId, AiMode
+  Artwork, ArtistId, ArtworkId, ArtworkImageId, AiMode
 } from '../entities';
 
 @Injectable()
 export class AiRepository {
 
   constructor(@InjectRepository(Artwork) private artworks: Repository<Artwork>) { }
+
+  async getArtwork(id: ArtworkId) {
+    return this.artworks.findOne({
+      where: { id: id }
+    });
+  }
+
+  async getArtistArtworks(id: ArtistId) {
+    return this.artworks.find({
+      where: { artistId: id }
+    });
+  }
 
   async getArtworkByImageId(id: ArtworkImageId) {
     return this.artworks.findOne({
@@ -40,6 +52,7 @@ export class AiRepository {
         artworkWorktype: { name: true },
         artworkMaterial: { name: true },
         artworkTechnique: { name: true },
+        public: true,
       },
       relations: {
         artist: true,

@@ -52,6 +52,8 @@ GOOGLE_MAILBOX=EMAIL <email@gmail.com>
 AI_MODULE_URL=http://localhost:5000
 # JWT access token secret used for auth between AI module and backend
 AI_ACCESS_TOKEN_SECRET=
+# Interval in seconds for sending images to AI for processing (defaults to 30)
+AI_AUTO_PROCESS_INTERVAL=30
 # Folder for static images generated from public images; if empty no static images will be generated 
 STATIC_FILE_ROOT=static
 ```
