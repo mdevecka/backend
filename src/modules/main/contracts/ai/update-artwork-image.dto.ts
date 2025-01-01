@@ -1,8 +1,8 @@
 import { IsString, IsOptional, IsJSON, IsUUID, IsEnum, ValidateNested } from 'class-validator';
-import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
+import { IsFile, HasMimeType } from 'nestjs-form-data';
 import { Type } from 'class-transformer';
 import { ArtworkImageId, ImageDuplicateStatus, AiGeneratedStatus } from '@modules/app-db/entities';
-import { imageMimeTypes } from '@common/helpers';
+import { FileType, imageMimeTypes } from '@common/helpers';
 
 export class UpdateArtworkImageMetadataDto {
 
@@ -77,7 +77,7 @@ export class UpdateArtworkImageDto {
   @IsOptional()
   @IsFile()
   @HasMimeType(imageMimeTypes)
-  image: MemoryStoredFile;
+  image: FileType;
 
   @IsJSON()
   json: string;

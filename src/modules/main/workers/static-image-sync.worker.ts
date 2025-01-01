@@ -8,7 +8,7 @@ import { AppDbModule } from '@modules/app-db';
 import { AdminRepository } from '@modules/app-db/repositories';
 import { Artwork } from '@modules/app-db/entities';
 import { Message } from '@modules/messenger';
-import { sleep, getExtensionForMimeType, delayExecution } from '@common/helpers';
+import { MimeType, sleep, getExtensionForMimeType, delayExecution } from '@common/helpers';
 import { parentPort } from 'worker_threads';
 import { mkdirSync, readdirSync, writeFileSync, rmSync } from 'fs';
 import { join, parse } from 'path';
@@ -84,7 +84,7 @@ async function run() {
   async function thumbnailGetter(artwork: Artwork) {
     return adminRepository.getArtworkThumbnail(artwork.artist.userId, artwork.id);
   }
-  async function storeImage(dir: string, artwork: Artwork, imageGetter: (art: Artwork) => Promise<{ image: Buffer, mimeType: string }>) {
+  async function storeImage(dir: string, artwork: Artwork, imageGetter: (art: Artwork) => Promise<{ image: Buffer, mimeType: MimeType }>) {
     const image = await imageGetter(artwork);
     if (image == null)
       throw new Error(`missing image for artwork '${artwork.id}'`);

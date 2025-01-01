@@ -235,6 +235,11 @@ export class AdminReadController {
     res.set({ "Content-Type": item.mimeType }).send(item.image);
   }
 
+  @Get('artwork/:id/processed')
+  async isArtworkBeingProcessed(@Param('id', ParseUUIDPipe) id: ArtworkId, @GetUserId() userId: UserId) {
+    return this.adminRepository.isArtworkBeingProcessed(userId, id);
+  }
+
   @Get('gallery/:id/image')
   async getGalleryImage(@Param('id', ParseUUIDPipe) id: GalleryId, @GetUserId() userId: UserId, @Response() res: ExpressResponse) {
     const item = await this.adminRepository.getGalleryImage(userId, id);

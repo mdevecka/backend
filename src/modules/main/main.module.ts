@@ -41,7 +41,9 @@ export class MainModule {
       worker.terminate();
     });
     worker.on('message', (msg: Message) => {
-      this.messenger.sendMessage(msg);
+      if (typeof msg === 'object') {
+        this.messenger.sendMessage(msg);
+      }
     });
     return worker;
   }

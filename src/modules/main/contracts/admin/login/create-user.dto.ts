@@ -1,6 +1,6 @@
 import { IsString, IsOptional, IsStrongPassword } from 'class-validator';
-import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
-import { EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
+import { IsFile, HasMimeType } from 'nestjs-form-data';
+import { FileType, EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
 import { passwordOptions } from './options';
 
 export class CreateUserDto {
@@ -23,6 +23,6 @@ export class CreateUserDto {
   @AllowEmpty()
   @IsFile()
   @HasMimeType(imageMimeTypes)
-  avatar: MemoryStoredFile | EMPTY;
+  avatar: FileType | EMPTY;
 
 }

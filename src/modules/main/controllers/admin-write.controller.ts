@@ -10,7 +10,7 @@ import {
   CreateResourceDto, UpdateResourceDto, SaveDesignerRoomDto,
   CreateArtworNFTDto, AiProcessImageDto
 } from '../contracts/admin/write';
-import { mapEmpty, imageMimeTypes, audioMimeTypes } from '@common/helpers';
+import { MimeType, mapEmpty, imageMimeTypes, audioMimeTypes, parseBool } from '@common/helpers';
 import { randomUUID } from 'crypto';
 
 @UseGuards(SessionAuthGuard)
@@ -29,7 +29,7 @@ export class AdminWriteController {
       name: dto.name,
       born: mapEmpty(dto.born, date => date),
       biography: dto.biography,
-      public: dto.public,
+      public: parseBool(dto.public),
       facebookProfileLink: dto.facebookProfileLink,
       instagramProfileLink: dto.instagramProfileLink,
       xProfileLink: dto.xProfileLink,
@@ -54,7 +54,7 @@ export class AdminWriteController {
       name: dto.name,
       born: mapEmpty(dto.born, date => date),
       biography: dto.biography,
-      public: dto.public,
+      public: parseBool(dto.public),
       facebookProfileLink: dto.facebookProfileLink,
       instagramProfileLink: dto.instagramProfileLink,
       xProfileLink: dto.xProfileLink,
@@ -85,7 +85,7 @@ export class AdminWriteController {
       description: dto.description,
       year: dto.year,
       tags: dto.tags,
-      public: dto.public,
+      public: parseBool(dto.public),
       measurements: dto.measurements,
       aiMode: dto.aiMode,
       aiGeneratedStatus: dto.aiGeneratedStatus,
@@ -135,7 +135,7 @@ export class AdminWriteController {
           mimeType: response.headers.get('content-type') || 'application/octet-stream'
         };
         artworkDb.image.buffer = image.buffer;
-        artworkDb.image.mimeType = image.mimeType;
+        artworkDb.image.mimeType = image.mimeType as MimeType;
         await this.adminRepository.saveArtwork(artworkDb);
 
         return { id: artworkDb.id };
@@ -168,7 +168,7 @@ export class AdminWriteController {
       description: dto.description,
       year: dto.year,
       tags: dto.tags,
-      public: dto.public,
+      public: parseBool(dto.public),
       measurements: dto.measurements,
       aiMode: dto.aiMode,
       aiGeneratedStatus: dto.aiGeneratedStatus,
@@ -207,7 +207,7 @@ export class AdminWriteController {
       address: dto.address,
       countryId: dto.countryId,
       gps: dto.gps,
-      public: dto.public,
+      public: parseBool(dto.public),
       userId: userId,
       image: mapEmpty(dto.image, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
     });
@@ -229,7 +229,7 @@ export class AdminWriteController {
       address: dto.address,
       countryId: dto.countryId,
       gps: dto.gps,
-      public: dto.public,
+      public: parseBool(dto.public),
       image: mapEmpty(dto.image, image => ({ buffer: image.buffer, mimeType: image.mimeType }), Image.empty),
     });
   }
@@ -257,7 +257,7 @@ export class AdminWriteController {
       fromDate: mapEmpty(dto.fromDate, date => new Date(date)),
       toDate: mapEmpty(dto.toDate, date => new Date(date)),
       curator: dto.curator,
-      public: dto.public,
+      public: parseBool(dto.public),
       galleryId: dto.galleryId,
       activeRoomId: mapEmpty(dto.activeRoomId, id => id),
       artworks: mapEmpty(dto.artworks, (list) => list.map(id => ({ id })), []),
@@ -287,7 +287,7 @@ export class AdminWriteController {
       fromDate: mapEmpty(dto.fromDate, date => new Date(date)),
       toDate: mapEmpty(dto.toDate, date => new Date(date)),
       curator: dto.curator,
-      public: dto.public,
+      public: parseBool(dto.public),
       galleryId: dto.galleryId,
       activeRoomId: mapEmpty(dto.activeRoomId, id => id),
       artworks: mapEmpty(dto.artworks, (list) => list.map(id => ({ id })), []),
@@ -416,6 +416,9 @@ export class AdminWriteController {
       id: artwork.id,
       aiProcessing: true,
     });
+    if (artwork.public) {
+      await this.httpApi.setImagePublic([artwork.image.id]);
+    }
   }
 
 }

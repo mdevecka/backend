@@ -20,15 +20,15 @@ export enum AiMode {
 }
 
 export enum AiGeneratedStatus {
-  NotGenerated = "not-generated",
-  Generated = "generated",
-  GeneratedProtected = "generated-protected",
+  NotGenerated = "NOT_GENERATED",
+  Generated = "GENERATED",
+  GeneratedProtected = "GENERATED_PROTECTED",
 }
 
 export enum ImageDuplicateStatus {
-  Ok = "ok",
-  Exists = "exists",
-  Plagiarized = "plagiarized",
+  Ok = "OK",
+  Exists = "EXISTS",
+  Plagiarized = "PLAGIARIZED",
 }
 
 async function createUnityImage(image: Buffer, maxSize: number) {

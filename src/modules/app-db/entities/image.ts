@@ -1,4 +1,5 @@
 import { Column } from "typeorm";
+import { MimeType } from '@common/helpers';
 
 export class Image {
 
@@ -8,6 +9,6 @@ export class Image {
   buffer: Buffer = null;
 
   @Column({ type: "text", nullable: true })
-  mimeType: string = null;
+  mimeType: MimeType = null;
 
 }

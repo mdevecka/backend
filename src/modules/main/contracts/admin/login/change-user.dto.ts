@@ -1,6 +1,6 @@
 import { IsString, IsOptional } from 'class-validator';
-import { MemoryStoredFile, IsFile, HasMimeType } from 'nestjs-form-data';
-import { EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
+import { IsFile, HasMimeType } from 'nestjs-form-data';
+import { FileType, EMPTY, AllowEmpty, imageMimeTypes } from '@common/helpers';
 
 export class ChangeUserDto {
 
@@ -16,6 +16,6 @@ export class ChangeUserDto {
   @AllowEmpty()
   @IsFile()
   @HasMimeType(imageMimeTypes)
-  avatar: MemoryStoredFile | EMPTY;
+  avatar: FileType | EMPTY;
 
 }
