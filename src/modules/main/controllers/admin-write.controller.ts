@@ -152,8 +152,6 @@ export class AdminWriteController {
     const artwork = await this.adminRepository.getArtwork(userId, id);
     if (artwork == null)
       throw new NotFoundException();
-    if (await this.adminRepository.artworkHasNft(id))
-      throw new BadRequestException("nft artwork cannot be directly changed");
     if (dto.artistId != null && !await this.adminRepository.hasArtist(userId, dto.artistId))
       throw new BadRequestException("artist does not exist");
     if (dto.exhibitions != null && dto.exhibitions !== "" && !await this.adminRepository.hasExhibitions(userId, dto.exhibitions))

@@ -112,6 +112,7 @@ export class CreateDataModule { }
 
 async function main() {
   const app = await NestFactory.create(CreateDataModule);
+  let lastImagePath: string = null;
   try {
     const sourceDataSource = app.get(getDataSourceToken("source"), { strict: false });
     const destDataSource = app.get(getDataSourceToken("default"), { strict: false });
@@ -186,6 +187,7 @@ async function main() {
       }
       usedLabels.add(slug);
       const info = artistInfos.map.get(image.artistId);
+      lastImagePath = filePath;
       const artwork = manager.create(de.Artwork, {
         importId: image.id,
         name: name,
@@ -213,6 +215,9 @@ async function main() {
     console.timeEnd("total time");
   }
   catch (e) {
+    if (lastImagePath != null) {
+      console.log("last image:", lastImagePath);
+    }
     console.error(e);
   }
   finally {
