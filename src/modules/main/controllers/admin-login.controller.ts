@@ -171,6 +171,7 @@ export class AdminLoginController {
         loginProviderId: req.user.id,
         registerState: RegisterState.Registering,
         registerToken: token,
+        registerTokenExpiration: () => "now() + '1 days'",
       });
       const redirectUrl = urlCombine(this.config.frontendUrl, this.config.authCreateUserRoute);
       const name = req.user.name ?? "";
