@@ -12,7 +12,7 @@ export class SyncAiImagePublicSubscriber implements EntitySubscriberInterface<an
   }
 
   afterInsert(event: InsertEvent<any>) {
-    if (!this.isValidTarget(event.metadata?.target))
+    if (!this.isValidEvent(event))
       return;
     const entity = event.entity as (Artist | Artwork);
     if (entity.public != null) {
@@ -21,7 +21,7 @@ export class SyncAiImagePublicSubscriber implements EntitySubscriberInterface<an
   }
 
   afterUpdate(event: UpdateEvent<any>) {
-    if (!this.isValidTarget(event.metadata?.target))
+    if (!this.isValidEvent(event))
       return;
     const entity = event.entity as (Artist | Artwork);
     if (entity.public != null) {
@@ -30,7 +30,7 @@ export class SyncAiImagePublicSubscriber implements EntitySubscriberInterface<an
   }
 
   afterRemove(event: RemoveEvent<any>) {
-    if (!this.isValidTarget(event.metadata?.target))
+    if (!this.isValidEvent(event))
       return;
     const entity = event.entity as (Artist | Artwork);
     this.handleUpdate(entity, event.entityId, false);
@@ -52,7 +52,10 @@ export class SyncAiImagePublicSubscriber implements EntitySubscriberInterface<an
     this.messenger.sendMessage({ type: "ResyncArtistAiStateMessage", id: id, public: isPublic });
   }
 
-  private isValidTarget(target: any) {
+  private isValidEvent(event: InsertEvent<any> | UpdateEvent<any> | RemoveEvent<any>) {
+    const target = event.metadata?.target;
+    if (event.entity == null)
+      return false;
     return (target === Artwork) || (target === Artist);
   }
 
