@@ -3,6 +3,7 @@ import { AppConfigService } from '@modules/config/app-config.service';
 import { AdminRepository, NftRepository } from '@modules/app-db/repositories';
 import { NftData } from '@modules/app-db/entities';
 import { NftConfigService } from '@modules/config';
+import { Logger } from '@nestjs/common';
 
 export enum MintStatus {
   MintedAlready = 'MintedAlready',
@@ -12,6 +13,7 @@ export enum MintStatus {
 
 @Injectable()
 export class MintCreator {
+  private readonly logger = new Logger(MintCreator.name)
 
   constructor(private configService: AppConfigService, private nftRepository: NftRepository, private adminRepository: AdminRepository, private nftConfigService: NftConfigService) {
   }
@@ -22,7 +24,7 @@ export class MintCreator {
     const user = await this.nftRepository.getUser(userId);
     const artwork = await this.nftRepository.getArtwork(userId, artworkId);
     const artworkImage = await this.adminRepository.getArtworkImage(userId, artworkId);
-
+    this.logger.log("Got here");
 
     if (artwork == null || user.trialMintClaimed == true || user.trialMintId != null) {
       return MintStatus.MintedAlready;
@@ -58,6 +60,7 @@ export class MintCreator {
     });
 
     const { nftID, metadataCid } = await response.json();
+    this.logger.log("Received response", nftID, metadataCid, response);
 
     if (nftID != null && metadataCid != null) {
       const collectionID = this.nftConfigService.collectionId;
@@ -83,8 +86,9 @@ export class MintCreator {
         description: cid.description,
         image: image,
       }
-
+      this.logger.log("Adding to DB", response);
       await this.nftRepository.trialMint(user.id, artworkId, nft, EvaGalleryWalletAddress);
+      this.logger.log("Added to DB", response);
       return MintStatus.Success;
     }
 
