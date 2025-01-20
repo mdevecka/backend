@@ -31,9 +31,7 @@ export class SyncImageSubscriber implements EntitySubscriberInterface<any> {
 
   private isValidEvent(event: InsertEvent<any> | UpdateEvent<any> | RemoveEvent<any>) {
     const target = event.metadata?.target;
-    if (event.entity == null)
-      return false;
-    return (target === Artwork) || (target === Artist);
+    return event.entity != null && ((target === Artwork) || (target === Artist));
   }
 
 }
