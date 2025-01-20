@@ -24,13 +24,14 @@ export class SyncImageSubscriber implements EntitySubscriberInterface<any> {
   }
 
   private handleEvent(event: InsertEvent<any> | UpdateEvent<any> | RemoveEvent<any>) {
-    if (this.isValidTarget(event.metadata?.target)) {
+    if (this.isValidEvent(event)) {
       this.messenger.sendMessage({ type: "ResyncImageMessage" });
     }
   }
 
-  private isValidTarget(target: any) {
-    return (target === Artwork) || (target === Artist);
+  private isValidEvent(event: InsertEvent<any> | UpdateEvent<any> | RemoveEvent<any>) {
+    const target = event.metadata?.target;
+    return event.entity != null && ((target === Artwork) || (target === Artist));
   }
 
 }
