@@ -125,17 +125,17 @@ export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
   const artwork = exhibition.artworks[0];
   return {
     name: exhibition.name,
-    fromDate: exhibition.fromDate.toISOString(),
-    toDate: exhibition.toDate.toISOString(),
+    fromDate: exhibition.fromDate?.toISOString() ?? null,
+    toDate: exhibition.toDate?.toISOString() ?? null,
     curator: exhibition.curator,
-    gallery: {
+    gallery: exhibition.gallery ? {
       name: exhibition.gallery.name,
       slug: exhibition.gallery.slug,
-    },
-    artwork: {
+    } : null,
+    artwork: artwork ? {
       name: artwork.name,
       slug: artwork.slug,
-    },
+    } : null,
     activeRoomId: exhibition.activeRoomId,
     slug: exhibition.slug,
   };
@@ -144,8 +144,8 @@ export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
 export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDetailDto {
   return {
     name: exhibition.name,
-    fromDate: exhibition.fromDate.toISOString(),
-    toDate: exhibition.toDate.toISOString(),
+    fromDate: exhibition.fromDate?.toISOString() ?? null,
+    toDate: exhibition.toDate?.toISOString() ?? null,
     curator: exhibition.curator,
     gallery: {
       name: exhibition.gallery.name,
