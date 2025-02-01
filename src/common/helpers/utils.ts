@@ -32,6 +32,11 @@ const extMimeMap = new Map<string, MimeType>([
   ['mp3', 'audio/mpeg'],
 ]);
 
+export interface ImageData {
+  buffer: Buffer;
+  mimeType: MimeType;
+}
+
 export function getEnv(): Environment {
   return (process.env.NODE_ENV as Environment) || "local";
 }
@@ -125,6 +130,19 @@ export function sleep(ms: number) {
 
 export async function createThumbnail(image: Buffer) {
   return sharp(image).resize({ width: 480 }).toFormat('jpg').toBuffer();
+}
+
+export async function resizeToLimit(image: ImageData, pixelLimit: number): Promise<ImageData> {
+  const sharpImage = sharp(image.buffer);
+  const imageInfo = await sharpImage.metadata();
+  const pixels = imageInfo.width * imageInfo.height;
+  if (pixels <= pixelLimit)
+    return image;
+  const ratio = imageInfo.width / imageInfo.height;
+  const desiredWidth = Math.floor(Math.sqrt(pixelLimit * ratio));
+  const desiredHeight = Math.floor(Math.sqrt(pixelLimit / ratio));
+  const newBuffer = await sharpImage.resize({ width: desiredWidth, height: desiredHeight }).toFormat('jpg').toBuffer();
+  return { buffer: newBuffer, mimeType: "image/jpeg" };
 }
 
 export function getExtensionForMimeType(mimeType: MimeType) {
