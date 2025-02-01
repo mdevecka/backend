@@ -137,7 +137,7 @@ async function run() {
     try {
       await syncImages();
     }
-    catch(ex) {
+    catch (ex) {
       logger.error(ex, ex.stack);
     }
   })).subscribe();

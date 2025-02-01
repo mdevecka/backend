@@ -25,5 +25,6 @@ export interface AppConfig {
   AI_MODULE_URL: string;
   AI_ACCESS_TOKEN_SECRET: string;
   AI_AUTO_PROCESS_INTERVAL: string;
+  AI_IMAGE_PIXEL_LIMIT: string;
   STATIC_FILE_ROOT: string;
 }
