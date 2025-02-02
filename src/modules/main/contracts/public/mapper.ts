@@ -16,7 +16,7 @@ import {
 export { createDesignerRoomDto, createDesignerLibraryItemDto } from '../admin/read';
 
 export function createArtistDto(artist: Artist): ArtistDto {
-  const artwork = artist.artworks[0];
+  const artwork = artist.artworks.length > 0 ? artist.artworks[0] : null;
   return {
     name: artist.name,
     born: artist.born,
@@ -24,13 +24,13 @@ export function createArtistDto(artist: Artist): ArtistDto {
     countryCode: artist.country.code,
     artistCategory: artist.artistCategory?.name,
     slug: artist.slug,
-    artwork: {
+    artwork: artwork != null ? {
       name: artwork.name,
       description: artwork.description,
       artistName: artwork.artist.name,
       year: artwork.year,
       slug: artwork.slug,
-    }
+    } : null
   };
 }
 
@@ -73,18 +73,18 @@ export function createArtworkDetailDto(artwork: Artwork): ArtworkDetailDto {
       slug: artwork.artist.slug,
     },
     year: artwork.year,
-    nft: mapEmpty(artwork.nft, nft => ({
-      nftData: mapEmpty(nft.nftData, nftData => ({
+    nft: artwork.nft != null ? mapEmpty(artwork.nft, nft => ({
+      nftData: nft.nftData != null ? mapEmpty(nft.nftData, nftData => ({
         name: nftData.name,
         image: nftData.image,
-      })),
-      collection: mapEmpty(nft.collection, col => ({
-        colData: mapEmpty(col.colData, colData => ({
+      })) : null,
+      collection: nft.collection != null ? mapEmpty(nft.collection, col => ({
+        colData: col.colData != null ? mapEmpty(col.colData, colData => ({
           name: colData.name,
           image: colData.image,
-        }))
-      }))
-    })),
+        })) : null
+      })) : null
+    })) : null,
     ai: artwork.ai,
     tags: artwork.tags,
     artworkGenre: artwork.artworkGenre?.name,
@@ -122,20 +122,20 @@ export function createGalleryDetailDto(gallery: Gallery): GalleryDetailDto {
 }
 
 export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
-  const artwork = exhibition.artworks[0];
+  const artwork = exhibition.artworks?.[0] ?? null;
   return {
     name: exhibition.name,
-    fromDate: exhibition.fromDate.toISOString(),
-    toDate: exhibition.toDate.toISOString(),
+    fromDate: exhibition.fromDate?.toISOString() ?? null,
+    toDate: exhibition.toDate?.toISOString() ?? null,
     curator: exhibition.curator,
-    gallery: {
+    gallery: exhibition.gallery != null ? {
       name: exhibition.gallery.name,
       slug: exhibition.gallery.slug,
-    },
-    artwork: {
+    } : null,
+    artwork: artwork != null ? {
       name: artwork.name,
       slug: artwork.slug,
-    },
+    } : null,
     activeRoomId: exhibition.activeRoomId,
     slug: exhibition.slug,
   };
@@ -144,8 +144,8 @@ export function createExhibitionDto(exhibition: Exhibition): ExhibitionDto {
 export function createExhibitionDetailDto(exhibition: Exhibition): ExhibitionDetailDto {
   return {
     name: exhibition.name,
-    fromDate: exhibition.fromDate.toISOString(),
-    toDate: exhibition.toDate.toISOString(),
+    fromDate: exhibition.fromDate?.toISOString() ?? null,
+    toDate: exhibition.toDate?.toISOString() ?? null,
     curator: exhibition.curator,
     gallery: {
       name: exhibition.gallery.name,
