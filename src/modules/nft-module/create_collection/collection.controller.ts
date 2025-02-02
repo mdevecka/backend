@@ -14,7 +14,7 @@ export class CollectionController {
   @FormDataRequest()
   async formUpload(@Body() form: CollectionDto): Promise<CollectionResponseDto> {
     const { file, name, metadata, address } = form;
-    const callData = await this.appService.createCollectionCall(file, name, metadata, address);
+    const callData = await this.appService.createCollectionCall(name, address, metadata, file);
     if (callData == null || callData == 'null') {
       throw new BadRequestException('An error occurred while creating nft call, please check your parameters');
     }

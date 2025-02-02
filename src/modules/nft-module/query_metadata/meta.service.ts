@@ -55,7 +55,6 @@ export class MetaFetcher {
     );
 
     const data: CollectionInterface[] = await response.json();
-
     for (let i = 0; i < data.length; i++) {
       if (data[i].metadata != null) {
 
@@ -63,6 +62,7 @@ export class MetaFetcher {
         const fetchedData = await this.nftConfigService.fetchMetadataFromIPFS(data[i].metadata);
         const newData = typeof fetchedData === 'string' ? JSON.parse(fetchedData) : fetchedData;
         if (data[i].image != null) {
+
           data[i].image = this.nftConfigService.convertIpfsLink(data[i].image);
         }
         else if (data[i].image == null) {
